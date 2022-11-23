@@ -1,10 +1,11 @@
 #' ExportCSV Export MetaData inside object into ".csv" files
 #'
-#' @param MetaData
-#'
+#' @param MetaData a Meta  data files
+#' @param list.files.path dirpath
 #' @return ".csv" files into working directory
 #' @export
 #' @import utils
+#' @import R.utils
 #' @examples "non"
 ExportCSV <- function (MetaData, list.files.path){
 
@@ -15,6 +16,14 @@ ExportCSV <- function (MetaData, list.files.path){
   if(!is.list(list.files.path)){stop(paste("list.files.path must be a list of file path whith Script, Raw genomic, Raw clinic, Processed and References directories in Parent Directory." ))}
 
 
+  for (i in list.files(list.files.path$RawDataDump)) {
+        filename <- paste(c(list.files.path$RawDataDump,i),collapse = "/")
+    gzip(filename, destname=sprintf("%s.gz", filename), overwrite=FALSE, remove=TRUE, BFR.SIZE=1e+07)
+
+  }
+
+
+
   name <- names(MetaData)
 
   for (i in name) {
@@ -23,26 +32,29 @@ ExportCSV <- function (MetaData, list.files.path){
 
 
 
-    if(str_detect(toupper(i), "RAW.MATRIX")) {   z <- cbind("GeneSymbol" = rownames(MetaData[[i]]), MetaData[[i]])
-                                                write.csv(z,row.names = F ,file = paste0(list.files.path$RawGenomic,"/",i,".csv"))}
+         if(str_detect(toupper(i), "SAMPLE.PHENO")) {  filename <- paste0(list.files.path$PipelineDump,"/",i,".csv")
+                                                        z <- cbind( MetaData[[i]])
+                                                         write.csv(z,row.names = F ,file = filename)
+                                                          gzip(filename, destname=sprintf("%s.gz", filename), overwrite=FALSE, remove=TRUE, BFR.SIZE=1e+07)}
 
-      if(str_detect(toupper(i), "RAW.CLINIC")) {  z <- cbind( MetaData[[i]])
-                                                   write.csv(z,row.names = F ,file = paste0(list.files.path$RawClinic,"/",i,".csv"))}
-
-        if(str_detect(toupper(i), "SAMPLE.PHENO")) {  z <- cbind( MetaData[[i]])
-                                                       write.csv(z,row.names = F ,file = paste0(list.files.path$Processed,"/",i,".csv"))}
-
-          if(str_detect(toupper(i), "PATIENT.CLINIC")) {  z <- cbind( MetaData[[i]])
-                                                          write.csv(z,row.names = F ,file = paste0(list.files.path$Processed,"/",i,".csv"))}
+          if(str_detect(toupper(i), "PATIENT.CLINIC")) {  filename <- paste0(list.files.path$PipelineDump,"/",i,".csv")
+                                                            z <- cbind( MetaData[[i]])
+                                                             write.csv(z,row.names = F ,file = filename)
+                                                              gzip(filename, destname=sprintf("%s.gz", filename), overwrite=FALSE, remove=TRUE, BFR.SIZE=1e+07)}
 
 
-           if(str_detect(toupper(i), "NORMALIZED.MATRIX")) { z <- cbind("GeneSymbol" = rownames(MetaData[[i]]), MetaData[[i]])
-                                                            write.csv(z,row.names = F ,file = paste0(list.files.path$Processed,"/",i,".csv"))}
+           if(str_detect(toupper(i), "NORMALIZED.MATRIX")) { filename <- paste0(list.files.path$PipelineDump,"/",i,".csv")
+                                                              z <- cbind("GeneSymbol" = rownames(MetaData[[i]]), MetaData[[i]])
+                                                               write.csv(z,row.names = F ,file = filename)
+                                                                gzip(filename, destname=sprintf("%s.gz", filename), overwrite=FALSE, remove=TRUE, BFR.SIZE=1e+07)}
 
     } else {
 
     z <- cbind("rownames" = rownames(MetaData[[i]]), MetaData[[i]][,colnames(MetaData[[i]])!="attributes"])
-    if (str_detect(toupper(i), "GENEANNOTATION")){write.csv(z,row.names = F ,file = paste0(list.files.path$References,"/",i,".csv"))}
+    if (str_detect(toupper(i), "GENEANNOTATION")){
+      filename <- paste0(list.files.path$RawDataDump,"/",i,".csv")
+      write.csv(z,row.names = F ,file = filename)
+      gzip(filename, destname=sprintf("%s.gz", filename), overwrite=FALSE, remove=TRUE, BFR.SIZE=1e+07)}
     }
 
 

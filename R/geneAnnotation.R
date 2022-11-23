@@ -5,10 +5,7 @@
 #' @param saverds if TRUE save a ".rds" file with the file field
 #' @import data.table
 #' @import AnnotationDbi
-#' @param type subset of genne Annot
-#' @param GeneType target
-#' @param GeneSymbol target
-#' @param extract_attributes none
+
 #' @importFrom org.Hs.eg.db org.Hs.eg.db
 #' @return return a data.frame with ensembl Id as rownames and attributes for each genes.
 #'

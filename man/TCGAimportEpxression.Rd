@@ -14,8 +14,7 @@ TCGAimportEpxression(
   platform = NULL,
   file.type = NULL,
   legacy = F,
-  data.norm = c("Raw", "TPM", "FKPM"),
-  remove.files.prepared = F
+  data.norm = c("Raw", "TPM", "FKPM")
 )
 }
 \arguments{
@@ -38,12 +37,6 @@ TCGAimportEpxression(
 \item{legacy}{legacy T or F}
 
 \item{data.norm}{a character "Raw"  = raw count, "TPM" = tpm normalisation gene expression, "FKPM" = fkpm normalisation gene expression if it exist}
-
-\item{remove.files.prepared}{FALSE or TRUE to remove data downloaded}
-
-\item{query}{query object exported}
-
-\item{bcr_patient_barcode}{grouped by}
 }
 \value{
 a data frame with build rna expression raw or normalized

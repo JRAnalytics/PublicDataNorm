@@ -1,4 +1,3 @@
-
 #' getProteinCodingMatrix
 #'
 #' @param Metadata Meta data from PublicDataNorm

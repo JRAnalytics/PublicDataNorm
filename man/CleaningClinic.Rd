@@ -7,17 +7,7 @@
 CleaningClinic(
   Metadata,
   type = c("Sample Pheno", "Patients' clinical data"),
-  list.files.path,
-  Organism,
-  Organ,
-  Disease,
-  Compartment,
-  SampleType,
-  TisseConservation,
-  TissueSampling,
-  PatientSampling,
-  SamplePathologicalState,
-  SequencingRun
+  Lexical_colnames_path
 )
 }
 \arguments{
@@ -25,7 +15,7 @@ CleaningClinic(
 
 \item{type}{"Sample Pheno" or "Patients' clinical data" for building clean clinical data from raw clinical data.}
 
-\item{list.files.path}{file path to find lexique of colnames}
+\item{Lexical_colnames_path}{file path to find lexique of colnames}
 }
 \value{
 a data frame of Samples pheno or patients clinical data. If Sample ID and Patients ID are the sames, so Samples.pheno and Patient_clinic are the same data frame

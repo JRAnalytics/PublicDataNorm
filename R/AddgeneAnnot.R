@@ -3,8 +3,6 @@
 #' @param Meta  Meta object to add geneAnnotation
 #' @param gtf.file.dir set xorking directory to path to gtf.file
 #' @param gtf.files  gtf file to load
-#'
-#' @param geneAnnotation function
 #' @import stringr
 #' @import AnnotationDbi
 #' @import data.table

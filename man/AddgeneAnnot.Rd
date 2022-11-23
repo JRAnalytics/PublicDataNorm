@@ -12,8 +12,6 @@ AddgeneAnnot(Meta, gtf.file.dir, gtf.files)
 \item{gtf.file.dir}{set xorking directory to path to gtf.file}
 
 \item{gtf.files}{gtf file to load}
-
-\item{geneAnnotation}{function}
 }
 \value{
 return a Meta list of dataframe with geneAnntotation

@@ -4,14 +4,17 @@
 \alias{ColNameClinic}
 \title{ColNameClinic function to prepare constant colnames to find in clinical data from lexiue .txt}
 \usage{
-ColNameClinic(list.files.path)
+ColNameClinic(Lexical_colnames_path)
 }
 \arguments{
-\item{list.files.path}{file path to find lexique of colnames}
+\item{Lexical_colnames_path}{file path to find lexique of colnames}
 }
 \value{
 a list
 }
 \description{
 ColNameClinic function to prepare constant colnames to find in clinical data from lexiue .txt
+}
+\examples{
+"none"
 }

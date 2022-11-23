@@ -16,14 +16,6 @@ geneAnnotation(
 \item{saverds}{if TRUE save a ".rds" file with the file field}
 
 \item{file}{character to names the geneAnnotation rds file}
-
-\item{type}{subset of genne Annot}
-
-\item{GeneType}{target}
-
-\item{GeneSymbol}{target}
-
-\item{extract_attributes}{none}
 }
 \value{
 return a data.frame with ensembl Id as rownames and attributes for each genes.

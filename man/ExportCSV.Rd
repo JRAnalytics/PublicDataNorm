@@ -7,7 +7,9 @@
 ExportCSV(MetaData, list.files.path)
 }
 \arguments{
-\item{MetaData}{}
+\item{MetaData}{a Meta  data files}
+
+\item{list.files.path}{dirpath}
 }
 \value{
 ".csv" files into working directory

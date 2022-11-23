@@ -1,5 +1,3 @@
-
-
 #' CheckMeta : Checking samples accors MetaData files
 #'
 #' @param MetaData a mMetaData list

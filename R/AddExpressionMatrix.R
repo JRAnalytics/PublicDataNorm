@@ -20,6 +20,8 @@ AddExpressionMatrix <- function(Metadata, local = c(T, F) , query, data.norm, pa
   if(local== T){
 
 
+
+
     message("Local import")
 
     l <-length(names(Metadata))
@@ -27,7 +29,7 @@ AddExpressionMatrix <- function(Metadata, local = c(T, F) , query, data.norm, pa
 
     if(length(lf)>1){
 
-      stop("There is more than one Matrix files in Dir :", lf)}
+      message("There is more than one Matrix files in Dir :", lf)}
 
     if(all(str_detect(lf, ".rds", negate = FALSE)==F) & all(str_detect(lf, ".txt", negate = FALSE)==F) & all(str_detect(lf, ".csv", negate = FALSE)==F)){stop("No '*.rds' or '*.txt' or '*.csv' files in set directory. \n change path or add file")}
 
@@ -36,7 +38,8 @@ AddExpressionMatrix <- function(Metadata, local = c(T, F) , query, data.norm, pa
     if(length(Metadata)>1) {
 
 
-
+      lf <- lf[str_detect(lf, "matrix")]
+      message(paste("Loading", lf, "file"))
 
     if(str_detect(lf, ".rds", negate = FALSE)){Metadata[[l+1]] <- readRDS(lf)} else {
 
@@ -56,6 +59,8 @@ AddExpressionMatrix <- function(Metadata, local = c(T, F) , query, data.norm, pa
 
      else {
 
+       lf <- lf[str_detect(lf, "matrix")]
+       message(paste("Loading", lf, "file"))
       if(str_detect(lf, ".rds", negate = FALSE)){Metadata[[1]] <- readRDS(lf)} else {
         if(str_detect(lf, ".txt", negate = FALSE)){
 

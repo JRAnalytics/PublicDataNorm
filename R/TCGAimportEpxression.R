@@ -6,12 +6,9 @@
 #' @param experimental.strategy a character of experimental.strategy
 #' @param sample.type a character of sample.type
 #' @param data.norm a character "Raw"  = raw count, "TPM" = tpm normalisation gene expression, "FKPM" = fkpm normalisation gene expression if it exist
-#' @param remove.files.prepared FALSE or TRUE to remove data downloaded
 #' @param platform platform
 #' @param file.type filetype
 #' @param legacy legacy T or F
-#' @param query query object exported
-#' @param bcr_patient_barcode grouped by
 #' @param Meta a Meta object. If NULL, will create the Meta object. If exist, will add objects from queries.
 #' @import data.table
 #' @import TCGAbiolinks
@@ -32,19 +29,15 @@ TCGAimportEpxression <- function(Meta=NULL,
                                     platform = NULL,
                                     file.type = NULL,
                                     legacy = F,
-                                   data.norm = c("Raw", "TPM", "FKPM"),remove.files.prepared = F){
+                                   data.norm = c("Raw", "TPM", "FKPM")){
 
-  require(dplyr)
-  require(data.table)
-  require(TCGAbiolinks)
-  require(DT)
-  require(stringr)
+
 if(isServeOK()==FALSE){stop("Connection to server GDC failled")}
 
 
 message("Querying", paste(project, "Meta"))
 
-query <<- GDCquery(
+query <- GDCquery(
   project = project ,
   data.category = data.category,
   data.type = data.type,
@@ -112,10 +105,7 @@ rownames(data) <-  unlist(lapply(str_split(rownames(data),"[|]" ), "[[", 1))
 
 
 
-if(remove.files.prepared){message("Removing downloaded data")
-  # removes files and empty directories
-  removefilesrecursively(files)
-}
+
 
 
 
@@ -194,7 +184,8 @@ rownames(clinic3_rolled) <- clinic3_rolled[,"bcr_patient_barcode"]
 
 
 Meta <- list("DF" = data,
-             "clinic"= clinic3_rolled)
+             "clinic"= clinic3_rolled,
+             "query" = query)
 
 names(Meta) <- c(paste0(data.norm,"-", project,"-matrix"), paste0("clinic_",project))
 

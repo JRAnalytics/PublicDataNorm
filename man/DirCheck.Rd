@@ -4,10 +4,12 @@
 \alias{DirCheck}
 \title{DirCheck Create project Dir in Script,n Precessed, Raw Clinic, Raw genomic, and references if does not exist.}
 \usage{
-DirCheck(project)
+DirCheck(project, path)
 }
 \arguments{
 \item{project}{a character string : project name}
+
+\item{path}{dir path of Parent directory}
 }
 \value{
 a file path list of dir project in ~parent/dir/project file
@@ -16,7 +18,7 @@ a file path list of dir project in ~parent/dir/project file
 DirCheck Create project Dir in Script,n Precessed, Raw Clinic, Raw genomic, and references if does not exist.
 }
 \examples{
-DirCheck("Maurer")
+"none"
 
 
 

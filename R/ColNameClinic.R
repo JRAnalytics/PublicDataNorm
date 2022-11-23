@@ -1,15 +1,15 @@
-
 #' ColNameClinic function to prepare constant colnames to find in clinical data from lexiue .txt
 #'
-#' @param list.files.path file path to find lexique of colnames
-#'
+#' @param Lexical_colnames_path file path to find lexique of colnames
+#' @importFrom data.table fread
+#' @importFrom stats na.omit
 #' @return a list
 #' @export
 #'
-#' @examples
-ColNameClinic <- function(list.files.path){
+#' @examples "none"
+ColNameClinic <- function(Lexical_colnames_path){
 
-cnameClinic <- data.table::fread(paste(list.files.path$Parent,"References","colnames clinical data.txt",sep = "/"))
+cnameClinic <- data.table::fread(paste(Lexical_colnames_path,"Lexic.txt",sep = "/"))
 
 
 cnameClinic <- as.data.frame(cnameClinic)
