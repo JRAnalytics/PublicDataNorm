@@ -7,6 +7,7 @@
 #' @param local T of F. If F, use query form. If F, add expression patrice from local file
 #' @param name.local.file if loca=True, names to apply in Meatadata object slot
 #' @importFrom utils menu
+#' @import data.table
 #' @return a data.frame in the Meta Object
 #' @export
 #'

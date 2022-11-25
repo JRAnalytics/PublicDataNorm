@@ -3,6 +3,7 @@
 export(AddClinic)
 export(AddExpressionMatrix)
 export(AddgeneAnnot)
+export(CheckLocalDatabase)
 export(CheckMeta)
 export(CleaningClinic)
 export(ColNameClinic)

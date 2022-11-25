@@ -13,31 +13,40 @@
 DirCheck <- function(project,path){
 
   file.path.parent <- paste(unlist(strsplit(path, "/")),collapse = "/")
-  file.path.Project <- paste(c(unlist(strsplit(path, "/")),project),collapse = "/")
-  file.path.Script <- paste(c(unlist(strsplit(path, "/")),project,"Script"),collapse = "/")
-  file.path.RawDataDump <- paste(c(unlist(strsplit(path, "/")),project,"RawDataDump"),collapse = "/")
-  file.path.RawPhenoAnnotation <- paste(c(unlist(strsplit(path, "/")),project,"RawPhenoAnnotation"),collapse = "/")
-  file.path.References <- paste(c(unlist(strsplit(path, "/")),project,"References"),collapse = "/")
-  file.path.PipelineDump <- paste(c(unlist(strsplit(path, "/")),project,"PipelineDump"),collapse = "/")
-  file.path.VerifiedDataSet <- paste(c(unlist(strsplit(path, "/")),project,"VerifiedDataSet"),collapse = "/")
+  # Directories in "parent" Dir. Refereces, Script, RawData and VerifiedDataSet
 
-  if(!dir.exists(file.path.Project)){dir.create(file.path.Project)}
+      file.path.References <- paste(c(unlist(strsplit(path, "/")),"03References"),collapse = "/")
+
+      file.path.Script <- paste(c(unlist(strsplit(path, "/")),"02Script"),collapse = "/")
+            file.path.Project.Script <- paste(c(file.path.Script,project),collapse = "/")
+
+      file.path.RawData <- paste(c(unlist(strsplit(path, "/")),"01RawData"),collapse = "/")
+            file.path.Project.RawData <- paste(c(file.path.RawData,project),collapse = "/")
+            file.path.PipelineDump <- paste(c(file.path.RawData,"PipelineDump"),collapse = "/")
+
+      file.path.VerifiedDataSet <- paste(c(unlist(strsplit(path, "/")),"04VerifiedDataSet"),collapse = "/")
+            file.path.Project.VerifiedDataset <- paste(c(file.path.VerifiedDataSet,project),collapse = "/")
+
   if(!dir.exists(file.path.Script)){dir.create(file.path.Script)}
-  if(!dir.exists(file.path.RawDataDump)){dir.create(file.path.RawDataDump)}
-  if(!dir.exists(file.path.RawPhenoAnnotation)){dir.create(file.path.RawPhenoAnnotation)}
+  if(!dir.exists(file.path.RawData)){dir.create(file.path.RawData)}
+  if(!dir.exists(file.path.Project.RawData)){dir.create(file.path.Project.RawData)}
   if(!dir.exists(file.path.References)){dir.create(file.path.References)}
   if(!dir.exists(file.path.PipelineDump)){dir.create(file.path.PipelineDump)}
   if(!dir.exists(file.path.VerifiedDataSet)){dir.create(file.path.VerifiedDataSet)}
+  if(!dir.exists(file.path.Project.VerifiedDataset)){dir.create(file.path.Project.VerifiedDataset)}
+  if(!dir.exists(file.path.Project.Script)){dir.create(file.path.Project.Script)}
+
+
 
 
   list.files.path <- list( "Parent"= file.path.parent,
-                           "Project" = file.path.Project,
+                           "RawData" = file.path.RawData,
+                           "Project.RawData" = file.path.Project.RawData,
                            "Script" = file.path.Script,
-                           "RawDataDump" = file.path.RawDataDump,
-                           "RawPhenoAnnotation" = file.path.RawPhenoAnnotation,
+                           "Project.Script" = file.path.Project.Script,
                            "References"= file.path.References,
-                           "PipelineDump" = file.path.PipelineDump,
-                           "VerifiedDataSet" = file.path.VerifiedDataSet)
+                           "VerifiedDataSet" = file.path.VerifiedDataSet,
+                           "Propject.VerifiedDataset" = file.path.Project.VerifiedDataset)
 
   message("Creating Project directories")
 

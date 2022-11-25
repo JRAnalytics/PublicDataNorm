@@ -53,7 +53,8 @@ for (i in 1:ncol(clinic)) {
       rownames(clinic2) <- clinic2$Samples
 
       clinic2[clinic2==""] <- NA
-      Metadata$Sample.pheno <- clinic2[colnames(Metadata[which(str_detect(names(Metadata), c("Raw", "matrix")))][[1]]),]
+      clinic2[clinic2=="NA"] <- NA
+      Metadata$Sample.pheno <- clinic2[colnames(Metadata[which(str_detect(names(Metadata), c("RawCount")))][[1]]),]
 
     } else {
 
@@ -69,6 +70,7 @@ for (i in 1:ncol(clinic)) {
       cl_rolled <-  cl_rolled[,c("SamplesID", cc)]
 
       cl_rolled[cl_rolled==""] <- NA
+      cl_rolled[cl_rolled=="NA"] <- NA
       Metadata$Sample.pheno <- cl_rolled
       }
 
@@ -84,6 +86,7 @@ for (i in 1:ncol(clinic)) {
         clinic2 <-  clcl[,c("PatientsID", cc)]
         rownames(clinic2) <- clinic2$Patients
         clinic2[clinic2==""] <- NA
+        clinic2[clinic2=="NA"] <- NA
         Metadata$Patient.clinic <- clinic2
 
         } else {
@@ -108,6 +111,7 @@ for (i in 1:ncol(clinic)) {
 
           cl_rolled <-  cl_rolled[,c("PatientsID", cc)]
           cl_rolled[cl_rolled==""] <- NA
+          cl_rolled[cl_rolled=="NA"] <- NA
           Metadata$Patient.clinic <- cl_rolled
 
           }

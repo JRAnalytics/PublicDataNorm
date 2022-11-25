@@ -2,6 +2,7 @@
 #'
 #' @param Lexical_colnames_path file path to find lexique of colnames
 #' @importFrom data.table fread
+#' @import dplyr
 #' @importFrom stats na.omit
 #' @return a list
 #' @export
@@ -9,20 +10,14 @@
 #' @examples "none"
 ColNameClinic <- function(Lexical_colnames_path){
 
-cnameClinic <- data.table::fread(paste(Lexical_colnames_path,"Lexic.txt",sep = "/"))
 
 
-cnameClinic <- as.data.frame(cnameClinic)
+x <- scan(paste(Lexical_colnames_path,"Lexic.txt",sep = "/"), what="", sep="\n")%>%strsplit("[[:space:]]+")
 
-l <- list()
-for (i in 1:ncol(cnameClinic)) {
-  nl <- names(l)
-  l <- c(l, list(na.omit(cnameClinic[,i])))
-  names(l) <-  c(nl, colnames(cnameClinic)[i])
+names(x) <- sapply(x, `[[`, 1)
+x<- lapply(x, `[`, -1)
 
-}
-
-return(l)
+return(x)
 }
 
 
