@@ -2,7 +2,7 @@
 #'
 #' @param Metadata Meta object
 #' @param path dir path in which the GDC project is saved, or local files are saved
-#' @param name.local.file if loca=True, names to apply in Meatadata object slot
+#' @param name.local.file if loca=True, names to apply in Metadata object slot
 #' @param merge merge loaded data clinic with existing clinial data : cbind by rownames
 #' @importFrom utils menu
 #' @return a data.frame in the Meta Object
@@ -25,14 +25,11 @@ AddClinic <- function(Metadata, path, merge = c(F,T), name.local.file) {
 
       if(str_detect(lf, ".rds", negate = FALSE)){Metadata[[l+1]] <- readRDS(lf) }
 
-      if(str_detect(lf, ".txt", negate = FALSE)){
+      if(str_detect(lf, ".txt|.csv|.tsv", negate = FALSE)){
 
         dt <- suppressWarnings(as.data.frame(data.table::fread(lf, na.strings = "")))
-        rownames(dt) <- dt[,1]}
-
-      if(str_detect(lf, ".csv", negate = FALSE)){
-        dt <- suppressWarnings(as.data.frame(data.table::fread(lf, na.strings = "")))
-        rownames(dt) <- dt[,1]}
+        rownames(dt) <- dt[,1]
+        }
 
         if (merge == F){
 

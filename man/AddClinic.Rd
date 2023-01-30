@@ -13,7 +13,7 @@ AddClinic(Metadata, path, merge = c(F, T), name.local.file)
 
 \item{merge}{merge loaded data clinic with existing clinial data : cbind by rownames}
 
-\item{name.local.file}{if loca=True, names to apply in Meatadata object slot}
+\item{name.local.file}{if loca=True, names to apply in Metadata object slot}
 }
 \value{
 a data.frame in the Meta Object

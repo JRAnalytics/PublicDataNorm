@@ -26,16 +26,13 @@ geneAnnotation <- function(gtf.files = "gencode.v40.annotation.gtf", saverds=TRU
   } else {
 
      if(!all(colnames(gtf.files)==c("chr","source","type","start","end","score","strand","phase","attributes")))
-      stop("GTF file has not the rigth structure as c('chr','source','type','start','end','score','strand','phase','attributes') ")
-
-      genes <- gtf.files
-
-    }
+      stop("GTF file has not the rigth structure as c('chr','source','type','start','end','score','strand','phase','attributes') ")}
 
 
 
   split_gene <- as.data.frame(subset(genes, subset = c(type=="gene" | type== "transcript") ))
 
+  if(nrow(split_gene)==0){ stop("Fun geneAnnotation : failed in subseting .gtf file")}
 
   split_gene$EnsemblID <- unlist(lapply(split_gene $attributes, extract_attributes, "gene_id"))
   split_gene$EnsemblID <- unlist(lapply(strsplit(split_gene$EnsemblID, "[.]"), "[[", 1))
@@ -53,7 +50,7 @@ geneAnnotation <- function(gtf.files = "gencode.v40.annotation.gtf", saverds=TRU
   if(str_detect(gtf.files, "v33")) {site <-"http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg33&position=" }
   if(str_detect(gtf.files, "v40")) {site <-"http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg40&position=" }
   if(str_detect(gtf.files, "v41")) {site <-"http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg41&position=" }
-
+  if(str_detect(gtf.files, "v42")) {site <-"http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg42&position=" }
 
   split_gene$UCSC_link <- paste0(site,split_gene$chr,"%3A",split_gene$start ,"%2D",split_gene$end)
 
@@ -70,6 +67,7 @@ geneAnnotation <- function(gtf.files = "gencode.v40.annotation.gtf", saverds=TRU
   split_gene[which(is.na(split_gene$Entrez.id)),"Entrez_geneID_link"] <- "-"
 
 
+if(nrow(split_gene)==0){ stop("Fun geneAnnotation return a DF with 0 rows")}
 
 return(split_gene)
 

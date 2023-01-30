@@ -7,7 +7,7 @@
 #' @import utils
 #' @import R.utils
 #' @examples "non"
-ExportCSV <- function (MetaData, list.files.path){
+ExportCSV <- function (MetaData, list.files.path, project){
 
   if(is.null(MetaData)){stop("Need a MetaData List file")}
   if(!is.list(MetaData)){stop("Need a MetaData List file")}
@@ -24,31 +24,40 @@ ExportCSV <- function (MetaData, list.files.path){
 
 
 
-         if(str_detect(toupper(i), "SAMPLE.PHENO")) {  filename <- paste0(list.files.path$VerifiedDataSet,"/",i,".csv")
+         if(str_detect(toupper(i), "SAMPLE.PHENO")) {  filename <- paste0(list.files.path$Propject.VerifiedDataset,"/",project,".",i,".csv")
                                                         z <- cbind( MetaData[[i]])
                                                          write.csv(z,row.names = F ,file = filename)
-                                                          gzip(filename, destname=sprintf("%s.gz", filename), overwrite=FALSE, remove=TRUE, BFR.SIZE=1e+07)}
+                                                          gzip(filename, destname=sprintf("%s.gz", filename), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)}
 
-          if(str_detect(toupper(i), "PATIENT.CLINIC")) {  filename <- paste0(list.files.path$VerifiedDataSet,"/",i,".csv")
+          if(str_detect(toupper(i), "PATIENT.CLINIC")) {  filename <- paste0(list.files.path$Propject.VerifiedDataset,"/",project,".",i,".csv")
                                                             z <- cbind( MetaData[[i]])
                                                              write.csv(z,row.names = F ,file = filename)
-                                                              gzip(filename, destname=sprintf("%s.gz", filename), overwrite=FALSE, remove=TRUE, BFR.SIZE=1e+07)}
+                                                              gzip(filename, destname=sprintf("%s.gz", filename), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)}
 
 
-           if(str_detect(toupper(i), "NORMALIZED")) { filename <- paste0(list.files.path$VerifiedDataSet,"/",i,".csv")
+           if(str_detect(toupper(i), "NORMALIZED")) { filename <- paste0(list.files.path$Propject.VerifiedDataset,"/",i,".csv")
                                                               z <- cbind("GeneSymbol" = rownames(MetaData[[i]]), MetaData[[i]])
                                                                write.csv(z,row.names = F ,file = filename)
-                                                                gzip(filename, destname=sprintf("%s.gz", filename), overwrite=FALSE, remove=TRUE, BFR.SIZE=1e+07)}
+                                                                gzip(filename, destname=sprintf("%s.gz", filename), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)}
 
-              if(str_detect(toupper(i), "RAWCOUNT")) { filename <- paste0(list.files.path$VerifiedDataSet,"/",i,".csv")
+              if(str_detect(toupper(i), "RAWCOUNT")) { filename <- paste0(list.files.path$Propject.VerifiedDataset,"/",i,".csv")
                                                                   z <- cbind("GeneSymbol" = rownames(MetaData[[i]]), MetaData[[i]])
                                                                     write.csv(z,row.names = F ,file = filename)
-                                                                      gzip(filename, destname=sprintf("%s.gz", filename), overwrite=FALSE, remove=TRUE, BFR.SIZE=1e+07)}
+                                                                      gzip(filename, destname=sprintf("%s.gz", filename), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)}
+
+              if(str_detect(toupper(i), ".MATRIX")) { filename <- paste0(list.files.path$Propject.VerifiedDataset,"/",i,".csv")
+                                                                    z <- cbind("GeneSymbol" = rownames(MetaData[[i]]), MetaData[[i]])
+                                                                    write.csv(z,row.names = F ,file = filename)
+                                                                    gzip(filename, destname=sprintf("%s.gz", filename), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)}
 
     }
 
 
-
+    if (str_detect(toupper(i), "ANNOT")) {
+      filename <- paste0(list.files.path$References,"/",i,".",project,".csv")
+      z <- cbind(MetaData[[i]])
+      write.csv(z,row.names = F ,file = filename)
+      gzip(filename, destname=sprintf("%s.gz", filename), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)   }
 
 
     }

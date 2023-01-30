@@ -4,12 +4,37 @@
 \alias{CheckLocalDatabase}
 \title{CheckLocalDatabase}
 \usage{
-CheckLocalDatabase(Local.Database.Path, Databasename = "DataBaseSummary.txt")
+CheckLocalDatabase(
+  Local.Data.base.Path,
+  Databasename = "DataBaseSummary.txt",
+  Normalization.Method = NA,
+  Sequençing.DeepenessPerMillionReads = NA,
+  Sequençing.LengthPer.pb = NA,
+  Sequençing.Run = NA,
+  Sequençing.Platform = NA,
+  First.Author = NA,
+  DOI = NA,
+  project = NA
+)
 }
 \arguments{
+\item{Local.Data.base.Path}{path to parent directory of the database.}
+
 \item{Databasename}{name of the database.txt summary file}
 
-\item{Local.Data.base.Path}{path to parent directory of the database.}
+\item{Normalization.Method}{Defaul = NA}
+
+\item{Sequençing.DeepenessPerMillionReads}{Defaul = NA}
+
+\item{Sequençing.LengthPer.pb}{Defaul = NA}
+
+\item{Sequençing.Platform}{Defaul = NA}
+
+\item{First.Author}{Defaul = NA}
+
+\item{DOI}{doi of article if exist. Defaul = NA}
+
+\item{project}{project name}
 }
 \value{
 a .text tab delimited database summary

@@ -20,25 +20,35 @@ AddgeneAnnot <- function(Meta ,gtf.file.dir, gtf.files){
 
   geneAnnot <- geneAnnotation(gtf.files = paste0(path,"/",gtf.files) ,saverds = F)
 
-  zz <- which(str_detect(names(Meta), c("Raw", "matrix")))
+  if(is.null(geneAnnot)){stop("Error in geneAnnotation function : is.null(geneAnnot==TRUE")}
+
+  if(is.null(rownames(geneAnnot))){stop("Error in geneAnnotation function : no rownames in geneAnnot. But is not Null")}
+
+  zz <- which(str_detect(toupper(names(Meta)), c("RAWCOUNT|RAW.MATRIX|RAW.COUNT|RAWMATRIX")))
+  if(length(zz)!=1){ stop("str_detect(names(Meta), c('Raw.count|Raw.matrix')),line 27, more than 1 object are detected.")}
 
   gene <- rownames(Meta[[zz]])
 
   if(all(str_detect(gene, "ENSG000"))){
 
-    message("Data matrice row names are ENSEMBL gene names.")
+    print(message("Data matrice row names are ENSEMBL gene names."))
 
-  Meta[[zz]] <- Meta[[zz]][-which(duplicated(gene)),]
+  if(length(duplicated(gene))!=0) {  Meta[[zz]] <- Meta[[zz]][-which(duplicated(gene)),] }
+    if(length(duplicated(gene))==0){ message("No rownames of raw matrix are duplicated")}
+
   gene <- unlist(lapply(str_split(rownames(Meta[[zz]]),"[.]"),"[[",1))
   rownames(Meta[[zz]]) <- gene
 
   geneAnnot <- geneAnnot[rownames(geneAnnot)%in%gene,]
+
+  if(nrow(geneAnnot)==0){ stop("if(nrow(geneAnnot)==0), line 43, N rows of geneAnnotation is 0")}
+
   geneAnnot <- geneAnnot[order(geneAnnot$GeneSymbol,decreasing = F),]
   Meta$geneAnnotation <- geneAnnot
   } else {
 
     gene <- unlist(lapply(str_split(rownames(Meta[[zz]]),"[|]"),"[[",1))
-  message("Data matrice row names are already in gene names.")
+  print(message("Data matrice row names are already in gene names."))
 
     geneAnnot <- geneAnnot[order(geneAnnot$GeneSymbol,decreasing = F),]
 

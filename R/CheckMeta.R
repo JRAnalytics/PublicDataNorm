@@ -15,7 +15,7 @@ CheckMeta <- function(MetaData) {
   l <-length(names(MetaData))
   MetaDataN <- names(MetaData)
 
-  ColN <- colnames(MetaData[[which(str_detect(names(MetaData),"Raw"))]])
+  ColN <- colnames(MetaData[[1]])
   m <- which(str_detect(toupper(names(MetaData)),"MATRIX"))
   c <- which(str_detect(toupper(names(MetaData)),"PATIENT") | str_detect(toupper(names(MetaData)),"CLINIC") | str_detect(toupper(names(MetaData)),"PHENO")  )
   message("-------------------------")
@@ -50,6 +50,22 @@ CheckMeta <- function(MetaData) {
         names(suma) <- c("Mode", "Gene not found", "Found")
         print(suma)
       }
+
+
+      if(all(str_detect(rownames(MetaData[[i]]), "ILMN_")==T)) { message(paste(names(MetaData[i]), " gene probes as Illumina Bead Array Probes"))
+
+        suma <- summary(rownames(MetaData[[i]])%in%rownames(MetaData$geneAnnotation))
+        print(suma)
+      }
+
+
+      if(all(str_detect(rownames(MetaData[[i]]), "_at")==T)) { message(paste(names(MetaData[i]), " gene probes as Illumina Microarray Probes"))
+
+        suma <- summary(rownames(MetaData[[i]])%in%rownames(MetaData$geneAnnotation))
+        print(suma)
+      }
+
+
 
       if(length(which(rownames(MetaData[[i]])%in%MetaData$geneAnnotation$GeneSymbol))>1)   {
 

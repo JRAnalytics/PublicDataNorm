@@ -28,13 +28,36 @@ AddExpressionMatrix <- function(Metadata, local = c(T, F) , query, data.norm, pa
     l <-length(names(Metadata))
     lf <- list.files(path)
 
-    if(length(lf)>1){
+    if(length(lf)>1){print(c(message("There is more than one Matrix files in Dir :"),lf))}
 
-      message("There is more than one Matrix files in Dir :", lf)}
+    if(all(str_detect(lf, ".rds|.txt|.csv|.tsv", negate = FALSE)==F)){stop("No '*.rds' or '*.txt' or '*.csv' files in set directory. \n change path or add file")}
 
-    if(all(str_detect(lf, ".rds", negate = FALSE)==F) & all(str_detect(lf, ".txt", negate = FALSE)==F) & all(str_detect(lf, ".csv", negate = FALSE)==F)){stop("No '*.rds' or '*.txt' or '*.csv' files in set directory. \n change path or add file")}
+    if(length(lf[str_detect(lf, "matrix")])>1) {
 
+      for (i in lf[str_detect(lf, "matrix")]) {
+        l <- length(Metadata)
+        message(paste("Loading", i, "file"))
 
+        if(str_detect(i, ".rds", negate = FALSE)){Metadata[[1]] <- readRDS(i)} else {
+          if(str_detect(i, ".txt", negate = FALSE)){
+
+            dt <- suppressWarnings(as.data.frame(data.table::fread(i)))
+            rownames(dt) <- dt[,1]
+            Metadata[[l+1]] <- dt}  else {
+              if(str_detect(i, ".csv", negate = FALSE)){
+                dt <- suppressWarnings(as.data.frame(data.table::fread(i)))
+                rownames(dt) <- dt[,1]
+                Metadata[[l+1]] <- dt} else {
+
+                  if(str_detect(i, ".tsv", negate = FALSE)){
+                    dt <- suppressWarnings(as.data.frame(data.table::fread(i)))
+                    rownames(dt) <- dt[,1]
+                    Metadata[[l+1]] <- dt}}
+            } }
+
+        names(Metadata)[l+1] <- paste0(name.local.file,".matrix.",which(lf[str_detect(lf, "matrix")]%in%i))
+
+        } } else {
 
     if(length(Metadata)>1) {
 
@@ -54,7 +77,17 @@ AddExpressionMatrix <- function(Metadata, local = c(T, F) , query, data.norm, pa
             dt <- suppressWarnings(as.data.frame(data.table::fread(lf)))
             rownames(dt) <- dt[,1]
             dt <- dt[,colnames(Metadata[[1]])]
-            Metadata[[l+1]] <- dt}}}
+            Metadata[[l+1]] <- dt} else {
+
+              if(str_detect(lf, ".tsv", negate = FALSE)){
+              dt <- suppressWarnings(as.data.frame(data.table::fread(lf)))
+              rownames(dt) <- dt[,1]
+              dt <- dt[,colnames(Metadata[[1]])]
+              Metadata[[l+1]] <- dt}
+              }
+          }
+
+      }
 
     names(Metadata)[l+1] <- paste0(name.local.file,".matrix")}
 
@@ -71,7 +104,12 @@ AddExpressionMatrix <- function(Metadata, local = c(T, F) , query, data.norm, pa
           if(str_detect(lf, ".csv", negate = FALSE)){
             dt <- suppressWarnings(as.data.frame(data.table::fread(lf)))
             rownames(dt) <- dt[,1]
-            Metadata[[1]] <- dt}
+            Metadata[[1]] <- dt}else {
+
+              if(str_detect(lf, ".tsv", negate = FALSE)){
+                dt <- suppressWarnings(as.data.frame(data.table::fread(lf)))
+                rownames(dt) <- dt[,1]
+                Metadata[[1]] <- dt}}
         }
         }
 
@@ -80,7 +118,7 @@ AddExpressionMatrix <- function(Metadata, local = c(T, F) , query, data.norm, pa
 
 
 
-      }
+      }}
 
 
 ###marche pas le readme!

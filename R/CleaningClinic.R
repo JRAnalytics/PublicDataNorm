@@ -12,24 +12,24 @@
 CleaningClinic <- function(Metadata, type = c("Sample Pheno", "Patients' clinical data"), Lexical_colnames_path){
 
 
-
-  cnameClinic <- ColNameClinic(Lexical_colnames_path)
+if(!exists("LexicClinic", mode = "any")){
+  LexicClinic <<- ColNameClinic(Lexical_colnames_path)}
 
   if(all(str_detect(names(Metadata),"clinic"))==T){stop("No clinical data in meta object")}
 
   clinic <- Metadata[which(str_detect(names(Metadata),"clinic"))][[1]]
 
 
-  clcl <-  data.frame(matrix(nrow = nrow(clinic), ncol = length(cnameClinic)))
-  colnames(clcl) = names(cnameClinic)
-  cnameClinic <- lapply(cnameClinic, toupper)
+  clcl <-  data.frame(matrix(nrow = nrow(clinic), ncol = length(LexicClinic)))
+  colnames(clcl) = names(LexicClinic)
+  LexicClinic <- lapply(LexicClinic, toupper)
 
 
 
 
 for (i in 1:ncol(clinic)) {
   pat <- toupper(colnames(clinic)[i])
-  col <- grep(paste("\\b",pat,"\\b", sep=""), cnameClinic)
+  col <- grep(paste("\\b",pat,"\\b", sep=""), LexicClinic)
 
   if(!length(col)==0){
 
@@ -38,8 +38,9 @@ for (i in 1:ncol(clinic)) {
   }
 }
 
+  if(!exists("SamplesOrPatients", mode = "any")){
 
-  SamplesOrPatients <- data.table::fread(paste(Lexical_colnames_path,"SamplesOrPatients.txt",sep = "/"))
+  SamplesOrPatients <<- data.table::fread(paste(Lexical_colnames_path,"SamplesOrPatients.txt",sep = "/"))}
 
   if(type=="Sample Pheno"){
 
@@ -50,11 +51,14 @@ for (i in 1:ncol(clinic)) {
 
 
       clinic2 <-  clcl[,c("SamplesID", cc)]
-      rownames(clinic2) <- clinic2$Samples
+      rownames(clinic2) <- clinic2$SamplesID
 
       clinic2[clinic2==""] <- NA
       clinic2[clinic2=="NA"] <- NA
-      Metadata$Sample.pheno <- clinic2[colnames(Metadata[which(str_detect(names(Metadata), c("RawCount")))][[1]]),]
+
+      if(all(str_detect(names(Meta), c("RawCount|Raw.count|Raw.Matrix|Raw.matrix"))==F)){  Metadata$Sample.pheno <- clinic2[colnames(Metadata[[1]]),]
+        }else{
+      Metadata$Sample.pheno <- clinic2[colnames(Metadata[which(str_detect(names(Metadata), c("RawCount|Raw.count|Raw.Matrix|Raw.matrix")))][[1]]),]}
 
     } else {
 

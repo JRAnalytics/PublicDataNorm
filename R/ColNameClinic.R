@@ -15,6 +15,7 @@ ColNameClinic <- function(Lexical_colnames_path){
 x <- scan(paste(Lexical_colnames_path,"Lexic.txt",sep = "/"), what="", sep="\n")%>%strsplit("[[:space:]]+")
 
 names(x) <- sapply(x, `[[`, 1)
+
 x<- lapply(x, `[`, -1)
 
 return(x)
