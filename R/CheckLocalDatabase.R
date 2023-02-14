@@ -104,7 +104,7 @@ CheckLocalDatabase <- function(Local.Data.base.Path,
   if(file.exists(fp)){
 
 
-    x <-  as.data.frame(fread(fp))
+    x <-  as.data.frame(data.table::fread(fp))
     rownames(x) <- x$Project
 
     if(project%in%rownames(x)){
