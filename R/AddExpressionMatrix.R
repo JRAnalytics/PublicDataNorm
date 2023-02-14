@@ -23,7 +23,7 @@ AddExpressionMatrix <- function(Metadata, local = c(T, F) , query, data.norm, pa
 
 
 
-    message("Local import")
+     message("Local import")
 
     l <-length(names(Metadata))
     lf <- list.files(path)

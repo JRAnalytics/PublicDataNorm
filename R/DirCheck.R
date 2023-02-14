@@ -15,7 +15,7 @@ DirCheck <- function(project,path){
   file.path.parent <- paste(unlist(strsplit(path, "/")),collapse = "/")
   # Directories in "parent" Dir. Refereces, Script, RawData and VerifiedDataSet
 
-      file.path.References <- paste(c(unlist(strsplit(path, "/")),"03References"),collapse = "/")
+       file.path.References <- paste(c(unlist(strsplit(path, "/")),"03References"),collapse = "/")
 
       file.path.Script <- paste(c(unlist(strsplit(path, "/")),"02Script"),collapse = "/")
             file.path.Project.Script <- paste(c(file.path.Script,project),collapse = "/")

@@ -53,7 +53,7 @@ ExportCSV <- function (MetaData, list.files.path, project){
     }
 
 
-    if (str_detect(toupper(i), "ANNOT")) {
+     if (str_detect(toupper(i), "ANNOT")) {
       filename <- paste0(list.files.path$References,"/",i,".",project,".csv")
       z <- cbind(MetaData[[i]])
       write.csv(z,row.names = F ,file = filename)

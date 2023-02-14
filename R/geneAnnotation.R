@@ -17,7 +17,7 @@ geneAnnotation <- function(gtf.files = "gencode.v40.annotation.gtf", saverds=TRU
 
 
 #loading of the gtf files
-  if(class(gtf.files)=="character") {
+   if(class(gtf.files)=="character") {
 
 
 

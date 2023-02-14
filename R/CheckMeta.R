@@ -52,7 +52,7 @@ CheckMeta <- function(MetaData) {
       }
 
 
-      if(all(str_detect(rownames(MetaData[[i]]), "ILMN_")==T)) { message(paste(names(MetaData[i]), " gene probes as Illumina Bead Array Probes"))
+       if(all(str_detect(rownames(MetaData[[i]]), "ILMN_")==T)) { message(paste(names(MetaData[i]), " gene probes as Illumina Bead Array Probes"))
 
         suma <- summary(rownames(MetaData[[i]])%in%rownames(MetaData$geneAnnotation))
         print(suma)

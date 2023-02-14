@@ -122,7 +122,7 @@ for (i in 1:ncol(clinic)) {
 
 
       } else {
-  stop("Choose type = 'Sample Pheno' or 'Patients' clinical data' ")}
+   stop("Choose type = 'Sample Pheno' or 'Patients' clinical data' ")}
 
 
 

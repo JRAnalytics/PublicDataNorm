@@ -10,7 +10,7 @@
 #' @examples
 #' "non"
 #' @export
-extract_attributes <- function(gtf_attributes, att_of_interest){
+ extract_attributes <- function(gtf_attributes, att_of_interest){
   if(is.null(gtf_attributes)) stop(paste("GFT$attributes is missing"))
   if(is.null(att_of_interest)) stop(paste("No targeted attribute is mentionned"))
 

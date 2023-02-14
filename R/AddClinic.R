@@ -48,7 +48,7 @@ AddClinic <- function(Metadata, path, merge = c(F,T), name.local.file) {
       return(Metadata)
 
 
-   }else{ stop("No meta data object found")
+    }else{ stop("No meta data object found")
 
 
 
