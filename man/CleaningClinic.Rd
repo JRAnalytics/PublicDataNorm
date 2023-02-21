@@ -4,11 +4,7 @@
 \alias{CleaningClinic}
 \title{CleaningClinic function : Cleaning clinical data to map samples and patients in Sequençing data}
 \usage{
-CleaningClinic(
-  Metadata,
-  type = c("Sample Pheno", "Patients' clinical data"),
-  Lexical_colnames_path
-)
+CleaningClinic(Metadata, type = c("Sample", "Patients"), Lexical_colnames_path)
 }
 \arguments{
 \item{Metadata}{Metadata object}

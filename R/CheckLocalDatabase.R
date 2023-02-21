@@ -3,9 +3,9 @@
 #' @param Local.Data.base.Path path to parent directory of the database.
 #' @param Databasename name of the database.txt summary file
 #' @param Normalization.Method Defaul = NA
-#' @param Sequençing.DeepenessPerMillionReads Defaul = NA
-#' @param Sequençing.LengthPer.pb Defaul = NA
-#' @param Sequençing.Platform Defaul = NA
+#' @param Sequencing.DeepenessPerMillionReads Defaul = NA
+#' @param Sequencing.LengthPer.pb Defaul = NA
+#' @param Sequencing.Platform Defaul = NA
 #' @param First.Author Defaul = NA
 #' @param DOI doi of article if exist. Defaul = NA
 #' @param project project name
@@ -17,10 +17,10 @@
 CheckLocalDatabase <- function(Local.Data.base.Path,
                                Databasename = "DataBaseSummary.txt",
                                Normalization.Method = NA,
-                               Sequençing.DeepenessPerMillionReads= NA,
-                               Sequençing.LengthPer.pb = NA,
-                               Sequençing.Run = NA,
-                               Sequençing.Platform = NA ,
+                               Sequencing.DeepenessPerMillionReads= NA,
+                               Sequencing.LengthPer.pb = NA,
+                               Sequencing.Run = NA,
+                               Sequencing.Platform = NA ,
                                First.Author = NA,
                                DOI = NA,
                               project = NA){
@@ -84,10 +84,10 @@ CheckLocalDatabase <- function(Local.Data.base.Path,
                    "N.RawGenes" = RawGenes,
                    "N.NormalizedGenes"=NormGenes,
                    "Normalization.Method" = Normalization.Method,
-                   "Sequençing.DeepenessPerMillionReads" = Sequençing.DeepenessPerMillionReads,
-                   "Sequençing.LengthPer.pb" = Sequençing.LengthPer.pb,
-                   "Sequençing.Run" = Sequençing.Run,
-                   "Sequençing.Platform" =Sequençing.Platform ,
+                   "Sequencing.DeepenessPerMillionReads" = Sequencing.DeepenessPerMillionReads,
+                   "Sequencing.LengthPer.pb" = Sequencing.LengthPer.pb,
+                   "Sequencing.Run" = Sequencing.Run,
+                   "Sequencing.Platform" =Sequencing.Platform ,
                    "First.Author" = First.Author,
                    "Article.DOI" = DOI,
                    row.names = project)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/DirCheck.R
 \name{DirCheck}
 \alias{DirCheck}
-\title{DirCheck Create project Dir in Script,n Precessed, Raw Clinic, Raw genomic, and references if does not exist.}
+\title{DirCheck Create project Dir in Processes,n Precessed, Raw Clinic, Raw genomic, and references if does not exist.}
 \usage{
 DirCheck(project, path)
 }
@@ -15,7 +15,7 @@ DirCheck(project, path)
 a file path list of dir project in ~parent/dir/project file
 }
 \description{
-DirCheck Create project Dir in Script,n Precessed, Raw Clinic, Raw genomic, and references if does not exist.
+DirCheck Create project Dir in Processes,n Precessed, Raw Clinic, Raw genomic, and references if does not exist.
 }
 \examples{
 "none"

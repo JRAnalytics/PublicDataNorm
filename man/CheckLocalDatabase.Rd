@@ -8,10 +8,10 @@ CheckLocalDatabase(
   Local.Data.base.Path,
   Databasename = "DataBaseSummary.txt",
   Normalization.Method = NA,
-  Sequençing.DeepenessPerMillionReads = NA,
-  Sequençing.LengthPer.pb = NA,
-  Sequençing.Run = NA,
-  Sequençing.Platform = NA,
+  Sequencing.DeepenessPerMillionReads = NA,
+  Sequencing.LengthPer.pb = NA,
+  Sequencing.Run = NA,
+  Sequencing.Platform = NA,
   First.Author = NA,
   DOI = NA,
   project = NA
@@ -24,11 +24,11 @@ CheckLocalDatabase(
 
 \item{Normalization.Method}{Defaul = NA}
 
-\item{Sequençing.DeepenessPerMillionReads}{Defaul = NA}
+\item{Sequencing.DeepenessPerMillionReads}{Defaul = NA}
 
-\item{Sequençing.LengthPer.pb}{Defaul = NA}
+\item{Sequencing.LengthPer.pb}{Defaul = NA}
 
-\item{Sequençing.Platform}{Defaul = NA}
+\item{Sequencing.Platform}{Defaul = NA}
 
 \item{First.Author}{Defaul = NA}
 

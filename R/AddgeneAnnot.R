@@ -33,8 +33,8 @@ AddgeneAnnot <- function(Meta ,gtf.file.dir, gtf.files){
 
     print(message("Data matrice row names are ENSEMBL gene names."))
 
-  if(length(duplicated(gene))!=0) {  Meta[[zz]] <- Meta[[zz]][-which(duplicated(gene)),] }
-    if(length(duplicated(gene))==0){ message("No rownames of raw matrix are duplicated")}
+    if(length(gene)!=length(unique(gene))) { Meta[[zz]] <- Meta[[zz]][-which(duplicated(gene)),] }
+    if(length(gene)==length(unique(gene))){ message("No rownames of raw matrix are duplicated")}
 
   gene <- unlist(lapply(str_split(rownames(Meta[[zz]]),"[.]"),"[[",1))
   rownames(Meta[[zz]]) <- gene

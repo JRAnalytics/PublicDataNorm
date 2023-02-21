@@ -4,16 +4,19 @@
 #' @param type "Sample Pheno" or "Patients' clinical data" for building clean clinical data from raw clinical data.
 #' @param Lexical_colnames_path file path to find lexique of colnames
 #' @importFrom utils menu
-#' @importFrom dplyr summarise
+#' @import dplyr
 #' @return a data frame of Samples pheno or patients clinical data. If Sample ID and Patients ID are the sames, so Samples.pheno and Patient_clinic are the same data frame
 #' @export
 #'
 #' @examples "none"
-CleaningClinic <- function(Metadata, type = c("Sample Pheno", "Patients' clinical data"), Lexical_colnames_path){
+CleaningClinic <- function(Metadata, type = c("Sample", "Patients"), Lexical_colnames_path){
 
 
 if(!exists("LexicClinic", mode = "any")){
-  LexicClinic <<- ColNameClinic(Lexical_colnames_path)}
+  pos <- 1
+  envir = as.environment(pos)
+  assign("LexicClinic", ColNameClinic(Lexical_colnames_path), envir = envir)
+}
 
   if(all(str_detect(names(Metadata),"clinic"))==T){stop("No clinical data in meta object")}
 
@@ -40,18 +43,29 @@ for (i in 1:ncol(clinic)) {
 
   if(!exists("SamplesOrPatients", mode = "any")){
 
-  SamplesOrPatients <<- data.table::fread(paste(Lexical_colnames_path,"SamplesOrPatients.txt",sep = "/"))}
+  SamplesOrPatients <- data.table::fread(paste(Lexical_colnames_path,"SamplesOrPatients.txt",sep = "/"))
+  pos <- 1
+  envir = as.environment(pos)
+  assign("SamplesOrPatients", SamplesOrPatients, envir = envir)
 
-  if(type=="Sample Pheno"){
+
+  }
+
+  if(type=="Sample"){
 
     cc <-  SamplesOrPatients[which(SamplesOrPatients$Type=="Samples.Pheno" | SamplesOrPatients$Type=="Both"),]$Descirption
     cc <- cc[!cc%in%("SamplesID")]
 
-    if(length(which(duplicated(clcl$Samples)))==0) {
+    if(all(is.na(clcl$SamplesID))){
+      message("No SamplesID found in raw clinical data. Using PatientID instead")
+      clcl$SamplesID <- clcl$PatientsID
+      }
 
+    if(length(which(duplicated(clcl$SamplesID)))==0) {
 
-      clinic2 <-  clcl[,c("SamplesID", cc)]
-      rownames(clinic2) <- clinic2$SamplesID
+       clinic2 <-  clcl[,c("SamplesID", cc)]
+       rownames(clinic2) <- clinic2$SamplesID
+
 
       clinic2[clinic2==""] <- NA
       clinic2[clinic2=="NA"] <- NA
@@ -67,7 +81,7 @@ for (i in 1:ncol(clinic)) {
       # create groups by name
       group_by(SamplesID) %>%
 
-      summarise(across(everything(), ~paste0(unique(na.omit(.x)), collapse = ";")))
+        dplyr::summarise(across(everything(), ~paste0(unique(na.omit(.x)), collapse = ";")))
       cl_rolled <- as.data.frame(cl_rolled)
       rownames(cl_rolled) <- cl_rolled$SamplesID
 
@@ -80,15 +94,28 @@ for (i in 1:ncol(clinic)) {
 
 
 
-    } else if(type=="Patients' clinical data")
+    } else if(type=="Patients")
       {
 
       cc <-  SamplesOrPatients[which(SamplesOrPatients$Type=="Patients.Pheno" | SamplesOrPatients$Type=="Both"),]$Descirption
       cc <- cc[!cc%in%("PatientsID")]
 
-      if(length(which(duplicated(clcl$Patients)))==0) {
+      if(all(is.na(clcl$PatientsID))){
+        message("No PatientsID found in raw clinical data. Using PatientID instead")
+        clcl$PatientsID <- clcl$SamplesID
+      }
+
+      if(length(which(duplicated(clcl$PatientsID)))==0) {
+
+        if(all(is.na(clcl$PatientsID))){
+          message("No PatientsID found in raw clinical data. Using PatientID instead")
+          clinic2 <-  clcl[,c("SamplesID", cc)]
+          rownames(clinic2) <- clinic2$SamplesID } else {
+            clinic2 <-  clcl[,c("PatientsID", cc)]
+            rownames(clinic2) <- clinic2$PatientsID}
+
         clinic2 <-  clcl[,c("PatientsID", cc)]
-        rownames(clinic2) <- clinic2$Patients
+        rownames(clinic2) <- clinic2$PatientsID
         clinic2[clinic2==""] <- NA
         clinic2[clinic2=="NA"] <- NA
         Metadata$Patient.clinic <- clinic2
@@ -103,7 +130,7 @@ for (i in 1:ncol(clinic)) {
             # create groups by name
             group_by(PatientsID) %>%
 
-            summarise(across(everything(), ~paste0(unique(na.omit(.x)), collapse = ";")))
+            dplyr::summarise(across(everything(), ~paste0(unique(na.omit(.x)), collapse = ";")))
 
           isNA <- which(is.na( cl_rolled$PatientsID))
 
