@@ -10,7 +10,8 @@ AddExpressionMatrix(
   query,
   data.norm,
   path,
-  name.local.file
+  name,
+  name.local.file = NULL
 )
 }
 \arguments{
@@ -24,7 +25,9 @@ AddExpressionMatrix(
 
 \item{path}{dir path in which the GDC project is saved, or local files are saved}
 
-\item{name.local.file}{if loca=True, names to apply in Meatadata object slot}
+\item{name}{if loca=True, names to apply in Meatadata object slot}
+
+\item{name.local.file}{name file of interest in path directory}
 }
 \value{
 a data.frame in the Meta Object

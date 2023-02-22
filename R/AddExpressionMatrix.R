@@ -5,14 +5,15 @@
 #' @param data.norm a character "Raw" ,"TPM", "FKPM"
 #' @param path dir path in which the GDC project is saved, or local files are saved
 #' @param local T of F. If F, use query form. If F, add expression patrice from local file
-#' @param name.local.file if loca=True, names to apply in Meatadata object slot
+#' @param name if loca=True, names to apply in Meatadata object slot
+#' @param name.local.file name file of interest in path directory
 #' @importFrom utils menu
 #' @import data.table
 #' @return a data.frame in the Meta Object
 #' @export
 #'
 #' @examples "none"
-AddExpressionMatrix <- function(Metadata, local = c(T, F) , query, data.norm, path, name.local.file) {
+AddExpressionMatrix <- function(Metadata, local = c(T, F) , query, data.norm, path, name,  name.local.file = NULL ) {
   if(!is.null(Metadata)){
     if(!is.list(Metadata)){
       stop("Metadata should be a list.")}
@@ -21,16 +22,57 @@ AddExpressionMatrix <- function(Metadata, local = c(T, F) , query, data.norm, pa
   if(local== T){
 
 
-
-
-     message("Local import")
+   message("Local import")
 
     l <-length(names(Metadata))
     lf <- list.files(path)
 
-    if(length(lf)>1){print(c(message("There is more than one Matrix files in Dir :"),lf))}
+    if(length(lf)>1){print(c(message("There is more than one files in Dir :"),lf))}
 
     if(all(str_detect(lf, ".rds|.txt|.csv|.tsv", negate = FALSE)==F)){stop("No '*.rds' or '*.txt' or '*.csv' files in set directory. \n change path or add file")}
+
+    if(!is.null(name.local.file)) {
+
+      filepath <- paste(path,name.local.file,sep="/")
+      message(paste("Loading", name.local.file, "file"))
+      if(str_detect(name.local.file, ".rds", negate = FALSE)){
+        dt <- readRDS(filepath)}
+      else {
+        if(str_detect(name.local.file, ".txt", negate = FALSE)){
+
+          dt <- suppressWarnings(as.data.frame(data.table::fread(filepath)))
+          rownames(dt) <- dt[,1]
+
+          }  else {
+            if(str_detect(name.local.file, ".csv", negate = FALSE)){
+              dt <- suppressWarnings(as.data.frame(data.table::fread(filepath)))
+              rownames(dt) <- dt[,1]
+             }else {
+
+                if(str_detect(name.local.file, ".tsv", negate = FALSE)){
+                  dt <- suppressWarnings(as.data.frame(data.table::fread(filepath)))
+                  rownames(dt) <- dt[,1]
+                 }}
+          }
+
+
+      }
+      if(length(Metadata)>=1) {
+        Metadata[[l+1]] <- dt
+        names(Metadata)[l+1] <- paste0(name,".matrix")
+        return(Metadata)}
+      else {
+
+        Metadata <- list("mat" = dt)
+
+        names(Metadata)[1] <- paste0(name,".matrix")
+        return(Metadata)
+        }
+
+
+
+      } else {
+
 
     if(length(lf[str_detect(lf, "matrix")])>1) {
 
@@ -55,11 +97,11 @@ AddExpressionMatrix <- function(Metadata, local = c(T, F) , query, data.norm, pa
                     Metadata[[l+1]] <- dt}}
             } }
 
-        names(Metadata)[l+1] <- paste0(name.local.file,".matrix.",which(lf[str_detect(lf, "matrix")]%in%i))
+        names(Metadata)[l+1] <- paste0(name,".matrix.",which(lf[str_detect(lf, "matrix")]%in%i))
 
         } } else {
 
-    if(length(Metadata)>1) {
+    if(length(Metadata)>=1) {
 
 
       lf <- lf[str_detect(lf, "matrix")]
@@ -89,7 +131,7 @@ AddExpressionMatrix <- function(Metadata, local = c(T, F) , query, data.norm, pa
 
       }
 
-    names(Metadata)[l+1] <- paste0(name.local.file,".matrix")}
+    names(Metadata)[l+1] <- paste0(name,".matrix")}
 
      else {
 
@@ -113,7 +155,7 @@ AddExpressionMatrix <- function(Metadata, local = c(T, F) , query, data.norm, pa
         }
         }
 
-      names(Metadata)[1] <- paste0(name.local.file,".matrix")
+      names(Metadata)[1] <- paste0(name,".matrix")
 
 
 
@@ -126,7 +168,7 @@ AddExpressionMatrix <- function(Metadata, local = c(T, F) , query, data.norm, pa
     if(file.exists("Readme.txt")){
 
 
-      name <- paste0(name.local.file,".matrix")
+      name <- paste0(name,".matrix")
 
       tme <- Sys.Date()
       tme <- format(tme, format="%B %d %Y")
@@ -168,7 +210,7 @@ AddExpressionMatrix <- function(Metadata, local = c(T, F) , query, data.norm, pa
     return(Metadata)
 
 
-  } else { # if local ==T
+  }} else { # if local ==T
     message("Fetching data from TCGA portal")
   query <- query
 
