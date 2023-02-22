@@ -53,9 +53,6 @@ ExportCSV <- function (MetaData, list.files.path, project){
 
 
 
-
-
-
   for (i in name) {
 
     if (!str_detect(toupper(i), "ANNOT")) {
@@ -101,7 +98,7 @@ ExportCSV <- function (MetaData, list.files.path, project){
 
             if(is.na(Vnumber)) {
               Vnumber = 1
-              message(paste(filename, " already exist. Adding Version to the latest exportaded file"))
+              message(paste(filename, " already exist. Adding Version to the latest exportedfile"))
               filepath2 <- paste0(list.files.path$Propject.VerifiedDataset,"/",filename2,".V",Vnumber,".csv",extension)
               file.rename(from = filepath, to = filepath2)
             }
@@ -123,9 +120,6 @@ ExportCSV <- function (MetaData, list.files.path, project){
             message(i," is the same data frame as ",filename)
             message("Will not be saved")}
         }}
-
-
-
 
       if(str_detect(toupper(i), "PATIENT.CLINIC")) {
         LF <- list.files(list.files.path$Propject.VerifiedDataset)
@@ -165,8 +159,8 @@ ExportCSV <- function (MetaData, list.files.path, project){
 
             if(is.na(Vnumber)) {
               Vnumber = 1
-              message(paste(filename, " already exist. Adding Version to the latest exportaded file"))
-              filepath2 <- paste0(list.files.path$Propject.VerifiedDataset,"/",filename2,".V",Vnumber,".csv")
+              message(paste(filename, " already exist. Adding Version to the latest exportedfile"))
+              filepath2 <- paste0(list.files.path$Propject.VerifiedDataset,"/",filename2,".V",Vnumber,".csv",extension)
               file.rename(from = filepath, to = filepath2)
             }
 
@@ -183,7 +177,6 @@ ExportCSV <- function (MetaData, list.files.path, project){
             message(i," is the same data frame as ",filename)
             message("Will not be saved")}
         }}
-
 
       if(str_detect(toupper(i), "NORMALIZED")) {
         LF <- list.files(list.files.path$Propject.VerifiedDataset)
@@ -225,8 +218,8 @@ ExportCSV <- function (MetaData, list.files.path, project){
 
             if(is.na(Vnumber)) {
               Vnumber = 1
-              message(paste(filename, " already exist. Adding Version to the latest exportaded file"))
-              filepath2 <- paste0(list.files.path$Propject.VerifiedDataset,"/",filename2,".V",Vnumber,".csv")
+              message(paste(filename, " already exist. Adding Version to the latest exportedfile"))
+              filepath2 <- paste0(list.files.path$Propject.VerifiedDataset,"/",filename2,".V",Vnumber,".csv",extension)
               file.rename(from = filepath, to = filepath2)
             }
 
@@ -247,26 +240,132 @@ ExportCSV <- function (MetaData, list.files.path, project){
             message("Will not be saved")}
         }}
 
-      if(str_detect(toupper(i), "RAWCOUNT")) {
-        count <- count+1
-        message("-------------------------------------------------")
-        message(paste("Exporting", count, "/", object,"object: ","Raw gene expression matrix"))
-        filename <- paste0(list.files.path$Propject.VerifiedDataset,"/",i,".csv")
-        z <- cbind("GeneSymbol" = rownames(MetaData[[i]]), MetaData[[i]])
-        write.csv(z,row.names = F ,file = filename)
-        message(paste("Compressing"))
-        R.utils::gzip(filename, destname=sprintf("%s.gz", filename), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)}}
+      if(str_detect(toupper(i), "RAW.COUNT|RAWCOUNT")) {
+        LF <- list.files(list.files.path$Propject.VerifiedDataset)
+        lengthSTR <- length(LF[str_detect(LF,i)])
+
+        if(lengthSTR==0){
+          count <- count+1
+          message("-------------------------------------------------")
+          message(paste("Exporting", count, "/", object,"object: ","Raw gene expression matrix"))
+          filename <- paste0(list.files.path$Propject.VerifiedDataset,"/",project,".",i,".csv")
+          z <- cbind("GeneSymbol" = rownames(MetaData[[i]]), MetaData[[i]])
+          write.csv(z,row.names = F ,file = filename)
+          message(paste("Compressing"))
+          R.utils::gzip(filename, destname=sprintf("%s.gz", filename), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)
+
+        } else{
+          count <- count+1
+          message("-------------------------------------------------")
+          message(paste("Exporting", count, "/", object,"object: ","Raw gene expression matrix"))
+          message("Raw gene expression exported file exist. Loading to compare if different to Metaobject Version")
+          df <- file.info(list.files(list.files.path$Propject.VerifiedDataset, full.names = T))
+          df$Filenames <- unlist(lapply(str_split(rownames(df),paste0(project,"/")),"[[",2))
+          df <- df[str_detect(df$Filenames, "Raw"),]
+          filepath <- rownames(df)[which.max(df$mtime)]
+          test <- as.data.frame(data.table::fread(filepath))
+          rownames(test) <- test[,1]
+          test <- test[,-1]
+          head(test)
+
+          filename <-  unlist(lapply(str_split(filepath,paste0(project,"/")),"[[",2))
+
+          if(!dplyr::all_equal(test,Meta[[i]])==T) { #Test ans Meta[[i]] are not the same data.frames
+
+            message("Raw gene expression matrix data are not the same original data. A new version will be created")
+            filename2 <- unlist(lapply(str_split(filename,".csv"),"[[",1))
+            extension <- unlist(lapply(str_split(filename,".csv"),"[[",2))
+            version <- str_extract(filename2,"V[0-9]*")
+            Vnumber <- as.numeric(str_extract(version,"([0-9]+).*$"))+1
+
+            if(is.na(Vnumber)) {
+              Vnumber = 1
+              message(paste(filename, " already exist. Adding Version to the latest exportedfile"))
+              filepath2 <- paste0(list.files.path$Propject.VerifiedDataset,"/",filename2,".V",Vnumber,".csv",extension)
+              file.rename(from = filepath, to = filepath2)
+            }
+
+
+
+            if(Vnumber==1){ Vnumber = 2}
+
+            message(paste("Exporting", count, "/", object,"object: ","Raw gene expression matrix V", Vnumber))
+            filename3 <- unlist(lapply(str_split(filename2,".V"),"[[",1))
+            filepath2 <- paste0(list.files.path$Propject.VerifiedDataset,"/",filename3,".V",Vnumber,".csv")
+            z <- cbind("GeneSymbol" = rownames(MetaData[[i]]), MetaData[[i]])
+            write.csv(z,row.names = F ,file = filepath2)
+            message(paste("Compressing"))
+            R.utils::gzip(filepath2, destname=sprintf("%s.gz", filepath2), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)
+          } else {
+
+            message(i," is the same data frame as ",filename)
+            message("Will not be saved")}
+        }}
+
+
+
+      }
 
 
     if (str_detect(toupper(i), "ANNOT")) {
-      count <- count+1
-      message("-------------------------------------------------")
-      message(paste("Exporting", count, "/", object,"object: ","gene Annotation file"))
-      filename <- paste0(list.files.path$References,"/",i,".",project,".csv")
-      z <- cbind(MetaData[[i]])
-      write.csv(z,row.names = F ,file = filename)
-      message(paste("Compressing"))
-      R.utils::gzip(filename, destname=sprintf("%s.gz", filename), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)   }
+      LF <- list.files(list.files.path$Propject.VerifiedDataset)
+      lengthSTR <- length(LF[str_detect(LF,i)])
+
+      if(lengthSTR==0){
+        count <- count+1
+        message("-------------------------------------------------")
+        message(paste("Exporting", count, "/", object,"object: ","gene Annotation file"))
+        filename <- paste0(list.files.path$Propject.VerifiedDataset,"/",project,".",i,".csv")
+        z <- MetaData[[i]]
+        write.csv(z,row.names = F ,file = filename)
+        message(paste("Compressing"))
+        R.utils::gzip(filename, destname=sprintf("%s.gz", filename), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)
+
+      } else{
+        count <- count+1
+        message("-------------------------------------------------")
+        message(paste("Exporting", count, "/", object,"object: ","gene Annotation file"))
+        message("Raw gene expression exported file exist. Loading to compare if different to Metaobject Version")
+        df <- file.info(list.files(list.files.path$Propject.VerifiedDataset, full.names = T))
+        df$Filenames <- unlist(lapply(str_split(rownames(df),paste0(project,"/")),"[[",2))
+        df <- df[str_detect(df$Filenames, "annot"),]
+        filepath <- rownames(df)[which.max(df$mtime)]
+        test <- as.data.frame(data.table::fread(filepath))
+        head(test)
+
+        filename <-  unlist(lapply(str_split(filepath,paste0(project,"/")),"[[",2))
+
+        if(!dplyr::all_equal(test,Meta[[i]])==T) { #Test ans Meta[[i]] are not the same data.frames
+
+          message("gene Annotation file data are not the same original data. A new version will be created")
+          filename2 <- unlist(lapply(str_split(filename,".csv"),"[[",1))
+          extension <- unlist(lapply(str_split(filename,".csv"),"[[",2))
+          version <- str_extract(filename2,"V[0-9]*")
+          Vnumber <- as.numeric(str_extract(version,"([0-9]+).*$"))+1
+
+          if(is.na(Vnumber)) {
+            Vnumber = 1
+            message(paste(filename, " already exist. Adding Version to the latest exportaded file"))
+            filepath2 <- paste0(list.files.path$Propject.VerifiedDataset,"/",filename2,".V",Vnumber,".csv",extension)
+            file.rename(from = filepath, to = filepath2)
+          }
+
+
+
+          if(Vnumber==1){ Vnumber = 2}
+
+          message(paste("Exporting", count, "/", object,"object: ","gene Annotation file V", Vnumber))
+          filename3 <- unlist(lapply(str_split(filename2,".V"),"[[",1))
+          filepath2 <- paste0(list.files.path$Propject.VerifiedDataset,"/",filename3,".V",Vnumber,".csv")
+          z <- MetaData[[i]]
+          write.csv(z,row.names = F ,file = filepath2)
+          message(paste("Compressing"))
+          R.utils::gzip(filepath2, destname=sprintf("%s.gz", filepath2), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)
+        } else {
+
+          message(i," is the same data frame as ",filename)
+          message("Will not be saved")}
+      }}
 
 
   }
