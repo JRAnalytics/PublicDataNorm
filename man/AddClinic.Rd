@@ -4,16 +4,27 @@
 \alias{AddClinic}
 \title{AddClinic to Meta object}
 \usage{
-AddClinic(Metadata, path, merge = c(F, T), name.local.file)
+AddClinic(
+  Metadata,
+  path,
+  merge = c(F, T),
+  mergeBy,
+  name,
+  name.local.file = NULL
+)
 }
 \arguments{
 \item{Metadata}{Meta object}
 
 \item{path}{dir path in which the GDC project is saved, or local files are saved}
 
-\item{merge}{merge loaded data clinic with existing clinial data : cbind by rownames}
+\item{merge}{merge loaded data clinic with existing clinial data : full_join by rownames}
 
-\item{name.local.file}{if loca=True, names to apply in Metadata object slot}
+\item{mergeBy}{colname using for merging clinical data.}
+
+\item{name}{if loca=True, names to apply in Metadata object slot}
+
+\item{name.local.file}{name file of interest in path directory, could be multiple names. c("a.csv","b.csv")}
 }
 \value{
 a data.frame in the Meta Object
