@@ -53,7 +53,25 @@ AddClinic <- function(Metadata, path, merge = c(F,T), mergeBy, name, name.local.
           rownames(dt) <- dt[,1]
 
 
-        }} else {
+        }
+      if(length(filepath)==1){
+
+        if(all(str_detect(filepath, ".rds|.txt|.csv|.tsv", negate = FALSE)==F) ){stop("No '*.rds' or '*.txt' '.csv' files in set directory. \n change path or add file")}
+
+
+        if(str_detect(filepath, ".rds", negate = FALSE)){
+          dt <- readRDS(filepath) }
+
+        if(str_detect(filepath, ".txt|.csv|.tsv", negate = FALSE)){
+
+          dt <- suppressWarnings(as.data.frame(data.table::fread(filepath, na.strings = "")))
+          rownames(dt) <-    dt[,1]
+
+        }
+
+
+
+      }} else {
 
           LF <- list.files(path)
           LF <- LF[str_detect(LF,"clinic")]
