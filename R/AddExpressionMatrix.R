@@ -58,11 +58,12 @@ AddExpressionMatrix <- function(Metadata, local = c(T, F) , query, data.norm, pa
 
       }
       if(length(Metadata)>=1) {
+        class(dt) <- "Expression.matrix"
         Metadata[[l+1]] <- dt
         names(Metadata)[l+1] <- paste0(name,".matrix")
         return(Metadata)}
       else {
-
+        class(dt) <- "Expression.matrix"
         Metadata <- list("mat" = dt)
 
         names(Metadata)[1] <- paste0(name,".matrix")
@@ -85,15 +86,18 @@ AddExpressionMatrix <- function(Metadata, local = c(T, F) , query, data.norm, pa
 
             dt <- suppressWarnings(as.data.frame(data.table::fread(i)))
             rownames(dt) <- dt[,1]
+            class(dt) <- "Expression.matrix"
             Metadata[[l+1]] <- dt}  else {
               if(str_detect(i, ".csv", negate = FALSE)){
                 dt <- suppressWarnings(as.data.frame(data.table::fread(i)))
                 rownames(dt) <- dt[,1]
+                class(dt) <- "Expression.matrix"
                 Metadata[[l+1]] <- dt} else {
 
                   if(str_detect(i, ".tsv", negate = FALSE)){
                     dt <- suppressWarnings(as.data.frame(data.table::fread(i)))
                     rownames(dt) <- dt[,1]
+                    class(dt) <- "Expression.matrix"
                     Metadata[[l+1]] <- dt}}
             } }
 
@@ -113,18 +117,21 @@ AddExpressionMatrix <- function(Metadata, local = c(T, F) , query, data.norm, pa
         dt <- suppressWarnings(as.data.frame(data.table::fread(lf)))
         rownames(dt) <- dt[,1]
         dt <- dt[,colnames(Metadata[[1]])]
+        class(dt) <- "Expression.matrix"
         Metadata[[l+1]] <- dt}  else {
 
           if(str_detect(lf, ".csv", negate = FALSE)){
             dt <- suppressWarnings(as.data.frame(data.table::fread(lf)))
             rownames(dt) <- dt[,1]
             dt <- dt[,colnames(Metadata[[1]])]
+            class(dt) <- "Expression.matrix"
             Metadata[[l+1]] <- dt} else {
 
               if(str_detect(lf, ".tsv", negate = FALSE)){
               dt <- suppressWarnings(as.data.frame(data.table::fread(lf)))
               rownames(dt) <- dt[,1]
               dt <- dt[,colnames(Metadata[[1]])]
+              class(dt) <- "Expression.matrix"
               Metadata[[l+1]] <- dt}
               }
           }
@@ -142,15 +149,18 @@ AddExpressionMatrix <- function(Metadata, local = c(T, F) , query, data.norm, pa
 
         dt <- suppressWarnings(as.data.frame(data.table::fread(lf)))
         rownames(dt) <- dt[,1]
+        class(dt) <- "Expression.matrix"
         Metadata[[1]] <- dt}  else {
           if(str_detect(lf, ".csv", negate = FALSE)){
             dt <- suppressWarnings(as.data.frame(data.table::fread(lf)))
             rownames(dt) <- dt[,1]
+            class(dt) <- "Expression.matrix"
             Metadata[[1]] <- dt}else {
 
               if(str_detect(lf, ".tsv", negate = FALSE)){
                 dt <- suppressWarnings(as.data.frame(data.table::fread(lf)))
                 rownames(dt) <- dt[,1]
+                class(dt) <- "Expression.matrix"
                 Metadata[[1]] <- dt}}
         }
         }
@@ -252,6 +262,7 @@ AddExpressionMatrix <- function(Metadata, local = c(T, F) , query, data.norm, pa
 
 
   l <-length(names(Metadata))
+  class(y) <- "Expression.matrix"
   Metadata[[l+1]]<- y
   names(Metadata)[l+1] <- c(paste0(data.norm,".",project,".matrix"))
 
