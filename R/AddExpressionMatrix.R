@@ -7,13 +7,15 @@
 #' @param local T of F. If F, use query form. If F, add expression patrice from local file
 #' @param name if loca=True, names to apply in Meatadata object slot
 #' @param name.local.file name file of interest in path directory
+#' @param force.replace set as F. T : replace an already object with the same name
+#' @param Raw TRUE or FALSE. If Raw data, to be specified.
 #' @importFrom utils menu
 #' @import data.table
 #' @return a data.frame in the Meta Object
 #' @export
 #'
 #' @examples "none"
-AddExpressionMatrix <- function(Metadata, local = c(T, F) , query, data.norm, path, name,  name.local.file = NULL ) {
+AddExpressionMatrix <- function(Metadata, local = c(T, F) , query, data.norm, path, name, Raw=T, name.local.file = NULL, force.replace=F ) {
   if(!is.null(Metadata)){
     if(!is.list(Metadata)){
       stop("Metadata should be a list.")}
@@ -58,15 +60,28 @@ AddExpressionMatrix <- function(Metadata, local = c(T, F) , query, data.norm, pa
 
       }
       if(length(Metadata)>=1) {
-        class(dt) <- "Expression.matrix"
-        Metadata[[l+1]] <- dt
-        names(Metadata)[l+1] <- paste0(name,".matrix")
+
+        if(!all(str_detect(names(Metadata),paste0(name,".matrix")))==F){
+          message("An Object with the same name already exist in MetaObject")
+          if(force.replace==F){stop("set force.replace==T to subset object.")}
+          message("Subsetting object.")
+          Metadata[[paste0(name,".matrix")]] <- dt    } else { Metadata[[l+1]] <- dt
+        names(Metadata)[l+1] <- paste0(name,".matrix")}
+
+        if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
+        attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type, "Expression.Matrix")
+        if(Raw==T){attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"Yes") } else {attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"No") }
+}
+
         return(Metadata)}
       else {
-        class(dt) <- "Expression.matrix"
-        Metadata <- list("mat" = dt)
 
+        Metadata <- list("mat" = dt)
         names(Metadata)[1] <- paste0(name,".matrix")
+
+        if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
+        attributes(Metadata)$Data.Type <-  c("Expression.Matrix")
+        if(Raw==T){attributes(Metadata)$Raw.data <- "Yes" } else {attributes(Metadata)$Raw.data <- "No" }}
         return(Metadata)
         }
 
@@ -86,19 +101,42 @@ AddExpressionMatrix <- function(Metadata, local = c(T, F) , query, data.norm, pa
 
             dt <- suppressWarnings(as.data.frame(data.table::fread(i)))
             rownames(dt) <- dt[,1]
-            class(dt) <- "Expression.matrix"
-            Metadata[[l+1]] <- dt}  else {
+            if(!all(str_detect(names(Metadata),paste0(name,".matrix")))==F){
+              message("An Object with the same name already exist in MetaObject")
+              if(force.replace==F){stop("set force.replace==T to subset object.")}
+              message("Subsetting object.")
+              Metadata[[paste0(name,".matrix")]] <- dt    } else { Metadata[[l+1]] <- dt
+            names(Metadata)[l+1] <- paste0(name,".matrix")}
+
+            attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type, "Expression.Matrix")
+            if(Raw==T){attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"Yes") } else {attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"No") }
+            }  else {
               if(str_detect(i, ".csv", negate = FALSE)){
                 dt <- suppressWarnings(as.data.frame(data.table::fread(i)))
                 rownames(dt) <- dt[,1]
-                class(dt) <- "Expression.matrix"
-                Metadata[[l+1]] <- dt} else {
+                if(!all(str_detect(names(Metadata),paste0(name,".matrix")))==F){
+                  message("An Object with the same name already exist in MetaObject")
+                  if(force.replace==F){stop("set force.replace==T to subset object.")}
+                  message("Subsetting object.")
+                  Metadata[[paste0(name,".matrix")]] <- dt    } else { Metadata[[l+1]] <- dt
+                names(Metadata)[l+1] <- paste0(name,".matrix")}
+
+                attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type, "Expression.Matrix")
+                if(Raw==T){attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"Yes") } else {attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"No") }} else {
 
                   if(str_detect(i, ".tsv", negate = FALSE)){
                     dt <- suppressWarnings(as.data.frame(data.table::fread(i)))
                     rownames(dt) <- dt[,1]
-                    class(dt) <- "Expression.matrix"
-                    Metadata[[l+1]] <- dt}}
+                    if(!all(str_detect(names(Metadata),paste0(name,".matrix")))==F){
+                      message("An Object with the same name already exist in MetaObject")
+                      if(force.replace==F){stop("set force.replace==T to subset object.")}
+                      message("Subsetting object.")
+                      Metadata[[paste0(name,".matrix")]] <- dt    } else { Metadata[[l+1]] <- dt
+                    names(Metadata)[l+1] <- paste0(name,".matrix")}
+
+                    }
+                    attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type, "Expression.Matrix")
+                    if(Raw==T){attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"Yes") } else {attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"No") }}
             } }
 
         names(Metadata)[l+1] <- paste0(name,".matrix.",which(lf[str_detect(lf, "matrix")]%in%i))
@@ -117,28 +155,59 @@ AddExpressionMatrix <- function(Metadata, local = c(T, F) , query, data.norm, pa
         dt <- suppressWarnings(as.data.frame(data.table::fread(lf)))
         rownames(dt) <- dt[,1]
         dt <- dt[,colnames(Metadata[[1]])]
-        class(dt) <- "Expression.matrix"
-        Metadata[[l+1]] <- dt}  else {
 
+        if(!all(str_detect(names(Metadata),paste0(name,".matrix")))==F){
+          message("An Object with the same name already exist in MetaObject")
+          if(force.replace==F){stop("set force.replace==T to subset object.")}
+          message("Subsetting object.")
+          Metadata[[paste0(name,".matrix")]] <- dt    } else { Metadata[[l+1]] <- dt
+        names(Metadata)[l+1] <- paste0(name,".matrix")}
+
+        if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
+        attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type, "Expression.Matrix")
+        if(Raw==T){attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"Yes") } else {attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"No") }}  else {
+}
           if(str_detect(lf, ".csv", negate = FALSE)){
             dt <- suppressWarnings(as.data.frame(data.table::fread(lf)))
             rownames(dt) <- dt[,1]
             dt <- dt[,colnames(Metadata[[1]])]
-            class(dt) <- "Expression.matrix"
-            Metadata[[l+1]] <- dt} else {
+
+            if(!all(str_detect(names(Metadata),paste0(name,".matrix")))==F){
+              message("An Object with the same name already exist in MetaObject")
+              if(force.replace==F){stop("set force.replace==T to subset object.")}
+              message("Subsetting object.")
+              Metadata[[paste0(name,".matrix")]] <- dt    } else { Metadata[[l+1]] <- dt
+            names(Metadata)[l+1] <- paste0(name,".matrix")}
+
+            if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
+            attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type, "Expression.Matrix")
+            if(Raw==T){attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"Yes") } else {attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"No") }
+            }} else {
 
               if(str_detect(lf, ".tsv", negate = FALSE)){
               dt <- suppressWarnings(as.data.frame(data.table::fread(lf)))
               rownames(dt) <- dt[,1]
               dt <- dt[,colnames(Metadata[[1]])]
-              class(dt) <- "Expression.matrix"
-              Metadata[[l+1]] <- dt}
+
+              if(!all(str_detect(names(Metadata),paste0(name,".matrix")))==F){
+                message("An Object with the same name already exist in MetaObject")
+                if(force.replace==F){stop("set force.replace==T to subset object.")}
+                message("Subsetting object.")
+                Metadata[[paste0(name,".matrix")]] <- dt    } else { Metadata[[l+1]] <- dt
+              names(Metadata)[l+1] <- paste0(name,".matrix")}
+
+
+              if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
+              attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type, "Expression.Matrix")
+              if(Raw==T){attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"Yes") } else {attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"No") }
+              }
+              }
               }
           }
 
       }
 
-    names(Metadata)[l+1] <- paste0(name,".matrix")}
+    }
 
      else {
 
@@ -149,19 +218,25 @@ AddExpressionMatrix <- function(Metadata, local = c(T, F) , query, data.norm, pa
 
         dt <- suppressWarnings(as.data.frame(data.table::fread(lf)))
         rownames(dt) <- dt[,1]
-        class(dt) <- "Expression.matrix"
-        Metadata[[1]] <- dt}  else {
+
+        Metadata[[1]] <- dt
+        attributes(Metadata)$Data.Type <-  c("Expression.Matrix")
+        if(Raw==T){attributes(Metadata)$Raw.data <- "Yes" } else {attributes(Metadata)$Raw.data <- "No" } }  else {
           if(str_detect(lf, ".csv", negate = FALSE)){
             dt <- suppressWarnings(as.data.frame(data.table::fread(lf)))
             rownames(dt) <- dt[,1]
-            class(dt) <- "Expression.matrix"
-            Metadata[[1]] <- dt}else {
+
+            Metadata[[1]] <- dt
+            attributes(Metadata)$Data.Type <-  c("Expression.Matrix")
+            if(Raw==T){attributes(Metadata)$Raw.data <- "Yes" } else {attributes(Metadata)$Raw.data <- "No" } }else {
 
               if(str_detect(lf, ".tsv", negate = FALSE)){
                 dt <- suppressWarnings(as.data.frame(data.table::fread(lf)))
                 rownames(dt) <- dt[,1]
-                class(dt) <- "Expression.matrix"
-                Metadata[[1]] <- dt}}
+
+                Metadata[[1]] <- dt
+                attributes(Metadata)$Data.Type <-  c("Expression.Matrix")
+                if(Raw==T){attributes(Metadata)$Raw.data <- "Yes" } else {attributes(Metadata)$Raw.data <- "No" } }}
         }
         }
 
@@ -262,9 +337,18 @@ AddExpressionMatrix <- function(Metadata, local = c(T, F) , query, data.norm, pa
 
 
   l <-length(names(Metadata))
-  class(y) <- "Expression.matrix"
+
   Metadata[[l+1]]<- y
   names(Metadata)[l+1] <- c(paste0(data.norm,".",project,".matrix"))
+  if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
+  if(l==0) {   attributes(Metadata)$Data.Type <-  c("Expression.Matrix")
+  if(Raw==T){attributes(Metadata)$Raw.data <- "Yes" } else {attributes(Metadata)$Raw.data <- "No" }
+  }} else {
+    if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
+      attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Expression.Matrix")
+
+  if(Raw==T){attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"Yes") } else {attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"No") } }
+}
 
 
 

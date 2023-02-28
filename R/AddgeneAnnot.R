@@ -24,7 +24,7 @@ AddgeneAnnot <- function(Meta ,gtf.file.dir, gtf.files){
 
   if(is.null(rownames(geneAnnot))){stop("Error in geneAnnotation function : no rownames in geneAnnot. But is not Null")}
 
-  zz <- which(str_detect(toupper(names(Meta)), c("RAWCOUNT|RAW.MATRIX|RAW.COUNT|RAWMATRIX")))
+  zz <- which(str_detect(toupper(names(Meta)), "RAWCOUNT|RAW.COUNT|RAW.MATRIX|RAWMATRIX"))
   if(length(zz)!=1){ stop("str_detect(names(Meta), c('Raw.count|Raw.matrix')),line 27, more than 1 object are detected.")}
 
    gene <- rownames(Meta[[zz]])

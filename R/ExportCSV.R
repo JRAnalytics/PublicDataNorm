@@ -84,6 +84,7 @@ ExportCSV <- function (MetaData, list.files.path, project){
           df <- df[str_detect(df$Filenames, "Sample.pheno"),]
           filepath <- rownames(df)[which.max(df$mtime)]
           test <- as.data.frame(data.table::fread(filepath))
+          test <- as.data.frame(test)
           rownames(test) <- test[,1]
           head(test)
 
@@ -145,6 +146,7 @@ ExportCSV <- function (MetaData, list.files.path, project){
           df <- df[str_detect(df$Filenames, "Patient.clinic"),]
           filepath <- rownames(df)[which.max(df$mtime)]
           test <- as.data.frame(data.table::fread(filepath))
+          test <- as.data.frame(test)
           rownames(test) <- test[,1]
           head(test)
 
@@ -202,6 +204,7 @@ ExportCSV <- function (MetaData, list.files.path, project){
           df <- df[str_detect(df$Filenames, "Normalized"),]
           filepath <- rownames(df)[which.max(df$mtime)]
           test <- as.data.frame(data.table::fread(filepath))
+          test <- as.data.frame(test)
           rownames(test) <- test[,1]
           test <- test[,-1]
           head(test)
@@ -240,7 +243,7 @@ ExportCSV <- function (MetaData, list.files.path, project){
             message("Will not be saved")}
         }}
 
-      if(str_detect(toupper(i), "RAW.COUNT|RAWCOUNT")) {
+      if(str_detect(toupper(i), "RAW.COUNT|RAWCOUNT|RAW.MATRIX|RAWMATRIX")) {
         LF <- list.files(list.files.path$Propject.VerifiedDataset)
         lengthSTR <- length(LF[str_detect(LF,i)])
 
@@ -261,9 +264,10 @@ ExportCSV <- function (MetaData, list.files.path, project){
           message("Raw gene expression exported file exist. Loading to compare if different to Metaobject Version")
           df <- file.info(list.files(list.files.path$Propject.VerifiedDataset, full.names = T))
           df$Filenames <- unlist(lapply(str_split(rownames(df),paste0(project,"/")),"[[",2))
-          df <- df[str_detect(df$Filenames, "Raw"),]
+          df <- df[str_detect(df$Filenames, "Raw.matrix|Rawmatrix|rawcount"),]
           filepath <- rownames(df)[which.max(df$mtime)]
           test <- as.data.frame(data.table::fread(filepath))
+          test <- as.data.frame(test)
           rownames(test) <- test[,1]
           test <- test[,-1]
           head(test)
@@ -325,12 +329,15 @@ ExportCSV <- function (MetaData, list.files.path, project){
         count <- count+1
         message("-------------------------------------------------")
         message(paste("Exporting", count, "/", object,"object: ","gene Annotation file"))
-        message("Raw gene expression exported file exist. Loading to compare if different to Metaobject Version")
+        message("geneAnnotation exported file exist. Loading to compare if different to Metaobject Version")
         df <- file.info(list.files(list.files.path$Propject.VerifiedDataset, full.names = T))
         df$Filenames <- unlist(lapply(str_split(rownames(df),paste0(project,"/")),"[[",2))
-        df <- df[str_detect(df$Filenames, "annot"),]
+        df <- df[str_detect(df$Filenames, "geneAnnotation"),]
         filepath <- rownames(df)[which.max(df$mtime)]
         test <- as.data.frame(data.table::fread(filepath))
+        rownames(test) <- test[,"EnsemblID"]
+        test[,"Entrez.id"] <- as.character(test[,"Entrez.id"])
+        test[,"HGNC"] <- as.character(test[,"HGNC"])
         head(test)
 
         filename <-  unlist(lapply(str_split(filepath,paste0(project,"/")),"[[",2))

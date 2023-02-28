@@ -6,6 +6,8 @@
 #' @param merge merge loaded data clinic with existing clinial data : full_join by rownames
 #' @param name.local.file name file of interest in path directory, could be multiple names. c("a.csv","b.csv")
 #' @param mergeBy colname using for merging clinical data.
+#' @param Raw TRUE or FALSE. If Raw data, to be specified.
+#' @param force.replace set as F. T : replace an already object with the same name
 #' @importFrom utils menu
 #' @import purrr
 #' @import dplyr
@@ -13,7 +15,7 @@
 #' @export
 #'
 #' @examples "none"
-AddClinic <- function(Metadata, path, merge = c(F,T), mergeBy, name, name.local.file = NULL) {
+AddClinic <- function(Metadata, path, merge = c(F,T), Raw = T,mergeBy, name, name.local.file = NULL, force.replace=F) {
 
   ### ecrasement si même nom dans le Meta à faire.
 
@@ -80,7 +82,8 @@ AddClinic <- function(Metadata, path, merge = c(F,T), mergeBy, name, name.local.
       if(all(str_detect(LF, ".rds|.txt|.csv|.tsv", negate = FALSE)==F)  ){stop("#55 No '*.rds' or '*.txt' '.csv' files in set directory. \n change path or add file")}
 
 
-      if(str_detect(LF, ".rds", negate = FALSE)){Metadata[[l+1]] <- readRDS(LF) }
+      if(str_detect(LF, ".rds", negate = FALSE)){
+       dt <- readRDS(LF)}
 
       if(str_detect(LF, ".txt|.csv|.tsv", negate = FALSE)){
 
@@ -92,9 +95,26 @@ AddClinic <- function(Metadata, path, merge = c(F,T), mergeBy, name, name.local.
         if (merge == F){
 
 
-            Metadata[[l+1]] <- dt
+          if(!all(str_detect(names(Metadata),name)==F)){
+            message("An Object with the same name already exist in MetaObject")
+            if(force.replace==F){stop("set force.replace==T to subset object.")}
+            message("Subsetting object.")
+            Metadata[[name]] <- dt
 
+
+            } else { Metadata[[l+1]] <- dt
             names(Metadata)[l+1] <- name
+
+
+
+            if(l==0) {   attributes(Metadata)$Data.Type <-  c("Clinical.data")
+            if(Raw==T){attributes(Metadata)$Raw.data <- c("Yes") } else {attributes(Metadata)$Raw.data <- c("No") }
+
+
+            } else {  attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Clinical.data")
+            if(Raw==T){attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"Yes") } else {attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"No") }
+
+            }}
         } else {
 
           if(is.null(str_detect(names(Metadata),"clinic"))){stop("No clinical data found in Meta Object.\n
@@ -102,11 +122,16 @@ AddClinic <- function(Metadata, path, merge = c(F,T), mergeBy, name, name.local.
                                                                  You can list a list of caracter for multiple clinical data to load at once and will be full_join.")}
 
           if(is.null(mergeBy)){stop("For merging data, mergeBy='colnames' must be specified")}
-          clinic <- list(Metadata[which(str_detect(names(Metadata),"clinic"))][[1]],dt)
+
+          NB <- which(attributes(Metadata)$Data.Type=="Clinical.data" & attributes(Metadata)$Raw=="Yes")
+
+          clinic <- list(Metadata[[NB]], dt)
 
           clinic <- clinic %>% purrr::reduce(full_join, by=mergeBy)
 
-          Metadata[which(str_detect(names(Metadata),"clinic"))][[1]] <- clinic
+          Metadata[[NB]] <- clinic
+
+
         }
 
       return(Metadata)

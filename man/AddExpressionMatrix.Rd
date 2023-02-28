@@ -11,7 +11,9 @@ AddExpressionMatrix(
   data.norm,
   path,
   name,
-  name.local.file = NULL
+  Raw = T,
+  name.local.file = NULL,
+  force.replace = F
 )
 }
 \arguments{
@@ -27,7 +29,11 @@ AddExpressionMatrix(
 
 \item{name}{if loca=True, names to apply in Meatadata object slot}
 
+\item{Raw}{TRUE or FALSE. If Raw data, to be specified.}
+
 \item{name.local.file}{name file of interest in path directory}
+
+\item{force.replace}{set as F. T : replace an already object with the same name}
 }
 \value{
 a data.frame in the Meta Object

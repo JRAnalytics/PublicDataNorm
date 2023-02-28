@@ -8,9 +8,11 @@ AddClinic(
   Metadata,
   path,
   merge = c(F, T),
+  Raw = T,
   mergeBy,
   name,
-  name.local.file = NULL
+  name.local.file = NULL,
+  force.replace = F
 )
 }
 \arguments{
@@ -20,11 +22,15 @@ AddClinic(
 
 \item{merge}{merge loaded data clinic with existing clinial data : full_join by rownames}
 
+\item{Raw}{TRUE or FALSE. If Raw data, to be specified.}
+
 \item{mergeBy}{colname using for merging clinical data.}
 
 \item{name}{if loca=True, names to apply in Metadata object slot}
 
 \item{name.local.file}{name file of interest in path directory, could be multiple names. c("a.csv","b.csv")}
+
+\item{force.replace}{set as F. T : replace an already object with the same name}
 }
 \value{
 a data.frame in the Meta Object

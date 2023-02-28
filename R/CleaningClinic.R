@@ -20,7 +20,9 @@ if(!exists("LexicClinic", mode = "any")){
 
   if(all(str_detect(names(Metadata),"clinic"))==T){stop("No clinical data in meta object")}
 
-  clinic <- Metadata[which(str_detect(names(Metadata),"clinic"))][[1]]
+  NB <- which(attributes(Metadata)$Data.Type=="Clinical.data" & attributes(Metadata)$Raw=="Yes")
+
+  clinic <- Metadata[[NB]]
 
 
   clcl <-  data.frame(matrix(nrow = nrow(clinic), ncol = length(LexicClinic)))
@@ -70,9 +72,15 @@ for (i in 1:ncol(clinic)) {
       clinic2[clinic2==""] <- NA
       clinic2[clinic2=="NA"] <- NA
 
-      if(all(str_detect(names(Meta), c("RawCount|Raw.count|Raw.Matrix|Raw.matrix"))==F)){  Metadata$Sample.pheno <- clinic2[colnames(Metadata[[1]]),]
-        }else{
-      Metadata$Sample.pheno <- clinic2[colnames(Metadata[which(str_detect(names(Metadata), c("RawCount|Raw.count|Raw.Matrix|Raw.matrix")))][[1]]),]}
+
+      NB2 <- which(attributes(Metadata)$Data.Type=="Expression.Matrix")
+      if(length(NB2)>1){NB2 <- NB2[1]}
+      Metadata$Sample.pheno <- clinic2[colnames(Metadata[[NB2]]),]
+
+      if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
+      attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Clinical.data")
+      attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"No")}
+
 
     } else {
 
@@ -90,6 +98,9 @@ for (i in 1:ncol(clinic)) {
       cl_rolled[cl_rolled==""] <- NA
       cl_rolled[cl_rolled=="NA"] <- NA
       Metadata$Sample.pheno <- cl_rolled
+      if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
+      attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Clinical.data")
+      attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"No")}
       }
 
 
@@ -120,6 +131,10 @@ for (i in 1:ncol(clinic)) {
         clinic2[clinic2=="NA"] <- NA
         Metadata$Patient.clinic <- clinic2
 
+        if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
+        attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Clinical.data")
+        attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"No")}
+
         } else {
 
 
@@ -144,6 +159,9 @@ for (i in 1:ncol(clinic)) {
           cl_rolled[cl_rolled==""] <- NA
           cl_rolled[cl_rolled=="NA"] <- NA
           Metadata$Patient.clinic <- cl_rolled
+          if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
+          attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Clinical.data")
+          attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"No")}
 
           }
 
