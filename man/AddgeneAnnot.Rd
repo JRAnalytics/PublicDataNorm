@@ -4,7 +4,7 @@
 \alias{AddgeneAnnot}
 \title{AddgeneAnnot to Meta}
 \usage{
-AddgeneAnnot(Meta, gtf.file.dir, gtf.files)
+AddgeneAnnot(Meta, gtf.file.dir, gtf.files, force.replace = F)
 }
 \arguments{
 \item{Meta}{Meta object to add geneAnnotation}
@@ -12,6 +12,8 @@ AddgeneAnnot(Meta, gtf.file.dir, gtf.files)
 \item{gtf.file.dir}{set xorking directory to path to gtf.file}
 
 \item{gtf.files}{gtf file to load}
+
+\item{force.replace}{set as F. T : replace an already object with the same name}
 }
 \value{
 return a Meta list of dataframe with geneAnntotation

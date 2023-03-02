@@ -20,7 +20,7 @@ if(!exists("LexicClinic", mode = "any")){
 
   if(all(str_detect(names(Metadata),"clinic"))==T){stop("No clinical data in meta object")}
 
-  NB <- which(attributes(Metadata)$Data.Type=="Clinical.data" & attributes(Metadata)$Raw=="Yes")
+  NB <- which(attributes(Metadata)$Data.Type=="Clinical.data" & attributes(Metadata)$Raw.data=="Yes")
 
   clinic <- Metadata[[NB]]
 
@@ -162,6 +162,11 @@ for (i in 1:ncol(clinic)) {
           if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
           attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Clinical.data")
           attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"No")}
+
+
+
+
+
 
           }
 

@@ -3,6 +3,7 @@
 #' @param Meta  Meta object to add geneAnnotation
 #' @param gtf.file.dir set xorking directory to path to gtf.file
 #' @param gtf.files  gtf file to load
+#' @param force.replace set as F. T : replace an already object with the same name
 #' @import stringr
 #' @import AnnotationDbi
 #' @import data.table
@@ -11,21 +12,30 @@
 #'
 #' @examples "none"
 #'
-AddgeneAnnot <- function(Meta ,gtf.file.dir, gtf.files){
+AddgeneAnnot <- function(Meta ,gtf.file.dir, gtf.files, force.replace=F){
 
   Meta <- Meta
 
   path <- file.path(gtf.file.dir)
 
+  if(!is.null(Meta$geneAnnotation)){
+    message("geneAnnotation already loaded.")
+    if(force.replace==F){stop("Set force.replace==T to subset object.")}
+    message("Subsetting object.")}
+
 
   geneAnnot <- geneAnnotation(gtf.files = paste0(path,"/",gtf.files) ,saverds = F)
+
 
   if(is.null(geneAnnot)){stop("Error in geneAnnotation function : is.null(geneAnnot==TRUE")}
 
   if(is.null(rownames(geneAnnot))){stop("Error in geneAnnotation function : no rownames in geneAnnot. But is not Null")}
 
-  zz <- which(str_detect(toupper(names(Meta)), "RAWCOUNT|RAW.COUNT|RAW.MATRIX|RAWMATRIX"))
-  if(length(zz)!=1){ stop("str_detect(names(Meta), c('Raw.count|Raw.matrix')),line 27, more than 1 object are detected.")}
+  zz <-  which(attributes(Meta)$Data.Type=="Expression.Matrix" & attributes(Meta)$Raw.data=="Yes")
+
+  if(length(zz)!=1){ stop("attributes(Meta)$Data.Type=='Expression.Matrix' & attributes(Meta)$Raw.data=='Yes',line 27, more than 1 object are detected.")}
+
+  ###rajouté ecrasement
 
    gene <- rownames(Meta[[zz]])
 
@@ -53,8 +63,19 @@ AddgeneAnnot <- function(Meta ,gtf.file.dir, gtf.files){
     geneAnnot <- geneAnnot[order(geneAnnot$GeneSymbol,decreasing = F),]
 
 
+    if(force.replace==T){
+
+      Meta$geneAnnotation <- geneAnnot  }
+
+
 
     Meta$geneAnnotation <- geneAnnot
+
+    if(length(attributes(Meta)$Data.Type)<length(Meta)){
+      attributes(Meta)$Data.Type <-  c(attributes(Meta)$Data.Type, "geneAnnotation.file")
+    attributes(Meta)$Raw.data <- c(attributes(Meta)$Raw.data,"No")
+    }
+
 
   }
 
