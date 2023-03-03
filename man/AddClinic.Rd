@@ -7,7 +7,7 @@
 AddClinic(
   Metadata,
   path,
-  merge = c(F, T),
+  merge = F,
   Raw = T,
   mergeBy,
   name,
@@ -20,7 +20,7 @@ AddClinic(
 
 \item{path}{dir path in which the GDC project is saved, or local files are saved}
 
-\item{merge}{merge loaded data clinic with existing clinial data : full_join by rownames}
+\item{merge}{merge loaded data clinic with existing clincial data : full_join by rownames. False if you load more than 1 file.}
 
 \item{Raw}{TRUE or FALSE. If Raw data, to be specified.}
 

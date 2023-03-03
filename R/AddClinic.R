@@ -3,7 +3,7 @@
 #' @param Metadata Meta object
 #' @param path dir path in which the GDC project is saved, or local files are saved
 #' @param name if loca=True, names to apply in Metadata object slot
-#' @param merge merge loaded data clinic with existing clinial data : full_join by rownames
+#' @param merge merge loaded data clinic with existing clincial data : full_join by rownames. False if you load more than 1 file.
 #' @param name.local.file name file of interest in path directory, could be multiple names. c("a.csv","b.csv")
 #' @param mergeBy colname using for merging clinical data.
 #' @param Raw TRUE or FALSE. If Raw data, to be specified.
@@ -15,7 +15,7 @@
 #' @export
 #'
 #' @examples "none"
-AddClinic <- function(Metadata, path, merge = c(F,T), Raw = T,mergeBy, name, name.local.file = NULL, force.replace=F) {
+AddClinic <- function(Metadata, path, merge = F, Raw = T,mergeBy, name, name.local.file = NULL, force.replace=F, join = c("left_join", "full_join")) {
 
   ### ecrasement si même nom dans le Meta à faire.
 
@@ -47,11 +47,17 @@ AddClinic <- function(Metadata, path, merge = c(F,T), Raw = T,mergeBy, name, nam
           if(str_detect(i, ".txt|.csv|.tsv", negate = FALSE)){
 
             clinic[[count]] <- suppressWarnings(as.data.frame(data.table::fread(i, na.strings = "")))
-            rownames(clinic[[count]]) <-    clinic[[count]][,1]
 
           }}
 
+        if(join=="full_join"){
           dt <- clinic %>% purrr::reduce(full_join, by=mergeBy)
+        }
+
+        if(join=="left_join"){
+          dt <- clinic %>% purrr::reduce(left_join, by=mergeBy)
+        }
+
           rownames(dt) <- dt[,1]
 
 
@@ -127,7 +133,13 @@ AddClinic <- function(Metadata, path, merge = c(F,T), Raw = T,mergeBy, name, nam
 
           clinic <- list(Metadata[[NB]], dt)
 
-          clinic <- clinic %>% purrr::reduce(full_join, by=mergeBy)
+          if(join=="full_join"){
+            dt <- clinic %>% purrr::reduce(full_join, by=mergeBy)
+          }
+
+          if(join=="left_join"){
+            dt <- clinic %>% purrr::reduce(left_join, by=mergeBy)
+          }
 
           Metadata[[NB]] <- clinic
 
