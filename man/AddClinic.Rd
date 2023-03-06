@@ -12,7 +12,8 @@ AddClinic(
   mergeBy,
   name,
   name.local.file = NULL,
-  force.replace = F
+  force.replace = F,
+  join = c("left_join", "full_join")
 )
 }
 \arguments{

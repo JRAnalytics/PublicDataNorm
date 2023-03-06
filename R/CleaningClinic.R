@@ -18,12 +18,13 @@ if(!exists("LexicClinic", mode = "any")){
   assign("LexicClinic", ColNameClinic(Lexical_colnames_path), envir = envir)
 }
 
-  if(all(str_detect(names(Metadata),"clinic"))==T){stop("No clinical data in meta object")}
+   NB <- which(attributes(Metadata)$Data.Type=="Clinical.data" & attributes(Metadata)$Raw.data=="Yes")
 
-  NB <- which(attributes(Metadata)$Data.Type=="Clinical.data" & attributes(Metadata)$Raw.data=="Yes")
+  if(length(NB)==0){stop("No clinical data in meta object")}
+
+
 
   clinic <- Metadata[[NB]]
-
 
   clcl <-  data.frame(matrix(nrow = nrow(clinic), ncol = length(LexicClinic)))
   colnames(clcl) = names(LexicClinic)
@@ -37,7 +38,7 @@ for (i in 1:ncol(clinic)) {
   col <- grep(paste("\\b",pat,"\\b", sep=""), LexicClinic)
 
   if(!length(col)==0){
-
+    print(colnames(clinic[,i]))
     clcl[,col] <- clinic[,i]
 
   }
@@ -66,16 +67,11 @@ for (i in 1:ncol(clinic)) {
     if(length(which(duplicated(clcl$SamplesID)))==0) {
 
        clinic2 <-  clcl[,c("SamplesID", cc)]
-       rownames(clinic2) <- clinic2$SamplesID
-
 
       clinic2[clinic2==""] <- NA
       clinic2[clinic2=="NA"] <- NA
 
-
-      NB2 <- which(attributes(Metadata)$Data.Type=="Expression.Matrix")
-      if(length(NB2)>1){NB2 <- NB2[1]}
-      Metadata$Sample.pheno <- clinic2[colnames(Metadata[[NB2]]),]
+      Metadata$Sample.pheno <- clinic2
 
       if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
       attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Clinical.data")
@@ -90,14 +86,15 @@ for (i in 1:ncol(clinic)) {
       group_by(SamplesID) %>%
 
         dplyr::summarise(across(everything(), ~paste0(unique(na.omit(.x)), collapse = ";")))
-      cl_rolled <- as.data.frame(cl_rolled)
-      rownames(cl_rolled) <- cl_rolled$SamplesID
+        cl_rolled <- as.data.frame(cl_rolled)
+
 
       cl_rolled <-  cl_rolled[,c("SamplesID", cc)]
 
       cl_rolled[cl_rolled==""] <- NA
       cl_rolled[cl_rolled=="NA"] <- NA
       Metadata$Sample.pheno <- cl_rolled
+
       if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
       attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Clinical.data")
       attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"No")}
@@ -121,12 +118,11 @@ for (i in 1:ncol(clinic)) {
         if(all(is.na(clcl$PatientsID))){
           message("No PatientsID found in raw clinical data. Using PatientID instead")
           clinic2 <-  clcl[,c("SamplesID", cc)]
-          rownames(clinic2) <- clinic2$SamplesID } else {
+          } else {
             clinic2 <-  clcl[,c("PatientsID", cc)]
-            rownames(clinic2) <- clinic2$PatientsID}
+           }
 
         clinic2 <-  clcl[,c("PatientsID", cc)]
-        rownames(clinic2) <- clinic2$PatientsID
         clinic2[clinic2==""] <- NA
         clinic2[clinic2=="NA"] <- NA
         Metadata$Patient.clinic <- clinic2
@@ -153,12 +149,13 @@ for (i in 1:ncol(clinic)) {
 
           cl_rolled <- as.data.frame(cl_rolled)
 
-          rownames(cl_rolled) <- cl_rolled$PatientsID
+
 
           cl_rolled <-  cl_rolled[,c("PatientsID", cc)]
           cl_rolled[cl_rolled==""] <- NA
           cl_rolled[cl_rolled=="NA"] <- NA
           Metadata$Patient.clinic <- cl_rolled
+
           if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
           attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Clinical.data")
           attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"No")}

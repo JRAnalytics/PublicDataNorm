@@ -19,7 +19,9 @@ AddgeneAnnot <- function(Meta ,gtf.file.dir, gtf.files, force.replace=F){
   path <- file.path(gtf.file.dir)
 
   if(!is.null(Meta$geneAnnotation)){
+
     message("geneAnnotation already loaded.")
+
     if(force.replace==F){stop("Set force.replace==T to subset object.")}
     message("Subsetting object.")}
 
@@ -54,7 +56,13 @@ AddgeneAnnot <- function(Meta ,gtf.file.dir, gtf.files, force.replace=F){
   if(nrow(geneAnnot)==0){ stop("if(nrow(geneAnnot)==0), line 43, N rows of geneAnnotation is 0")}
 
   geneAnnot <- geneAnnot[order(geneAnnot$GeneSymbol,decreasing = F),]
+
+  if(is.null(Meta$geneAnnotation)){ attributes(Meta)$Data.Type <-  c(attributes(Meta)$Data.Type, "geneAnnotation.file")
+  attributes(Meta)$Raw.data <- c(attributes(Meta)$Raw.data,"No") }
+
   Meta$geneAnnotation <- geneAnnot
+
+
   } else {
 
     gene <- unlist(lapply(str_split(rownames(Meta[[zz]]),"[|]"),"[[",1))
@@ -62,19 +70,11 @@ AddgeneAnnot <- function(Meta ,gtf.file.dir, gtf.files, force.replace=F){
 
     geneAnnot <- geneAnnot[order(geneAnnot$GeneSymbol,decreasing = F),]
 
-
-    if(force.replace==T){
-
-      Meta$geneAnnotation <- geneAnnot  }
-
-
+    if(is.null(Meta$geneAnnotation)){ attributes(Meta)$Data.Type <-  c(attributes(Meta)$Data.Type, "geneAnnotation.file")
+    attributes(Meta)$Raw.data <- c(attributes(Meta)$Raw.data,"No") }
 
     Meta$geneAnnotation <- geneAnnot
 
-    if(length(attributes(Meta)$Data.Type)<length(Meta)){
-      attributes(Meta)$Data.Type <-  c(attributes(Meta)$Data.Type, "geneAnnotation.file")
-    attributes(Meta)$Raw.data <- c(attributes(Meta)$Raw.data,"No")
-    }
 
 
   }
