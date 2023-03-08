@@ -44,13 +44,15 @@ if(!exists("LexicClinic", mode = "any")){
   colnames(clcl) = names(LexicClinic)
   LexicClinic <- lapply(LexicClinic, toupper)
 
+  colnames(clinic) <-gsub("[.]", "_",colnames(clinic))
+  LexicClinic <-  lapply(LexicClinic,function(x) gsub("[.]", "_",x))
 
 
 
 for (i in 1:ncol(clinic)) {
   pat <- toupper(colnames(clinic)[i])
-  col <- grep(paste("\\b",pat,"\\b", sep=""), LexicClinic)
-
+  col <- grep(paste("\\b",pat, "\\b",sep=""), LexicClinic)
+  print(paste("pat = ",pat,"col = ", col))
   if(!length(col)==0){
 
     clcl[,col] <- clinic[,i]

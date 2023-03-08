@@ -33,7 +33,7 @@ AddgeneAnnot <- function(Meta ,gtf.file.dir, gtf.files, force.replace=F){
 
   if(is.null(rownames(geneAnnot))){stop("Error in geneAnnotation function : no rownames in geneAnnot. But is not Null")}
 
-  zz <-  which(attributes(Meta)$Data.Type=="Expression.Matrix" & attributes(Meta)$Raw.data=="Yes")
+  zz <- which(attributes(Meta)$Data.Type=="Expression.Matrix")[1]
 
   if(length(zz)!=1){ stop("attributes(Meta)$Data.Type=='Expression.Matrix' & attributes(Meta)$Raw.data=='Yes',line 27, more than 1 object are detected.")}
 
