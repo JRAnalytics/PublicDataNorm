@@ -4,7 +4,12 @@
 \alias{CleaningClinic}
 \title{CleaningClinic function : Cleaning clinical data to map samples and patients in Sequençing data}
 \usage{
-CleaningClinic(Metadata, type = c("Sample", "Patients"), Lexical_colnames_path)
+CleaningClinic(
+  Metadata,
+  type = c("Sample", "Patients"),
+  Lexical_colnames_path,
+  project
+)
 }
 \arguments{
 \item{Metadata}{Metadata object}
@@ -12,6 +17,9 @@ CleaningClinic(Metadata, type = c("Sample", "Patients"), Lexical_colnames_path)
 \item{type}{"Sample Pheno" or "Patients' clinical data" for building clean clinical data from raw clinical data.}
 
 \item{Lexical_colnames_path}{file path to find lexique of colnames}
+
+\item{list.files.path}{dir path
+@param project project}
 }
 \value{
 a data frame of Samples pheno or patients clinical data. If Sample ID and Patients ID are the sames, so Samples.pheno and Patient_clinic are the same data frame

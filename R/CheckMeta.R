@@ -16,8 +16,9 @@ CheckMeta <- function(MetaData) {
   MetaDataN <- names(MetaData)
 
   ColN <- colnames(MetaData[[1]])
-  m <- which(str_detect(toupper(names(MetaData)),"MATRIX"))
-  c <- which(str_detect(toupper(names(MetaData)),"PATIENT") | str_detect(toupper(names(MetaData)),"CLINIC") | str_detect(toupper(names(MetaData)),"PHENO")  )
+  m <- which(attributes(Meta)$Data.Type=="Expression.Matrix")
+  c <- which(attributes(Meta)$Data.Type=="Clinical.data")
+
   message("-------------------------")
   message("Checking colnames of matrices in MetaData from Raw gene expression matrix")
   message("-------------------------")

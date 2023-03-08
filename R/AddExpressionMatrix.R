@@ -43,17 +43,19 @@ AddExpressionMatrix <- function(Metadata, local = c(T, F) , query, data.norm, pa
         if(str_detect(name.local.file, ".txt", negate = FALSE)){
 
           dt <- suppressWarnings(as.data.frame(data.table::fread(filepath)))
-          rownames(dt) <- dt[,1]
+
+          if(length(dt[,1])!=length(unique( dt[,1]))) { } else {  rownames(dt) <- dt[,1]}
+
 
           }  else {
             if(str_detect(name.local.file, ".csv", negate = FALSE)){
               dt <- suppressWarnings(as.data.frame(data.table::fread(filepath)))
-              rownames(dt) <- dt[,1]
+              if(length(dt[,1])!=length(unique( dt[,1]))) { } else {  rownames(dt) <- dt[,1]}
              }else {
 
                 if(str_detect(name.local.file, ".tsv", negate = FALSE)){
                   dt <- suppressWarnings(as.data.frame(data.table::fread(filepath)))
-                  rownames(dt) <- dt[,1]
+                  if(length(dt[,1])!=length(unique( dt[,1]))) { } else {  rownames(dt) <- dt[,1]}
                  }}
           }
 

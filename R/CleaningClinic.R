@@ -3,19 +3,33 @@
 #' @param Metadata Metadata object
 #' @param type "Sample Pheno" or "Patients' clinical data" for building clean clinical data from raw clinical data.
 #' @param Lexical_colnames_path file path to find lexique of colnames
+#' @param list.files.path dir path
+#'  @param project project
 #' @importFrom utils menu
 #' @import dplyr
 #' @return a data frame of Samples pheno or patients clinical data. If Sample ID and Patients ID are the sames, so Samples.pheno and Patient_clinic are the same data frame
 #' @export
 #'
 #' @examples "none"
-CleaningClinic <- function(Metadata, type = c("Sample", "Patients"), Lexical_colnames_path){
+CleaningClinic <- function(Metadata, type = c("Sample", "Patients"), Lexical_colnames_path, project){
 
 
 if(!exists("LexicClinic", mode = "any")){
-  pos <- 1
+
+   pos <- 1
   envir = as.environment(pos)
-  assign("LexicClinic", ColNameClinic(Lexical_colnames_path), envir = envir)
+  if(file.exists(paste0(Lexical_colnames_path$Project.Processes, "/",project,".Lexic.txt"))){
+
+    x <- scan(paste0(Lexical_colnames_path$Project.Processes, "/",project,".Lexic.txt"), what="", sep="\n")%>%strsplit("[[:space:]]+")
+    names(x) <- sapply(x, `[[`, 1)
+    LexicClinic<- lapply(x, `[`, -1)
+
+
+    assign("LexicClinic", LexicClinic, envir = envir)
+
+    } else {  assign("LexicClinic", ColNameClinic(Lexical_colnames_path$Processes), envir = envir) }
+
+
 }
 
    NB <- which(attributes(Metadata)$Data.Type=="Clinical.data" & attributes(Metadata)$Raw.data=="Yes")
@@ -38,17 +52,22 @@ for (i in 1:ncol(clinic)) {
   col <- grep(paste("\\b",pat,"\\b", sep=""), LexicClinic)
 
   if(!length(col)==0){
-    print(colnames(clinic[,i]))
+
     clcl[,col] <- clinic[,i]
 
   }
 }
 
   if(!exists("SamplesOrPatients", mode = "any")){
-
-  SamplesOrPatients <- data.table::fread(paste(Lexical_colnames_path,"SamplesOrPatients.txt",sep = "/"))
   pos <- 1
   envir = as.environment(pos)
+
+  if(file.exists(paste0(Lexical_colnames_path$Project.Processes, "/",project,".SamplesOrPatients.txt"))){
+
+    SamplesOrPatients <- data.table::fread(paste0(Lexical_colnames_path$Project.Processes, "/",project,".SamplesOrPatients.txt"))
+
+  } else {  SamplesOrPatients <- data.table::fread(paste(Lexical_colnames_path$Processes,"SamplesOrPatients.txt",sep = "/")) }
+
   assign("SamplesOrPatients", SamplesOrPatients, envir = envir)
 
 

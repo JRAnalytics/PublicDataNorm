@@ -2,6 +2,7 @@
 #'
 #' @param MetaData a MetaData  data files
 #' @param list.files.path dirpath
+#' @param project project
 #' @return ".csv" files into working directory
 #' @export
 #' @import utils
@@ -49,7 +50,7 @@ ExportCSV <- function (MetaData, list.files.path, project){
     message("-------------------------------------------------")
     message(paste("Exporting", count, "/", object,"object: ","SamplesOrPatients"))
 
-    write.table(SamplesOrPatients, file= paste0(list.files.path$Project.Processes,"/",project,"SamplesOrPatients.txt"),quote = F, sep = "\t", row.names = F)}
+    write.table(SamplesOrPatients, file= paste0(list.files.path$Project.Processes,"/",project,".SamplesOrPatients.txt"),quote = F, sep = "\t", row.names = F)}
 
 
 
@@ -76,7 +77,8 @@ ExportCSV <- function (MetaData, list.files.path, project){
            count <- count+1
            message("-------------------------------------------------")
            message(paste("Exporting", count, "/", object,"object: ",names(MetaData)[j]))
-           message("Samples' pheno exported file exist. Loading to compare if different to Metaobject Version")
+           message(paste(names(MetaData)[j],"exported file exist. Loading to compare if different to Metaobject Version"))
+
            df <- file.info(list.files(list.files.path$Propject.VerifiedDataset, full.names = T))
            df$Filenames <- unlist(lapply(str_split(rownames(df),paste0(project,"/")),"[[",2))
            df <- df[str_detect(df$Filenames, names(MetaData)[j]),]
