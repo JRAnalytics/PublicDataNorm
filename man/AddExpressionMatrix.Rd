@@ -27,7 +27,7 @@ AddExpressionMatrix(
 
 \item{path}{dir path in which the GDC project is saved, or local files are saved}
 
-\item{name}{if loca=True, names to apply in Meatadata object slot}
+\item{name}{if loca=True, names to apply in Metadata object slot}
 
 \item{Raw}{TRUE or FALSE. If Raw data, to be specified.}
 

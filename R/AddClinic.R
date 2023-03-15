@@ -3,10 +3,12 @@
 #' @param Metadata Meta object
 #' @param path dir path in which the GDC project is saved, or local files are saved
 #' @param name if loca=True, names to apply in Metadata object slot
+#' @param type c("Samples", "Patients") To specify if clinical data refers to samples or patients data. Importat if mutliple samples for one patient.
 #' @param merge merge loaded data clinic with existing clincial data : full_join by rownames. False if you load more than 1 file.
 #' @param name.local.file name file of interest in path directory, could be multiple names. c("a.csv","b.csv")
 #' @param mergeBy colname using for merging clinical data.
 #' @param Raw TRUE or FALSE. If Raw data, to be specified.
+#' @param join c("left_join", "full_join")
 #' @param force.replace set as F. T : replace an already object with the same name
 #' @importFrom utils menu
 #' @import purrr
@@ -15,7 +17,7 @@
 #' @export
 #'
 #' @examples "none"
-AddClinic <- function(Metadata, path, merge = F, Raw = T,mergeBy, name, name.local.file = NULL, force.replace=F, join = c("left_join", "full_join")) {
+AddClinic <- function(Metadata, path, merge = F, Raw = T,mergeBy, name, type = c("Samples", "Patients"),name.local.file = NULL, force.replace=F, join = c("left_join", "full_join")) {
 
   ### ecrasement si même nom dans le Meta à faire.
 
@@ -113,11 +115,13 @@ AddClinic <- function(Metadata, path, merge = F, Raw = T,mergeBy, name, name.loc
 
 
 
-            if(l==0) {   attributes(Metadata)$Data.Type <-  c("Clinical.data")
+            if(l==0) {   if(type == "Samples") {attributes(Metadata)$Data.Type <-  c("Samples.Clinical.data")}
+              if(type == "Patients") {attributes(Metadata)$Data.Type <-  c("Patient.Clinical.data")}
             if(Raw==T){attributes(Metadata)$Raw.data <- c("Yes") } else {attributes(Metadata)$Raw.data <- c("No") }
 
 
-            } else {  attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Clinical.data")
+            } else {  if(type == "Samples") {attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Samples.Clinical.data")}
+            if(type == "Patients") {attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Patient.Clinical.data")}
             if(Raw==T){attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"Yes") } else {attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"No") }
 
             }}
@@ -129,7 +133,7 @@ AddClinic <- function(Metadata, path, merge = F, Raw = T,mergeBy, name, name.loc
 
           if(is.null(mergeBy)){stop("For merging data, mergeBy='colnames' must be specified")}
 
-          NB <- which(attributes(Metadata)$Data.Type=="Clinical.data" & attributes(Metadata)$Raw=="Yes")
+          NB <- which(str_detect(string =attributes(Metadata)$Data.Type ,"Clinical.data") & attributes(Metadata)$Raw=="Yes")
 
           clinic <- list(Metadata[[NB]], dt)
 

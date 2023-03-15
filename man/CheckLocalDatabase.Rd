@@ -28,6 +28,8 @@ CheckLocalDatabase(
 
 \item{Sequencing.LengthPer.pb}{Defaul = NA}
 
+\item{Sequencing.Run}{Defaul = NA}
+
 \item{Sequencing.Platform}{Defaul = NA}
 
 \item{First.Author}{Defaul = NA}

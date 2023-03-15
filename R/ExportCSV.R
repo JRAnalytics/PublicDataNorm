@@ -30,28 +30,35 @@ ExportCSV <- function (MetaData, list.files.path, project){
   }
 
 
-  if(exists("LexicClinic", mode= "any" )) {
+  if(exists("PatientLexic", mode= "any" )) {
     count <- count+1
     message("-------------------------------------------------")
-    message(paste("Exporting", count, "/", object,"object: ","LexicClinic"))
+    message(paste("Exporting", count, "/", object,"object: ","PatientLexic"))
 
-    if (file.exists(paste0(list.files.path$Project.Processes,"/",project,".Lexic.txt"))) {
+    if (file.exists(paste0(list.files.path$Project.Processes,"/",project,".PatientLexic.txt"))) {
       #Delete file if it exists
-      file.remove(paste0(list.files.path$Project.Processes,"/",project,".Lexic.txt"))
+      file.remove(paste0(list.files.path$Project.Processes,"/",project,".PatientLexic.txt"))
     }
 
-    LexicClinic <- lapply(LexicClinic, function(x) {c(x[1],x)}) #Mandatory to duplicated listName in the listed values.
-    lapply(LexicClinic, write, paste0(list.files.path$Project.Processes,"/",project,".Lexic.txt"), append=TRUE, ncolumns=1000 ) #write a ".txt" file without listNames
+    PatientLexic <- lapply(PatientLexic, function(x) {c(x[1],x)}) #Mandatory to duplicated listName in the listed values.
+    lapply(PatientLexic, write, paste0(list.files.path$Project.Processes,"/",project,".PatientLexic.txt"), append=TRUE, ncolumns=1000 ) #write a ".txt" file without listNames
   }
 
 
-  if(exists("SamplesOrPatients", mode= "any" )) {
-
+  if(exists("SamplesLexic", mode= "any" )) {
     count <- count+1
     message("-------------------------------------------------")
-    message(paste("Exporting", count, "/", object,"object: ","SamplesOrPatients"))
+    message(paste("Exporting", count, "/", object,"object: ","SamplesLexic"))
 
-    write.table(SamplesOrPatients, file= paste0(list.files.path$Project.Processes,"/",project,".SamplesOrPatients.txt"),quote = F, sep = "\t", row.names = F)}
+    if (file.exists(paste0(list.files.path$Project.Processes,"/",project,".SamplesLexic.txt"))) {
+      #Delete file if it exists
+      file.remove(paste0(list.files.path$Project.Processes,"/",project,".SamplesLexic.txt"))
+    }
+
+    SamplesLexic <- lapply(SamplesLexic, function(x) {c(x[1],x)}) #Mandatory to duplicated listName in the listed values.
+    lapply(SamplesLexic, write, paste0(list.files.path$Project.Processes,"/",project,".SamplesLexic.txt"), append=TRUE, ncolumns=1000 ) #write a ".txt" file without listNames
+  }
+
 
 
 
@@ -181,7 +188,7 @@ ExportCSV <- function (MetaData, list.files.path, project){
 
             if(Vnumber==1){ Vnumber = 2}
 
-            message(paste0("Exporting ", count, " / ", object,"object: ",names(MetaData)[j], "V", Vnumber))
+            message(paste0("Exporting ", count, " / ", object," object: ",names(MetaData)[j], "V", Vnumber))
             filename3 <- unlist(lapply(str_split(filename2,".V"),"[[",1))
             filepath2 <- paste0(list.files.path$Propject.VerifiedDataset,"/",filename3,".V",Vnumber,".csv")
             z <- cbind("GeneSymbol" = rownames(MetaData[[j]]), MetaData[[j]])

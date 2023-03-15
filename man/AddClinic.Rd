@@ -11,6 +11,7 @@ AddClinic(
   Raw = T,
   mergeBy,
   name,
+  type = c("Samples", "Patients"),
   name.local.file = NULL,
   force.replace = F,
   join = c("left_join", "full_join")
@@ -29,9 +30,13 @@ AddClinic(
 
 \item{name}{if loca=True, names to apply in Metadata object slot}
 
+\item{type}{c("Samples", "Patients") To specify if clinical data refers to samples or patients data. Importat if mutliple samples for one patient.}
+
 \item{name.local.file}{name file of interest in path directory, could be multiple names. c("a.csv","b.csv")}
 
 \item{force.replace}{set as F. T : replace an already object with the same name}
+
+\item{join}{c("left_join", "full_join")}
 }
 \value{
 a data.frame in the Meta Object

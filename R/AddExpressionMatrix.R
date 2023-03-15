@@ -5,7 +5,7 @@
 #' @param data.norm a character "Raw" ,"TPM", "FKPM"
 #' @param path dir path in which the GDC project is saved, or local files are saved
 #' @param local T of F. If F, use query form. If F, add expression patrice from local file
-#' @param name if loca=True, names to apply in Meatadata object slot
+#' @param name if loca=True, names to apply in Metadata object slot
 #' @param name.local.file name file of interest in path directory
 #' @param force.replace set as F. T : replace an already object with the same name
 #' @param Raw TRUE or FALSE. If Raw data, to be specified.

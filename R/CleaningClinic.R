@@ -2,82 +2,68 @@
 #'
 #' @param Metadata Metadata object
 #' @param type "Sample Pheno" or "Patients' clinical data" for building clean clinical data from raw clinical data.
-#' @param Lexical_colnames_path file path to find lexique of colnames
-#' @param list.files.path dir path
-#'  @param project project
+#' @param list.files.path file path to find lexique of colnames
+#' @param project project
+#' @param ForceCleaning If TRUE, Force a cleaning method from Samples.clinical data into Patient.clinical data and vice versa.
 #' @importFrom utils menu
 #' @import dplyr
 #' @return a data frame of Samples pheno or patients clinical data. If Sample ID and Patients ID are the sames, so Samples.pheno and Patient_clinic are the same data frame
 #' @export
 #'
 #' @examples "none"
-CleaningClinic <- function(Metadata, type = c("Sample", "Patients"), Lexical_colnames_path, project){
+CleaningClinic <- function(Metadata, type = c("Sample", "Patients"), list.files.path, project, ForceCleaning = F){
 
 
-if(!exists("LexicClinic", mode = "any")){
-
-   pos <- 1
-  envir = as.environment(pos)
-  if(file.exists(paste0(Lexical_colnames_path$Project.Processes, "/",project,".Lexic.txt"))){
-
-    x <- scan(paste0(Lexical_colnames_path$Project.Processes, "/",project,".Lexic.txt"), what="", sep="\n")%>%strsplit("[[:space:]]+")
-    names(x) <- sapply(x, `[[`, 1)
-    LexicClinic<- lapply(x, `[`, -1)
 
 
-    assign("LexicClinic", LexicClinic, envir = envir)
-
-    } else {  assign("LexicClinic", ColNameClinic(Lexical_colnames_path$Processes), envir = envir) }
-
-
-}
-
-   NB <- which(attributes(Metadata)$Data.Type=="Clinical.data" & attributes(Metadata)$Raw.data=="Yes")
+   NB <- which(str_detect(attributes(Metadata)$Data.Type ,"Clinical.data") & attributes(Metadata)$Raw.data=="Yes")
 
   if(length(NB)==0){stop("No clinical data in meta object")}
 
 
 
-  clinic <- Metadata[[NB]]
 
-  clcl <-  data.frame(matrix(nrow = nrow(clinic), ncol = length(LexicClinic)))
-  colnames(clcl) = names(LexicClinic)
-  LexicClinic <- lapply(LexicClinic, toupper)
-
-  colnames(clinic) <-gsub("[.]", "_",colnames(clinic))
-  LexicClinic <-  lapply(LexicClinic,function(x) gsub("[.]", "_",x))
-
-
-
-for (i in 1:ncol(clinic)) {
-  pat <- toupper(colnames(clinic)[i])
-  col <- grep(paste("\\b",pat, "\\b",sep=""), LexicClinic)
-  print(paste("pat = ",pat,"col = ", col))
-  if(!length(col)==0){
-
-    clcl[,col] <- clinic[,i]
-
-  }
-}
-
-  if(!exists("SamplesOrPatients", mode = "any")){
-  pos <- 1
-  envir = as.environment(pos)
-
-  if(file.exists(paste0(Lexical_colnames_path$Project.Processes, "/",project,".SamplesOrPatients.txt"))){
-
-    SamplesOrPatients <- data.table::fread(paste0(Lexical_colnames_path$Project.Processes, "/",project,".SamplesOrPatients.txt"))
-
-  } else {  SamplesOrPatients <- data.table::fread(paste(Lexical_colnames_path$Processes,"SamplesOrPatients.txt",sep = "/")) }
-
-  assign("SamplesOrPatients", SamplesOrPatients, envir = envir)
-
-
-  }
 
   if(type=="Sample"){
 
-    cc <-  SamplesOrPatients[which(SamplesOrPatients$Type=="Samples.Pheno" | SamplesOrPatients$Type=="Both"),]$Descirption
+    NBS <- which(attributes(Metadata)$Data.Type=="Samples.Clinical.data" & attributes(Metadata)$Raw.data=="Yes")
+
+    if(ForceCleaning==F){
+    if(length(NBS)==0){stop("No Samples.Clinical.data found in Metadata object. Set ForceCleaning=T to force cleaning from Patient.Clinical.Data")}
+    } else {  if(length(NBS)==0){NBS <- which(str_detect(attributes(Metadata)$Data.Type ,"Clinical.data") & attributes(Metadata)$Raw=="Yes")    }}
+
+    clinic <- Metadata[[NBS]]
+
+    LexicClinic <- SamplesLexic
+
+    clcl <-  data.frame(matrix(nrow = nrow(clinic), ncol = length(LexicClinic)))
+    colnames(clcl) = names(LexicClinic)
+    LexicClinic <- lapply(LexicClinic, toupper)
+
+    colnames(clinic) <-gsub("[.]", "_",colnames(clinic))
+    LexicClinic <-  lapply(LexicClinic,function(x) gsub("[.]", "_",x))
+
+    if(file.exists(paste0(list.files.path$Project.Processes,"/Samples.CleanedProcess.txt"))){ file.remove(paste0(list.files.path$Project.Processes,"/Samples.CleanedProcess.txt"))}
+
+    cat("Samples.CleanedProcess" , file=paste0(list.files.path$Project.Processes,"/Samples.CleanedProcess.txt"),sep="\n",append = T)
+    cat("Raw.Clinic colnames Origin,Clean.Called" , file=paste0(list.files.path$Project.Processes,"/Samples.CleanedProcess.txt"),sep="\n",append = T)
+    for (i in 1:ncol(clinic)) {
+      pat <- toupper(colnames(clinic)[i])
+      col <- grep(paste("\\b",pat, "\\b",sep=""), LexicClinic)
+
+
+
+      cat(paste(pat,",", names(LexicClinic)[col]) , file=paste0(list.files.path$Project.Processes,"/Samples.CleanedProcess.txt"),sep="\n",append = T)
+
+
+      if(!length(col)==0){
+
+        clcl[,col] <- clinic[,i]
+
+      }
+    }
+
+    cc <- names(LexicClinic)
     cc <- cc[!cc%in%("SamplesID")]
 
     if(all(is.na(clcl$SamplesID))){
@@ -89,13 +75,14 @@ for (i in 1:ncol(clinic)) {
 
        clinic2 <-  clcl[,c("SamplesID", cc)]
 
+       clinic2 <- as.data.frame(clinic2)
       clinic2[clinic2==""] <- NA
       clinic2[clinic2=="NA"] <- NA
 
       Metadata$Sample.pheno <- clinic2
 
       if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
-      attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Clinical.data")
+      attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Samples.Clinical.data")
       attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"No")}
 
 
@@ -117,16 +104,51 @@ for (i in 1:ncol(clinic)) {
       Metadata$Sample.pheno <- cl_rolled
 
       if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
-      attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Clinical.data")
+      attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Samples.Clinical.data")
       attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"No")}
       }
 
-
+    file.show(paste0(list.files.path$Project.Processes,"/Samples.CleanedProcess.txt"))
 
     } else if(type=="Patients")
       {
 
-      cc <-  SamplesOrPatients[which(SamplesOrPatients$Type=="Patients.Pheno" | SamplesOrPatients$Type=="Both"),]$Descirption
+      NBP <- which(attributes(Metadata)$Data.Type=="Patient.Clinical.data" & attributes(Metadata)$Raw.data=="Yes")
+
+      if(ForceCleaning==F){
+        if(length(NBP)==0){stop("No Patient.Clinical.data found in Metadata object. Set ForceCleaning=T to force cleaning from Samples.Clinical.Data")}
+      } else { if(length(NBP)==0){ NBP <- which(str_detect(attributes(Metadata)$Data.Type ,"Clinical.data") & attributes(Metadata)$Raw=="Yes")    }}
+
+      clinic <- Metadata[[NBP]]
+
+      LexicClinic <- PatientLexic
+
+      clcl <-  data.frame(matrix(nrow = nrow(clinic), ncol = length(LexicClinic)))
+      colnames(clcl) = names(LexicClinic)
+      LexicClinic <- lapply(LexicClinic, toupper)
+
+      colnames(clinic) <-gsub("[.]", "_",colnames(clinic))
+      LexicClinic <-  lapply(LexicClinic,function(x) gsub("[.]", "_",x))
+
+      if(file.exists(paste0(list.files.path$Project.Processes,"/Patients.CleanedProcess.txt"))){ file.remove(paste0(list.files.path$Project.Processes,"/Patients.CleanedProcess.txt"))}
+
+      cat("Patients.CleanedProcess" , file=paste0(list.files.path$Project.Processes,"/Patients.CleanedProcess.txt"),sep="\n",append = T)
+      cat("Raw.Clinic colnames Origin,Clean.Called" , file=paste0(list.files.path$Project.Processes,"/Patients.CleanedProcess.txt"),sep="\n",append = T)
+
+      for (i in 1:ncol(clinic)) {
+        pat <- toupper(colnames(clinic)[i])
+        col <- grep(paste("\\b",pat, "\\b",sep=""), LexicClinic)
+
+        cat(paste(pat,",", names(LexicClinic)[col]) , file=paste0(list.files.path$Project.Processes,"/Patients.CleanedProcess.txt"),sep="\n",append = T)
+
+        if(!length(col)==0){
+
+          clcl[,col] <- clinic[,i]
+
+        }
+      }
+
+      cc <- names(LexicClinic)
       cc <- cc[!cc%in%("PatientsID")]
 
       if(all(is.na(clcl$PatientsID))){
@@ -136,20 +158,15 @@ for (i in 1:ncol(clinic)) {
 
       if(length(which(duplicated(clcl$PatientsID)))==0) {
 
-        if(all(is.na(clcl$PatientsID))){
-          message("No PatientsID found in raw clinical data. Using PatientID instead")
-          clinic2 <-  clcl[,c("SamplesID", cc)]
-          } else {
-            clinic2 <-  clcl[,c("PatientsID", cc)]
-           }
 
         clinic2 <-  clcl[,c("PatientsID", cc)]
+        clinic2 <- as.data.frame(clinic2)
         clinic2[clinic2==""] <- NA
         clinic2[clinic2=="NA"] <- NA
         Metadata$Patient.clinic <- clinic2
 
         if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
-        attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Clinical.data")
+        attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Patient.Clinical.data")
         attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"No")}
 
         } else {
@@ -178,7 +195,7 @@ for (i in 1:ncol(clinic)) {
           Metadata$Patient.clinic <- cl_rolled
 
           if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
-          attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Clinical.data")
+          attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Patient.Clinical.data")
           attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"No")}
 
 
@@ -186,11 +203,14 @@ for (i in 1:ncol(clinic)) {
 
 
 
-          }
+        }
 
+      file.show(paste0(list.files.path$Project.Processes,"/Patients.CleanedProcess.txt"))
 
       } else {
    stop("Choose type = 'Sample Pheno' or 'Patients' clinical data' ")}
+
+
 
 
 

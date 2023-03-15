@@ -12,7 +12,7 @@
 #' "none"
 #'
 #' @export
-geneAnnotation <- function(gtf.files = "gencode.v40.annotation.gtf", saverds=TRUE,file= ".rds" ){
+geneAnnotation <- function(gtf.files = "gencode.v40.annotation.gtf", saverds=TRUE, file= ".rds" ){
 
 
 #loading of the gtf files

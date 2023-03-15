@@ -7,8 +7,9 @@
 CleaningClinic(
   Metadata,
   type = c("Sample", "Patients"),
-  Lexical_colnames_path,
-  project
+  list.files.path,
+  project,
+  ForceCleaning = F
 )
 }
 \arguments{
@@ -16,10 +17,11 @@ CleaningClinic(
 
 \item{type}{"Sample Pheno" or "Patients' clinical data" for building clean clinical data from raw clinical data.}
 
-\item{Lexical_colnames_path}{file path to find lexique of colnames}
+\item{list.files.path}{file path to find lexique of colnames}
 
-\item{list.files.path}{dir path
-@param project project}
+\item{project}{project}
+
+\item{ForceCleaning}{If TRUE, Force a cleaning method from Samples.clinical data into Patient.clinical data and vice versa.}
 }
 \value{
 a data frame of Samples pheno or patients clinical data. If Sample ID and Patients ID are the sames, so Samples.pheno and Patient_clinic are the same data frame

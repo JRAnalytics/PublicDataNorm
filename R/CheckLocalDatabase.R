@@ -6,6 +6,7 @@
 #' @param Sequencing.DeepenessPerMillionReads Defaul = NA
 #' @param Sequencing.LengthPer.pb Defaul = NA
 #' @param Sequencing.Platform Defaul = NA
+#' @param Sequencing.Run Defaul = NA
 #' @param First.Author Defaul = NA
 #' @param DOI doi of article if exist. Defaul = NA
 #' @param project project name

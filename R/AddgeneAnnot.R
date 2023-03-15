@@ -25,6 +25,9 @@ AddgeneAnnot <- function(Meta ,gtf.file.dir, gtf.files, force.replace=F){
     if(force.replace==F){stop("Set force.replace==T to subset object.")}
     message("Subsetting object.")}
 
+  if(!str_detect(gtf.files, ".gtf")){stop("A '.gtf' file is needed for AddgeneAnnot function.\n If an R object already exist with annotations, use AddObjetToMeta() function.") }
+  if(!file.exists(paste0(path,"/",gtf.files))){ stop("File does not exist in directories.")}
+
 
   geneAnnot <- geneAnnotation(gtf.files = paste0(path,"/",gtf.files) ,saverds = F)
 
