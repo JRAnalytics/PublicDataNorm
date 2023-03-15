@@ -22,7 +22,7 @@ ExportCSV <- function (MetaData, list.files.path, project){
 
   message(paste("Exporting", object, "objects"))
 
-  NB.raw.clinic <- which(attributes(MetaData)$Data.Type=="Clinical.data" & attributes(MetaData)$Raw.data=="Yes" )
+  NB.raw.clinic <- which(c(attributes(MetaData)$Data.Type=="Patient.Clinical.data" |attributes(MetaData)$Data.Type=="Samples.Clinical.data" ) & attributes(MetaData)$Raw.data=="Yes" )
   if(length(NB.raw.clinic)>0) {
     count <- count+1
     message("-------------------------------------------------")
@@ -62,7 +62,7 @@ ExportCSV <- function (MetaData, list.files.path, project){
 
 
 
-     NB.Samples.Patients.pheno <-  which(attributes(MetaData)$Data.Type=="Clinical.data" & attributes(MetaData)$Raw.data=="No" )
+     NB.Samples.Patients.pheno <-   which(c(attributes(MetaData)$Data.Type=="Patient.Clinical.data" |attributes(MetaData)$Data.Type=="Samples.Clinical.data" ) & attributes(MetaData)$Raw.data=="No" )
 
         if(length(NB.Samples.Patients.pheno)!=0) {
 
