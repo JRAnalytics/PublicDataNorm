@@ -19,7 +19,7 @@ AddObjetToMeta <- function(Meta, object, name ,Data.type = c("Expression.Matrix"
   if(!is.character(name)) { stop("name should be specified as character")}
   if(is.null(Data.type)) { stop("Data.type should be specified")}
   if(is.null(Raw)) { stop("Raw should be specified")}
-  if(!Data.type%in%c("Expression.Matrix","Patient.Clinical.data", "Samples.Clinical.data","geneAnnotation.file" )) { stop("Data.type should be specified from this values c('Expression.Matrix','Patient.Clinical.data', 'Samples.Clinical.data','eneAnnotation.file' ")}
+  if(!Data.type%in%c("Expression.Matrix","Patient.Clinical.data", "Samples.Clinical.data","geneAnnotation.file" )) { stop("Data.type should be specified from this values c('Expression.Matrix','Patient.Clinical.data', 'Samples.Clinical.data','geneAnnotation.file' ")}
   if(!Raw%in%c("Yes", "No")) { stop("Raw should be specified 'Yes' or 'No'")}
 
 

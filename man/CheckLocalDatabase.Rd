@@ -6,37 +6,39 @@
 \usage{
 CheckLocalDatabase(
   Local.Data.base.Path,
-  Databasename = "DataBaseSummary.txt",
   Normalization.Method = NA,
-  Sequencing.DeepenessPerMillionReads = NA,
-  Sequencing.LengthPer.pb = NA,
-  Sequencing.Run = NA,
-  Sequencing.Platform = NA,
+  Technology = NA,
+  Platform = NA,
+  Run.spec = NA,
   First.Author = NA,
   DOI = NA,
-  project = NA
+  project = NA,
+  Comment = NA,
+  User = NA
 )
 }
 \arguments{
 \item{Local.Data.base.Path}{path to parent directory of the database.}
 
-\item{Databasename}{name of the database.txt summary file}
-
 \item{Normalization.Method}{Defaul = NA}
 
-\item{Sequencing.DeepenessPerMillionReads}{Defaul = NA}
+\item{Technology}{Microarray, RNAseq, Single cell etc}
 
-\item{Sequencing.LengthPer.pb}{Defaul = NA}
+\item{Platform}{Brand of technology}
 
-\item{Sequencing.Run}{Defaul = NA}
-
-\item{Sequencing.Platform}{Defaul = NA}
+\item{Run.spec}{Deppenes, reads, etc etc}
 
 \item{First.Author}{Defaul = NA}
 
 \item{DOI}{doi of article if exist. Defaul = NA}
 
 \item{project}{project name}
+
+\item{Comment}{specify a comment for this export}
+
+\item{User}{User who export the cleaned Meta object}
+
+\item{Sequencing.DeepenessPerMillionReads}{Defaul = NA}
 }
 \value{
 a .text tab delimited database summary
