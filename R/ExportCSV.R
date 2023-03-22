@@ -20,6 +20,21 @@ ExportCSV <- function (MetaData, list.files.path, project){
   object <- length(MetaData)+2
   name <- names(MetaData)
 
+
+  LF <- list.files(list.files.path$Propject.VerifiedDataset)
+  if(length(LF)!=0){
+    df <- file.info(list.files(list.files.path$Propject.VerifiedDataset, full.names = T))
+    df$Filenames <- unlist(lapply(str_split(rownames(df),paste0(project,"/")),"[[",2))
+    filepath <- rownames(df)[which.max(df$mtime)]
+    filename <-  unlist(lapply(str_split(filepath,paste0(project,"/")),"[[",2))
+    filename2 <- unlist(lapply(str_split(filename,".csv"),"[[",1))
+    extension <- unlist(lapply(str_split(filename,".csv"),"[[",2))
+    version <- str_extract(filename2,"V[0-9]*")
+    Vnumber <- as.numeric(str_extract(version,"([0-9]+).*$"))+1
+    }
+
+
+
   message(paste("Exporting", object, "objects"))
 
   NB.raw.clinic <- which(c(attributes(MetaData)$Data.Type=="Patient.Clinical.data" |attributes(MetaData)$Data.Type=="Samples.Clinical.data" ) & attributes(MetaData)$Raw.data=="Yes" )
@@ -108,24 +123,27 @@ ExportCSV <- function (MetaData, list.files.path, project){
            filename <-  unlist(lapply(str_split(filepath,paste0(project,"/")),"[[",2))
            filename2 <- unlist(lapply(str_split(filename,".csv"),"[[",1))
             extension <- unlist(lapply(str_split(filename,".csv"),"[[",2))
-            version <- str_extract(filename2,"V[0-9]*")
-            Vnumber <- as.numeric(str_extract(version,"([0-9]+).*$"))+1
+
+
+
 
              if(is.na(Vnumber)) {
-               Vnumber = 1
-               filepath2 <- paste0(list.files.path$Propject.VerifiedDataset,"/",filename2,".V",Vnumber,".csv",extension)
+               Vnumber2 = 1
+               filepath2 <- paste0(list.files.path$Propject.VerifiedDataset,"/",filename2,".V",Vnumber2,".csv",extension)
                file.rename(from = filepath, to = filepath2)
              }
 
              #adding version file history
 
-             if(Vnumber==1){ Vnumber = 2}
+             if(!is.null(Vnumber) & !is.na(Vnumber)){Vnumber2 = Vnumber }
 
-             attributes(MetaData)$Version <- paste0("V", Vnumber)
+             if(Vnumber2==1){ Vnumber2 = 2}
 
-             message(paste0("Exporting ", count, " / ", object,"object: ",names(MetaData)[j], "V", Vnumber))
+             attributes(MetaData)$Version <- paste0("V", Vnumber2)
+
+             message(paste0("Exporting ", count, " / ", object,"object: ",names(MetaData)[j], "V", Vnumber2))
              filename3 <- unlist(lapply(str_split(filename2,".V"),"[[",1))
-             filepath2 <- paste0(list.files.path$Propject.VerifiedDataset,"/",filename3,".V",Vnumber,".csv")
+             filepath2 <- paste0(list.files.path$Propject.VerifiedDataset,"/",filename3,".V",Vnumber2,".csv")
              z <- cbind( MetaData[[j]])
              write.csv(z,row.names = F ,file = filepath2)
              message(paste("Compressing"))
@@ -175,22 +193,20 @@ ExportCSV <- function (MetaData, list.files.path, project){
 
             filename2 <- unlist(lapply(str_split(filename,".csv"),"[[",1))
             extension <- unlist(lapply(str_split(filename,".csv"),"[[",2))
-            version <- str_extract(filename2,"V[0-9]*")
-            Vnumber <- as.numeric(str_extract(version,"([0-9]+).*$"))+1
 
             if(is.na(Vnumber)) {
-              Vnumber = 1
-              filepath2 <- paste0(list.files.path$Propject.VerifiedDataset,"/",filename2,".V",Vnumber,".csv",extension)
+              Vnumber2 = 1
+              filepath2 <- paste0(list.files.path$Propject.VerifiedDataset,"/",filename2,".V",Vnumber2,".csv",extension)
               file.rename(from = filepath, to = filepath2)
             }
 
             #adding version file history
+            if(!is.null(Vnumber) & !is.na(Vnumber)){Vnumber2 = Vnumber }
+            if(Vnumber2==1){ Vnumber2 = 2}
 
-            if(Vnumber==1){ Vnumber = 2}
-
-            message(paste0("Exporting ", count, " / ", object," object: ",names(MetaData)[j], "V", Vnumber))
+            message(paste0("Exporting ", count, " / ", object," object: ",names(MetaData)[j], "V", Vnumber2))
             filename3 <- unlist(lapply(str_split(filename2,".V"),"[[",1))
-            filepath2 <- paste0(list.files.path$Propject.VerifiedDataset,"/",filename3,".V",Vnumber,".csv")
+            filepath2 <- paste0(list.files.path$Propject.VerifiedDataset,"/",filename3,".V",Vnumber2,".csv")
             z <- cbind("GeneSymbol" = rownames(MetaData[[j]]), MetaData[[j]])
             write.csv(z,row.names = F ,file = filepath2)
             message(paste("Compressing"))
@@ -239,23 +255,22 @@ ExportCSV <- function (MetaData, list.files.path, project){
 
           filename2 <- unlist(lapply(str_split(filename,".csv"),"[[",1))
           extension <- unlist(lapply(str_split(filename,".csv"),"[[",2))
-          version <- str_extract(filename2,"V[0-9]*")
-          Vnumber <- as.numeric(str_extract(version,"([0-9]+).*$"))+1
+
 
           if(is.na(Vnumber)) {
-            Vnumber = 1
+            Vnumber2 = 1
 
-            filepath2 <- paste0(list.files.path$Propject.VerifiedDataset,"/",filename2,".V",Vnumber,".csv",extension)
+            filepath2 <- paste0(list.files.path$Propject.VerifiedDataset,"/",filename2,".V",Vnumber2,".csv",extension)
             file.rename(from = filepath, to = filepath2)
           }
 
           #adding version file history
+          if(!is.null(Vnumber) & !is.na(Vnumber)){Vnumber2 = Vnumber }
+          if(Vnumber2==1){ Vnumber2 = 2}
 
-          if(Vnumber==1){ Vnumber = 2}
-
-          message(paste0("Exporting ", count, " / ", object,"object: ",names(MetaData)[j], "V", Vnumber))
+          message(paste0("Exporting ", count, " / ", object,"object: ",names(MetaData)[j], "V", Vnumber2))
           filename3 <- unlist(lapply(str_split(filename2,".V"),"[[",1))
-          filepath2 <- paste0(list.files.path$Propject.VerifiedDataset,"/",filename3,".V",Vnumber,".csv")
+          filepath2 <- paste0(list.files.path$Propject.VerifiedDataset,"/",filename3,".V",Vnumber2,".csv")
           z <- cbind( MetaData[[j]])
           write.csv(z,row.names = F ,file = filepath2)
           message(paste("Compressing"))

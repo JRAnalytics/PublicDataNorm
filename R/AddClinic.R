@@ -60,7 +60,7 @@ AddClinic <- function(Metadata, path, merge = F, Raw = T,mergeBy, name, type = c
           dt <- clinic %>% purrr::reduce(left_join, by=mergeBy)
         }
 
-          rownames(dt) <- dt[,1]
+
 
 
         }

@@ -5,6 +5,7 @@
 \title{CheckLocalDatabase}
 \usage{
 CheckLocalDatabase(
+  Meta,
   Local.Data.base.Path,
   Normalization.Method = NA,
   Technology = NA,
@@ -18,6 +19,8 @@ CheckLocalDatabase(
 )
 }
 \arguments{
+\item{Meta}{Meta object}
+
 \item{Local.Data.base.Path}{path to parent directory of the database.}
 
 \item{Normalization.Method}{Defaul = NA}

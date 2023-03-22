@@ -1,5 +1,6 @@
 #' CheckLocalDatabase
 #'
+#' @param Meta Meta object
 #' @param Local.Data.base.Path path to parent directory of the database.
 #' @param Normalization.Method Defaul = NA
 #' @param Sequencing.DeepenessPerMillionReads Defaul = NA
@@ -16,7 +17,8 @@
 #' @export
 #'
 #' @examples "non"
-CheckLocalDatabase <- function(Local.Data.base.Path,
+CheckLocalDatabase <- function(Meta,
+                               Local.Data.base.Path,
                                Normalization.Method = NA,
                                Technology = NA,
                                Platform = NA,
@@ -35,11 +37,13 @@ CheckLocalDatabase <- function(Local.Data.base.Path,
    if(is.null(attributes(Meta)$Version)){ Version = "V1"} else {   Version <- attributes(Meta)$Version }
 
 
-  if(length(names(Meta)[(str_detect(names(Meta), "Sample"))])==0){ Nsamples=0 } else{
-      Nsamples <- nrow(Meta[[which(str_detect(names(Meta), "Sample"))]])}
+   NBS <- which(attributes(Meta)$Data.Type=="Samples.Clinical.data" & attributes(Meta)$Raw.data=="No")
+   NBP <- which(attributes(Meta)$Data.Type=="Patient.Clinical.data" & attributes(Meta)$Raw.data=="No")
 
-  if(length(names(Meta)[(str_detect(names(Meta), "Patient"))])==0){ Npatient = Nsamples}else{
-    NBP <- which(attributes(Meta)$Data.Type=="Patient.Clinical.data" & attributes(Meta)$Raw.data=="No")
+  if(length(NBS)==0){ Nsamples=0 } else{
+      Nsamples <- nrow(Meta[[NBS]])}
+
+  if(length(NBP)==0){ Npatient = Nsamples}else{
       Npatient <- nrow(Meta[[NBP]])}
 
   if(length(which(attributes(Meta)$Data.Type=="Expression.Matrix" & attributes(Meta)$Raw.data=="Yes" ))==0){ RawGenes = 0} else {
@@ -51,15 +55,16 @@ CheckLocalDatabase <- function(Local.Data.base.Path,
     NB.norm.mat <- which(attributes(Meta)$Data.Type=="Expression.Matrix" & attributes(Meta)$Raw.data=="No")
       NormGenes <- nrow(Meta[[NB.norm.mat[1]]])}
 
-   NBS <- which(attributes(Meta)$Data.Type=="Samples.Clinical.data" & attributes(Meta)$Raw.data=="No")
+
+
    if(all(is.na(Meta[[NBS]]$SamplePathologicalState))){tumor <- nrow(Meta[[NBS]]) } else {
      tumor <- length(which(str_detect(toupper(Meta[[NBS]]$SamplePathologicalState),"TUM|PRIMARY")))
      if(tumor==0 & !all(is.na(Meta[[NBS]]$SamplePathologicalState))) {
 
        normal <- length(which(str_detect(toupper(Meta[[NBS]]$SamplePathologicalState),"NORM|HEAL")))
-       meta <- length(which(str_detect(toupper(Meta[[NBS]]$SamplePathologicalState),"MET")))
+       met <- length(which(str_detect(toupper(Meta[[NBS]]$SamplePathologicalState),"MET")))
        na <- length(which(is.na(Meta[[NBS]]$SamplePathologicalState)))
-       tumor = nrow(Meta[[NBS]])-normal-meta-na
+       tumor = nrow(Meta[[NBS]])-normal-met-na
      }
 
    }
@@ -69,14 +74,15 @@ CheckLocalDatabase <- function(Local.Data.base.Path,
 
        if(normal==0 & !all(is.na(Meta[[NBS]]$SamplePathologicalState))) {
 
-         tumor <- length(which(str_detect(toupper(Meta[[NBS]]$SamplePathologicalState),"TUM|PRIMARY")))
-         meta <- length(which(str_detect(toupper(Meta[[NBS]]$SamplePathologicalState),"MET")))
+
+         met <- length(which(str_detect(toupper(Meta[[NBS]]$SamplePathologicalState),"MET")))
          na <- length(which(is.na(Meta[[NBS]]$SamplePathologicalState)))
-         normal = nrow(Meta[[NBS]])-tumor-meta-na
+         normal = nrow(Meta[[NBS]])-tumor-met-na
        }
        }
 
-    NBP <- which(attributes(Meta)$Data.Type=="Patient.Clinical.data" & attributes(Meta)$Raw.data=="No")
+
+
 
   if(length(NBP)>0){ TTT<- Meta[[NBP]] %>% subset(TreatmentInfo=="Yes")%>%nrow()
     } else { TTT <- 0 }
@@ -99,7 +105,7 @@ CheckLocalDatabase <- function(Local.Data.base.Path,
     OSinfo <- "No"
   PFSinfo <- "No" }
 
-
+    met <- length(which(str_detect(toupper(Meta[[NBS]]$SamplePathologicalState),"MET")))
 
   dt <- data.frame("Project" = project,
                    "Version" = Version,
@@ -108,7 +114,7 @@ CheckLocalDatabase <- function(Local.Data.base.Path,
                    "N.Samples" = Nsamples,
                    "N.TumoralSamples" = tumor,
                    "N.NormalSamples" = normal,
-                   "N.Metastasis" = meta,
+                   "N.Metastasis" = met,
                    "Overall.Survival" =OSinfo ,
                    "Progression.Free.Survival" = PFSinfo,
                    "Treatment.Information" = TTTinfo,
@@ -129,36 +135,64 @@ CheckLocalDatabase <- function(Local.Data.base.Path,
 
 
   message("Adding to data bases : ")
-  print(dt)
+
   fp <- paste(c(Local.Data.base.Path,Databasename), collapse = "/")
 
 
   if(file.exists(fp)){
 
 
+
     x <-  as.data.frame(data.table::fread(fp))
+    x <- x[order(x$Project,x$Version,decreasing = F),]
+
+    if(length(x$Project[x$Project==project])!=0){
 
 
-    if(x$Project==project & x$Version[x$Project==project]==attributes(Meta)$Version){
 
-      message(paste(project,"already existing in database. Reactualising database"))
+      if(!all((x$Project[x$Project==project]==project & x$Version[x$Project==project]==attributes(Meta)$Version)==F)){
 
-      row <- max(which(x$Project==project & x$Version[x$Project==project]==attributes(Meta)$Version))
+        message(paste(project,"already existing in database. Reactualising database"))
 
-      x[row,] <- dt
+        proj <- which(x$Project==project)
+        row <- which(x$Version[proj]==attributes(Meta)$Version)
 
-    } else { x <- rbind(x,dt) }
+
+        x[row,] <- dt
+
+
+      } else { x <- rbind(x,dt)
+    print(dt)
+
+    }}
+
+    if(length(x$Project[x$Project==project])==0){ x <- rbind(x,dt)
+      print(dt)
+
+      }
+
+    LF <- list.files(list.files.path$Propject.VerifiedDataset)
+    if(length(LF)!=0){
+      df <- file.info(list.files(list.files.path$Propject.VerifiedDataset, full.names = T))
+      df$Filenames <- unlist(lapply(str_split(rownames(df),paste0(project,"/")),"[[",2))
+      filename2 <- unlist(lapply(str_split( df$Filenames ,".csv"),"[[",1))
+      version <- unique(str_extract(filename2,"V[0-9]*"))
+
+    }
+    if(!all(is.na(version))){
+    if(!all(x$Version[x$Project==project]%in%version)){
+      outV <- x$Version[!x$Version[x$Project==project]%in%version]
+      message(paste("Project",outV  ,"version is missing in 04VerifiedDataset. Removing from DataBaseSummary.txt"))
+      x <- x[-which(!x$Version[x$Project==project]%in%version),]
+    }}
 
 
     x <- x[order(x$Project,x$Version,decreasing = F),]
-
     write.table(x,fp,row.names = F, sep = "\t",dec = "." )
   } else {
-
+    print(dt)
     write.table(dt,fp,row.names = F, sep = "\t",dec = "." )
   }
-
-
 
 
 
