@@ -32,7 +32,7 @@ CleaningClinic <- function(Metadata, type = c("Sample", "Patients"), list.files.
     if(length(NBS)==0){stop("No Samples.Clinical.data found in Metadata object. Set ForceCleaning=T to force cleaning from Patient.Clinical.Data")}
     } else {  if(length(NBS)==0){NBS <- which(str_detect(attributes(Metadata)$Data.Type ,"Clinical.data") & attributes(Metadata)$Raw=="Yes")    }}
 
-    clinic <- Metadata[[NBS]]
+    clinic <- as.data.frame(Metadata[[NBS]])
 
     LexicClinic <- SamplesLexic
 
@@ -119,7 +119,7 @@ CleaningClinic <- function(Metadata, type = c("Sample", "Patients"), list.files.
         if(length(NBP)==0){stop("No Patient.Clinical.data found in Metadata object. Set ForceCleaning=T to force cleaning from Samples.Clinical.Data")}
       } else { if(length(NBP)==0){ NBP <- which(str_detect(attributes(Metadata)$Data.Type ,"Clinical.data") & attributes(Metadata)$Raw=="Yes")    }}
 
-      clinic <- Metadata[[NBP]]
+      clinic <- as.data.frame(Metadata[[NBP]])
 
       LexicClinic <- PatientLexic
 
