@@ -20,19 +20,22 @@ ExportCSV <- function (MetaData, list.files.path, project){
   object <- length(MetaData)+2
   name <- names(MetaData)
 
+  Vnumber <- NA
 
   LF <- list.files(list.files.path$Propject.VerifiedDataset)
   if(length(LF)!=0){
     df <- file.info(list.files(list.files.path$Propject.VerifiedDataset, full.names = T))
     df$Filenames <- unlist(lapply(str_split(rownames(df),paste0(project,"/")),"[[",2))
-    filepath <- rownames(df)[which.max(df$mtime)]
+    filepath <- rownames(df)
     filename <-  unlist(lapply(str_split(filepath,paste0(project,"/")),"[[",2))
     filename2 <- unlist(lapply(str_split(filename,".csv"),"[[",1))
     extension <- unlist(lapply(str_split(filename,".csv"),"[[",2))
     version <- str_extract(filename2,"V[0-9]*")
-    Vnumber <- as.numeric(str_extract(version,"([0-9]+).*$"))+1
+    Vnumber <- max(as.numeric(str_extract(version,"([0-9]+).*$")))+1
+    Vnumber2 <- Vnumber
     }
 
+  if(!c(is.null(Vnumber)|is.na(Vnumber))){ message(paste("Exporting Version V", Vnumber))} else {message(paste("Exporting Version V1")) }
 
 
   message(paste("Exporting", object, "objects"))
@@ -93,16 +96,22 @@ ExportCSV <- function (MetaData, list.files.path, project){
            filename <- paste0(list.files.path$Propject.VerifiedDataset,"/",project,".",names(MetaData)[j],".csv")
            z <-  MetaData[[j]]
 
-           if(str_detect(names(Meta)[j], "Sample")) {    z <- z[,c("SamplesID", colnames(z)[!colnames(z)%in%"SamplesID"])] }
 
+           if(is.na(Vnumber)| is.null(Vnumber)){
+             write.csv(z,row.names = F ,file = filename)
+             message(paste("Compressing"))
+             R.utils::gzip(filename, destname=sprintf("%s.gz", filename), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)} else {
 
-           if(str_detect(names(Meta)[j], "Patient")) {        z <- z[,c("PatientsID", colnames(z)[!colnames(z)%in%"PatientsID"])] }
+               if(is.na(Vnumber)) {Vnumber2 = 1}
+               if(Vnumber2==1){ Vnumber2 = 2}
+               if(!is.null(Vnumber) & !is.na(Vnumber)){Vnumber2 = Vnumber }
 
+               filename <- paste0(list.files.path$Propject.VerifiedDataset,"/",project,".",names(MetaData)[j],".V", Vnumber2,".csv")
+               write.csv(z,row.names = F ,file = filename)
+               message(paste("Compressing"))
+               R.utils::gzip(filename, destname=sprintf("%s.gz", filename), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)
 
-
-           write.csv(z,row.names = F ,file = filename)
-           message(paste("Compressing"))
-           R.utils::gzip(filename, destname=sprintf("%s.gz", filename), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)
+             }
 
            attributes(MetaData)$Version <- "V1"
 
@@ -141,7 +150,7 @@ ExportCSV <- function (MetaData, list.files.path, project){
 
              attributes(MetaData)$Version <- paste0("V", Vnumber2)
 
-             message(paste0("Exporting ", count, " / ", object,"object: ",names(MetaData)[j], "V", Vnumber2))
+             message(paste0("Exporting ", count, " / ", object,"object: ",names(MetaData)[j]))
              filename3 <- unlist(lapply(str_split(filename2,".V"),"[[",1))
              filepath2 <- paste0(list.files.path$Propject.VerifiedDataset,"/",filename3,".V",Vnumber2,".csv")
              z <- cbind( MetaData[[j]])
@@ -172,9 +181,24 @@ ExportCSV <- function (MetaData, list.files.path, project){
           message(paste("Exporting", count, "/", object,"object: ",names(MetaData)[j]))
           filename <- paste0(list.files.path$Propject.VerifiedDataset,"/",project,".",names(MetaData)[j],".csv")
           z <- cbind("GeneSymbol" = rownames(MetaData[[j]]), MetaData[[j]])
-          write.csv(z,row.names = F ,file = filename)
-          message(paste("Compressing"))
-          R.utils::gzip(filename, destname=sprintf("%s.gz", filename), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)
+
+          if(is.na(Vnumber)| is.null(Vnumber)){
+            write.csv(z,row.names = F ,file = filename)
+            message(paste("Compressing"))
+            R.utils::gzip(filename, destname=sprintf("%s.gz", filename), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)} else {
+
+              if(is.na(Vnumber)) {Vnumber2 = 1}
+              if(Vnumber2==1){ Vnumber2 = 2}
+              if(!is.null(Vnumber) & !is.na(Vnumber)){Vnumber2 = Vnumber }
+
+              filename <- paste0(list.files.path$Propject.VerifiedDataset,"/",project,".",names(MetaData)[j],".V", Vnumber2,".csv")
+              write.csv(z,row.names = F ,file = filename)
+              message(paste("Compressing"))
+              R.utils::gzip(filename, destname=sprintf("%s.gz", filename), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)
+
+            }
+
+
 
         } else{
           count <- count+1
@@ -204,7 +228,7 @@ ExportCSV <- function (MetaData, list.files.path, project){
             if(!is.null(Vnumber) & !is.na(Vnumber)){Vnumber2 = Vnumber }
             if(Vnumber2==1){ Vnumber2 = 2}
 
-            message(paste0("Exporting ", count, " / ", object," object: ",names(MetaData)[j], "V", Vnumber2))
+            message(paste0("Exporting ", count, " / ", object," object: ",names(MetaData)[j]))
             filename3 <- unlist(lapply(str_split(filename2,".V"),"[[",1))
             filepath2 <- paste0(list.files.path$Propject.VerifiedDataset,"/",filename3,".V",Vnumber2,".csv")
             z <- cbind("GeneSymbol" = rownames(MetaData[[j]]), MetaData[[j]])
@@ -233,9 +257,25 @@ ExportCSV <- function (MetaData, list.files.path, project){
         message(paste("Exporting", count, "/", object,"object: ",names(MetaData)[j], "file"))
         filename <- paste0(list.files.path$Propject.VerifiedDataset,"/",project,".",names(MetaData)[j],".csv")
         z <- cbind(MetaData[[j]])
+
+        if(is.na(Vnumber)| is.null(Vnumber)){
         write.csv(z,row.names = F ,file = filename)
         message(paste("Compressing"))
-        R.utils::gzip(filename, destname=sprintf("%s.gz", filename), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)
+        R.utils::gzip(filename, destname=sprintf("%s.gz", filename), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)} else {
+
+          if(is.na(Vnumber)) {Vnumber2 = 1}
+          if(Vnumber2==1){ Vnumber2 = 2}
+          if(!is.null(Vnumber) & !is.na(Vnumber)){Vnumber2 = Vnumber }
+
+          filename <- paste0(list.files.path$Propject.VerifiedDataset,"/",project,".",names(MetaData)[j],".V", Vnumber2,".csv")
+          write.csv(z,row.names = F ,file = filename)
+          message(paste("Compressing"))
+          R.utils::gzip(filename, destname=sprintf("%s.gz", filename), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)
+
+          }
+
+
+
 
       } else{
         count <- count+1
@@ -268,7 +308,7 @@ ExportCSV <- function (MetaData, list.files.path, project){
           if(!is.null(Vnumber) & !is.na(Vnumber)){Vnumber2 = Vnumber }
           if(Vnumber2==1){ Vnumber2 = 2}
 
-          message(paste0("Exporting ", count, " / ", object,"object: ",names(MetaData)[j], "V", Vnumber2))
+          message(paste0("Exporting ", count, " / ", object,"object: ",names(MetaData)[j]))
           filename3 <- unlist(lapply(str_split(filename2,".V"),"[[",1))
           filepath2 <- paste0(list.files.path$Propject.VerifiedDataset,"/",filename3,".V",Vnumber2,".csv")
           z <- cbind( MetaData[[j]])
