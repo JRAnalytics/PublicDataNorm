@@ -158,7 +158,7 @@ CheckLocalDatabase <- function(Meta,
         row <- which(x$Version[proj]==attributes(Meta)$Version)
 
 
-        x[row,] <- dt
+        x[proj[row],] <- dt
 
 
       } else { x <- rbind(x,dt)
@@ -179,11 +179,23 @@ CheckLocalDatabase <- function(Meta,
       version <- unique(str_extract(filename2,"V[0-9]*"))
 
     }
+
+    if(length(version)==1){
+      if(is.na(version)){version = "V1"}}
+
     if(!all(is.na(version))){
     if(!all(x$Version[x$Project==project]%in%version)){
-      outV <- x$Version[!x$Version[x$Project==project]%in%version]
-      message(paste("Project",outV  ,"version is missing in 04VerifiedDataset. Removing from DataBaseSummary.txt"))
-      x <- x[-which(!x$Version[x$Project==project]%in%version),]
+
+      proj <- which(x$Project==project)
+
+      if(length(unique(x[proj,]$Project))!=1){stop("Error in actualising DataBaseSummary.txt")}
+
+      outV <- which(!x[proj,]$Version%in%version)
+
+
+      message(paste("Project",project   ,"version",x[proj[outV],]$Version," is missing in 04VerifiedDataset. Removing from DataBaseSummary.txt\n"))
+
+      x <- x[-proj[outV],]
     }}
 
 
