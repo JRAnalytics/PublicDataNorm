@@ -99,8 +99,7 @@ ExportCSV <- function (MetaData, list.files.path, project){
 
            if(is.na(Vnumber)| is.null(Vnumber)){
              write.csv(z,row.names = F ,file = filename)
-             message(paste("Compressing"))
-             R.utils::gzip(filename, destname=sprintf("%s.gz", filename), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)} else {
+             } else {
 
                if(is.na(Vnumber)) {Vnumber2 = 1}
                if(Vnumber2==1){ Vnumber2 = 2}
@@ -108,8 +107,7 @@ ExportCSV <- function (MetaData, list.files.path, project){
 
                filename <- paste0(list.files.path$Propject.VerifiedDataset,"/",project,".",names(MetaData)[j],".V", Vnumber2,".csv")
                write.csv(z,row.names = F ,file = filename)
-               message(paste("Compressing"))
-               R.utils::gzip(filename, destname=sprintf("%s.gz", filename), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)
+
 
              }
 
@@ -155,8 +153,6 @@ ExportCSV <- function (MetaData, list.files.path, project){
              filepath2 <- paste0(list.files.path$Propject.VerifiedDataset,"/",filename3,".V",Vnumber2,".csv")
              z <- cbind( MetaData[[j]])
              write.csv(z,row.names = F ,file = filepath2)
-             message(paste("Compressing"))
-             R.utils::gzip(filepath2, destname=sprintf("%s.gz", filepath2), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)
 
          }
 
