@@ -1,7 +1,7 @@
 #' CheckLocalDatabase
 #'
 #' @param Meta Meta object
-#' @param Local.Data.base.Path path to parent directory of the database.
+#' @param list.files.path dirpath
 #' @param Normalization.Method Defaul = NA
 #' @param Sequencing.DeepenessPerMillionReads Defaul = NA
 #' @param Technology Microarray, RNAseq, Single cell etc
@@ -18,7 +18,7 @@
 #'
 #' @examples "non"
 CheckLocalDatabase <- function(Meta,
-                               Local.Data.base.Path,
+                               list.files.path,
                                Normalization.Method = NA,
                                Technology = NA,
                                Platform = NA,
@@ -31,7 +31,7 @@ CheckLocalDatabase <- function(Meta,
 
   Databasename = "DataBaseSummary.txt"
 
-
+  Local.Data.base.Path <- list.files.path$Parent
    lf <- list.files(Local.Data.base.Path)
 
    if(is.null(attributes(Meta)$Version)){ Version = "V1"} else {   Version <- attributes(Meta)$Version }

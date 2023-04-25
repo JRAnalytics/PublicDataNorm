@@ -8,6 +8,8 @@ AddObjetToMeta(
   Meta,
   object,
   name,
+  geneFilter = F,
+  SamplesFilter = F,
   Data.type = c("Expression.Matrix", "Patient.Clinical.data", "Samples.Clinical.data",
     "geneAnnotation.file"),
   Raw = c("Yes", "No")
@@ -19,6 +21,10 @@ AddObjetToMeta(
 \item{object}{an object to add}
 
 \item{name}{name to apply in Meta objet list}
+
+\item{geneFilter}{Default F, select only genes found in both the geneAnnotation.file and the Expression Matrix.}
+
+\item{SamplesFilter}{Default F, select only samples found in both the clinical data and the Expression Matrix.}
 
 \item{Data.type}{attribute c("Expression.Matrix","Patient.Clinical.data", "Samples.Clinical.data","geneAnnotation.file" )}
 

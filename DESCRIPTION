@@ -33,4 +33,5 @@ Imports:
     survival,
     survminer,
     TCGAbiolinks,
-    utils
+    utils,
+    matrixStats
