@@ -43,6 +43,9 @@ AddObjetToMeta <- function(Meta, object, name ,
     val <- gene[which(gene%in%as.matrix(object))[1]]
     colT <- which(matrixStats::colAnys(as.matrix(object),value = val))
 
+    if(length(colT)>1){ colT <- colT[1]}
+
+
 
       if(all(str_detect(gene, "ENSG")==T)) { message("Data matrice row names are as ENSEMBL.")
         if(length(colT)==0){stop("No genes as ENSEMBL found in geneAnnotation.file.")}}
@@ -65,7 +68,10 @@ AddObjetToMeta <- function(Meta, object, name ,
 
       message("Selecting retrieved genes from Raw expression matrix")
 
-      if(geneFilter==T){ object <- object[object[,colT]%in%gene,]
+      if(geneFilter==T){
+
+        object <- object[object[,colT]%in%gene,]
+
       if(length(object[,colT])!=length(unique(object[,colT]))){object <- object[!duplicated(object[,colT]),]} }
 
 
@@ -77,6 +83,8 @@ AddObjetToMeta <- function(Meta, object, name ,
     samples <- colnames(Meta[[zz]])
     val <- samples[which(samples%in%as.matrix(object))[1]]
     colT <- which(matrixStats::colAnys(as.matrix(object),value = val))
+
+    if(length(colT)>1){ colT <- colT[1]}
 
     message("Found Samples :")
     print(summary(samples%in%as.matrix(object)))

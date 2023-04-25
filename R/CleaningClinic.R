@@ -32,7 +32,9 @@ CleaningClinic <- function(Metadata, type = c("Sample", "Patients"), list.files.
     if(length(NBS)==0){stop("No Samples.Clinical.data found in Metadata object. Set ForceCleaning=T to force cleaning from Patient.Clinical.Data")}
     } else {  if(length(NBS)==0){NBS <- which(str_detect(attributes(Metadata)$Data.Type ,"Clinical.data") & attributes(Metadata)$Raw=="Yes")    }}
 
-    clinic <- as.data.frame(Metadata[[NBS]])
+    for(k in NBS){
+
+    clinic <- as.data.frame(Metadata[[k]])
 
     LexicClinic <- SamplesLexic
 
@@ -79,11 +81,22 @@ CleaningClinic <- function(Metadata, type = c("Sample", "Patients"), list.files.
       clinic2[clinic2==""] <- NA
       clinic2[clinic2=="NA"] <- NA
 
-      Metadata$Sample.pheno <- clinic2
+      l <- length(Metadata)
 
+      if(paste0("Cleaned.Samples.pheno.",names(Metadata)[k])%in%names(Metadata)){
+
+        Metadata[[paste0("Cleaned.Samples.pheno.",names(Metadata)[k])]] <- clinic2
+
+        } else {
+
+      Metadata[[l+1]] <- clinic2
+      names(Metadata)[l+1] <- paste0("Cleaned.Samples.pheno.",names(Metadata)[k])
       if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
-      attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Samples.Clinical.data")
-      attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"No")}
+        attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Samples.Clinical.data")
+        attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"No")}}
+
+
+
 
 
     } else {
@@ -101,7 +114,20 @@ CleaningClinic <- function(Metadata, type = c("Sample", "Patients"), list.files.
 
       cl_rolled[cl_rolled==""] <- NA
       cl_rolled[cl_rolled=="NA"] <- NA
-      Metadata$Sample.pheno <- cl_rolled
+
+      l <- length(Metadata)
+
+      if(paste0("Cleaned.Samples.pheno.",names(Metadata)[k])%in%names(Metadata)){
+
+        Metadata[[paste0("Cleaned.Samples.pheno.",names(Metadata)[k])]] <- cl_rolled
+
+      } else {
+
+        Metadata[[l+1]] <- cl_rolled
+        names(Metadata)[l+1] <- paste0("Cleaned.Samples.pheno.",names(Metadata)[k])
+        if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
+          attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Samples.Clinical.data")
+          attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"No")}}
 
       if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
       attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Samples.Clinical.data")
@@ -109,17 +135,22 @@ CleaningClinic <- function(Metadata, type = c("Sample", "Patients"), list.files.
       }
 
     file.show(paste0(list.files.path$Project.Processes,"/Samples.CleanedProcess.txt"))
-
+}
     } else if(type=="Patients")
       {
 
       NBP <- which(attributes(Metadata)$Data.Type=="Patient.Clinical.data" & attributes(Metadata)$Raw.data=="Yes")
 
+
+
       if(ForceCleaning==F){
         if(length(NBP)==0){stop("No Patient.Clinical.data found in Metadata object. Set ForceCleaning=T to force cleaning from Samples.Clinical.Data")}
       } else { if(length(NBP)==0){ NBP <- which(str_detect(attributes(Metadata)$Data.Type ,"Clinical.data") & attributes(Metadata)$Raw=="Yes")    }}
 
-      clinic <- as.data.frame(Metadata[[NBP]])
+
+      for(k in NBP){
+
+        clinic <- as.data.frame(Metadata[[k]])
 
       LexicClinic <- PatientLexic
 
@@ -163,11 +194,23 @@ CleaningClinic <- function(Metadata, type = c("Sample", "Patients"), list.files.
         clinic2 <- as.data.frame(clinic2)
         clinic2[clinic2==""] <- NA
         clinic2[clinic2=="NA"] <- NA
-        Metadata$Patient.clinic <- clinic2
 
-        if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
-        attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Patient.Clinical.data")
-        attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"No")}
+
+
+        l <- length(Metadata)
+        if(paste0("Cleaned.Patient.Clinical.data.",names(Metadata)[k])%in%names(Metadata)){
+
+          Metadata[[paste0("Cleaned.Patient.Clinical.data.",names(Metadata)[k])]] <- clinic2
+
+        } else {
+
+          Metadata[[l+1]] <- clinic2
+          names(Metadata)[l+1] <- paste0("Cleaned.Patient.Clinical.data.",names(Metadata)[k])
+          if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
+            attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Patient.Clinical.data")
+            attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"No")}}
+
+
 
         } else {
 
@@ -192,7 +235,19 @@ CleaningClinic <- function(Metadata, type = c("Sample", "Patients"), list.files.
           cl_rolled <-  cl_rolled[,c("PatientsID", cc)]
           cl_rolled[cl_rolled==""] <- NA
           cl_rolled[cl_rolled=="NA"] <- NA
-          Metadata$Patient.clinic <- cl_rolled
+          l <- length(Metadata)
+
+          if(paste0("Cleaned.Patient.Clinical.data.",names(Metadata)[k])%in%names(Metadata)){
+
+            Metadata[[paste0("Cleaned.Patient.Clinical.data.",names(Metadata)[k])]] <- cl_rolled
+
+          } else {
+
+            Metadata[[l+1]] <- cl_rolled
+            names(Metadata)[l+1] <- paste0("Cleaned.Patient.Clinical.data.",names(Metadata)[k])
+            if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
+              attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Patient.Clinical.data")
+              attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"No")}}
 
           if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
           attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Patient.Clinical.data")
@@ -206,6 +261,7 @@ CleaningClinic <- function(Metadata, type = c("Sample", "Patients"), list.files.
         }
 
       file.show(paste0(list.files.path$Project.Processes,"/Patients.CleanedProcess.txt"))
+      }
 
       } else {
    stop("Choose type = 'Sample Pheno' or 'Patients' clinical data' ")}

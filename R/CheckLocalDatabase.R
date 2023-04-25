@@ -32,19 +32,36 @@ CheckLocalDatabase <- function(Meta,
   Databasename = "DataBaseSummary.txt"
 
   Local.Data.base.Path <- list.files.path$Parent
-   lf <- list.files(Local.Data.base.Path)
+  lf <- list.files(Local.Data.base.Path)
 
-   if(is.null(attributes(Meta)$Version)){ Version = "V1"} else {   Version <- attributes(Meta)$Version }
+  if(is.null(attributes(Meta)$Version)){ Version = "V1"} else {   Version <- attributes(Meta)$Version }
+
+  NBS <- which(attributes(Meta)$Data.Type=="Samples.Clinical.data" & attributes(Meta)$Raw.data=="No")
+  cc <- as.character()
+  for (i in NBS){
+    nn <- names(cc)
+    cc <- c(cc,nrow(Meta[[i]]))
+    names(cc) <- c(nn,i)
+  }
+  NBS <- as.numeric(names(cc)[which(cc%in%min(cc))[1]])
+
+  NBP <- which(attributes(Meta)$Data.Type=="Patient.Clinical.data" & attributes(Meta)$Raw.data=="No")
+  cc <- as.character()
+  for (i in NBP){
+    nn <- names(cc)
+    cc <- c(cc,nrow(Meta[[i]]))
+    names(cc) <- c(nn,i)
+  }
+  NBP <- as.numeric(names(cc)[which(cc%in%min(cc))[1]])
 
 
-   NBS <- which(attributes(Meta)$Data.Type=="Samples.Clinical.data" & attributes(Meta)$Raw.data=="No")
-   NBP <- which(attributes(Meta)$Data.Type=="Patient.Clinical.data" & attributes(Meta)$Raw.data=="No")
+
 
   if(length(NBS)==0){ Nsamples=0 } else{
-      Nsamples <- nrow(Meta[[NBS]])}
+    Nsamples <- nrow(Meta[[NBS]])}
 
   if(length(NBP)==0){ Npatient = Nsamples}else{
-      Npatient <- nrow(Meta[[NBP]])}
+    Npatient <- nrow(Meta[[NBP]])}
 
   if(length(which(attributes(Meta)$Data.Type=="Expression.Matrix" & attributes(Meta)$Raw.data=="Yes" ))==0){ RawGenes = 0} else {
 
@@ -53,39 +70,47 @@ CheckLocalDatabase <- function(Meta,
 
   if(length(which(attributes(Meta)$Data.Type=="Expression.Matrix" & attributes(Meta)$Raw.data=="No" ))==0){NormGenes=0}else{
     NB.norm.mat <- which(attributes(Meta)$Data.Type=="Expression.Matrix" & attributes(Meta)$Raw.data=="No")
-      NormGenes <- nrow(Meta[[NB.norm.mat[1]]])}
+    NormGenes <- nrow(Meta[[NB.norm.mat[1]]])}
 
 
 
-   if(all(is.na(Meta[[NBS]]$SamplePathologicalState))){tumor <- nrow(Meta[[NBS]]) } else {
-     tumor <- length(which(str_detect(toupper(Meta[[NBS]]$SamplePathologicalState),"TUM|PRIMARY")))
-     if(tumor==0 & !all(is.na(Meta[[NBS]]$SamplePathologicalState))) {
+  if(all(is.na(Meta[[NBS]]$SamplePathologicalState))){tumor <- nrow(Meta[[NBS]]) } else {
+    tumor <- length(which(str_detect(toupper(Meta[[NBS]]$SamplePathologicalState),"TUM|PRIMARY")))
+    if(tumor==0 & !all(is.na(Meta[[NBS]]$SamplePathologicalState))) {
 
-       normal <- length(which(str_detect(toupper(Meta[[NBS]]$SamplePathologicalState),"NORM|HEAL")))
-       met <- length(which(str_detect(toupper(Meta[[NBS]]$SamplePathologicalState),"MET")))
-       na <- length(which(is.na(Meta[[NBS]]$SamplePathologicalState)))
-       tumor = nrow(Meta[[NBS]])-normal-met-na
-     }
+      normal <- length(which(str_detect(toupper(Meta[[NBS]]$SamplePathologicalState),"NORM|HEAL")))
+      met <- length(which(str_detect(toupper(Meta[[NBS]]$SamplePathologicalState),"MET")))
+      na <- length(which(is.na(Meta[[NBS]]$SamplePathologicalState)))
+      tumor = nrow(Meta[[NBS]])-normal-met-na
+    }
 
-   }
+  }
 
-       if(all(is.na(Meta[[NBS]]$SamplePathologicalState))){normal <- 0 } else {
-       normal<- length(which(str_detect(toupper(Meta[[NBS]]$SamplePathologicalState),"NORM|HEAL")))
+  if(all(is.na(Meta[[NBS]]$SamplePathologicalState))){normal <- 0 } else {
+    normal<- length(which(str_detect(toupper(Meta[[NBS]]$SamplePathologicalState),"NORM|HEAL")))
 
-       if(normal==0 & !all(is.na(Meta[[NBS]]$SamplePathologicalState))) {
-
-
-         met <- length(which(str_detect(toupper(Meta[[NBS]]$SamplePathologicalState),"MET")))
-         na <- length(which(is.na(Meta[[NBS]]$SamplePathologicalState)))
-         normal = nrow(Meta[[NBS]])-tumor-met-na
-       }
-       }
+    if(normal==0 & !all(is.na(Meta[[NBS]]$SamplePathologicalState))) {
 
 
+      met <- length(which(str_detect(toupper(Meta[[NBS]]$SamplePathologicalState),"MET")))
+      na <- length(which(is.na(Meta[[NBS]]$SamplePathologicalState)))
+      normal = nrow(Meta[[NBS]])-tumor-met-na
+    }
+  }
 
 
-  if(length(NBP)>0){ TTT<- Meta[[NBP]] %>% subset(TreatmentInfo=="Yes")%>%nrow()
-    } else { TTT <- 0 }
+
+
+
+
+  if(length(NBS)>0){
+
+    TTT.RT <- length(which(str_detect(toupper(Meta[[NBS]][,"Treatment.HasRT"]),"YES|TRUE|1")))
+    TTT.NeoAdj <- length(which(str_detect(toupper(Meta[[NBS]][,"Treatment.HasNeoAdj"]),"YES|TRUE|1")))
+
+    TTT <-  TTT.RT+TTT.NeoAdj
+
+  } else { TTT <- 0 }
 
 
   if( TTT==0  ){
@@ -93,19 +118,19 @@ CheckLocalDatabase <- function(Meta,
     TTTtype <- NA
   } else {
     TTTinfo <- "Yes"
-    TTTtype <- paste(unique(Meta[[NBP]][,c("Treatment.AdjType"  ,    "Treatment.NeoAdjType"  , "Treatment.RT"    )]),collapse = ",")
-    TTTtype <- paste(unique(Meta[[NBP]][,c("Treatment.AdjType"  ,    "Treatment.NeoAdjType" ,  "Treatment.RT"    )]),collapse = ",")
+    TTTtype <- paste(unique(Meta[[NBS]][,c("Treatment.NeoAdjType", "Treatment.RT_Type"    )]),collapse = ",")
+    TTTtype <- paste(unique(Meta[[NBS]][,c("Treatment.NeoAdjType", "Treatment.RT_Type"    )]),collapse = ",")
   }
 
   if(length(NBP)>0){
-  if(all(is.na(Meta[[NBP]]$OSdelay))){ OSinfo <- "No" } else { OSinfo <- "Yes" }
-  if(all(is.na(Meta[[NBP]]$PFSdelay ))){ PFSinfo <- "No" } else { PFSinfo <- "Yes" } }
+    if(all(is.na(Meta[[NBP]]$OSdelay))){ OSinfo <- "No" } else { OSinfo <- "Yes" }
+    if(all(is.na(Meta[[NBP]]$PFSdelay ))){ PFSinfo <- "No" } else { PFSinfo <- "Yes" } }
 
   else {
     OSinfo <- "No"
-  PFSinfo <- "No" }
+    PFSinfo <- "No" }
 
-    met <- length(which(str_detect(toupper(Meta[[NBS]]$SamplePathologicalState),"MET")))
+  met <- length(which(str_detect(toupper(Meta[[NBS]]$SamplePathologicalState),"MET")))
 
   dt <- data.frame("Project" = project,
                    "Version" = Version,
@@ -115,7 +140,7 @@ CheckLocalDatabase <- function(Meta,
                    "N.TumoralSamples" = tumor,
                    "N.NormalSamples" = normal,
                    "N.Metastasis" = met,
-                   "Overall.Survival" =OSinfo ,
+                   "Overall.Survival" = OSinfo ,
                    "Progression.Free.Survival" = PFSinfo,
                    "Treatment.Information" = TTTinfo,
                    "Treatment.Type" = TTTtype,
@@ -162,14 +187,14 @@ CheckLocalDatabase <- function(Meta,
 
 
       } else { x <- rbind(x,dt)
-    print(dt)
-
-    }}
-
-    if(length(x$Project[x$Project==project])==0){ x <- rbind(x,dt)
       print(dt)
 
-      }
+      }}
+
+    if(length(x$Project[x$Project==project])==0){ x <- rbind(x,dt)
+    print(dt)
+
+    }
 
     LF <- list.files(list.files.path$Propject.VerifiedDataset)
     if(length(LF)!=0){
@@ -184,19 +209,19 @@ CheckLocalDatabase <- function(Meta,
       if(is.na(version)){version = "V1"}}
 
     if(!all(is.na(version))){
-    if(!all(x$Version[x$Project==project]%in%version)){
+      if(!all(x$Version[x$Project==project]%in%version)){
 
-      proj <- which(x$Project==project)
+        proj <- which(x$Project==project)
 
-      if(length(unique(x[proj,]$Project))!=1){stop("Error in actualising DataBaseSummary.txt")}
+        if(length(unique(x[proj,]$Project))!=1){stop("Error in actualising DataBaseSummary.txt")}
 
-      outV <- which(!x[proj,]$Version%in%version)
+        outV <- which(!x[proj,]$Version%in%version)
 
 
-      message(paste("Project",project   ,"version",x[proj[outV],]$Version," is missing in 04VerifiedDataset. Removing from DataBaseSummary.txt\n"))
+        message(paste("Project",project   ,"version",x[proj[outV],]$Version," is missing in 04VerifiedDataset. Removing from DataBaseSummary.txt\n"))
 
-      x <- x[-proj[outV],]
-    }}
+        x <- x[-proj[outV],]
+      }}
 
 
     x <- x[order(x$Project,x$Version,decreasing = F),]

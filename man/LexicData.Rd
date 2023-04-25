@@ -4,7 +4,7 @@
 \alias{LexicData}
 \title{LexicData function to prepare constant colnames to find in clinical data from lexiue .txt}
 \usage{
-LexicData(list.files.path)
+LexicData(list.files.path, replaceLexic = F)
 }
 \arguments{
 \item{list.files.path}{file path to find lexique of colnames}

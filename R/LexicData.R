@@ -1,6 +1,7 @@
 #' LexicData function to prepare constant colnames to find in clinical data from lexiue .txt
 #'
 #' @param list.files.path file path to find lexique of colnames
+#' @param replaceLexic repalce Smaples and Patient Lexis if already loaded
 #' @importFrom data.table fread
 #' @import dplyr
 #' @importFrom stats na.omit
@@ -8,11 +9,14 @@
 #' @export
 #'
 #' @examples "none"
-LexicData <- function(list.files.path){
+LexicData <- function(list.files.path, replaceLexic =F){
 
 
 
-if(!exists("PatientLexic", mode = "any") | !exists("SamplesLexic", mode = "any") ){
+if(c(exists("PatientLexic", mode = "any") | exists("SamplesLexic", mode = "any")) & replaceLexic==T |
+   c(!exists("PatientLexic", mode = "any") | !exists("SamplesLexic", mode = "any")) ){
+
+
 
   pos <- 1
   envir = as.environment(pos)
