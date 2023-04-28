@@ -109,9 +109,10 @@ CheckMeta <- function(MetaData) {
 
   message(paste("Checking colnames of matrices in MetaData from", names(MetaData)[m[1]]), "in clinical data.")
   message("-------------------------")
+
   for (i in c){
 
-    if(all(!is.null(na.omit(MetaData[[i]][MetaData[[i]]==ColN])))) {   message(paste(MetaDataN[i]), " colnames : PASS") } else {  message(paste(MetaDataN[i]), " rownames : FAIL") }
+    if(all(ColN%in%as.matrix(MetaData[[i]]))) {   message(paste(MetaDataN[i]), " colnames : PASS") } else {  message(paste(MetaDataN[i]), " rownames : FAIL") }
 
   }
 

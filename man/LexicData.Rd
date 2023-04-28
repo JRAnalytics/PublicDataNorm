@@ -8,6 +8,8 @@ LexicData(list.files.path, replaceLexic = F)
 }
 \arguments{
 \item{list.files.path}{file path to find lexique of colnames}
+
+\item{replaceLexic}{repalce Smaples and Patient Lexis if already loaded}
 }
 \value{
 a list
