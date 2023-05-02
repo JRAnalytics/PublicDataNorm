@@ -2,6 +2,7 @@
 
 export(AddClinic)
 export(AddExpressionMatrix)
+export(AddLexic)
 export(AddObjetToMeta)
 export(AddgeneAnnot)
 export(CheckCleaning)

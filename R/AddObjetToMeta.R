@@ -93,11 +93,21 @@ AddObjetToMeta <- function(Meta, object, name ,
 
     if(SamplesFilter==T){
       message("Selecting only Samples present in both Expression.matrix and clinical.data.")
-      object <- object[object[,colT]%in%samples,]
-      Meta[[zz]] <- Meta[[zz]][samples%in%object[,colT],]
+
+      # Diviser chaque élément de la colonne en un vecteur de sous-chaînes
+      substrings <- strsplit(as.data.frame(object)[,colT], ";")
+      # Vérifier si chaque valeur du vecteur est présente dans chaque vecteur de sous-chaînes
+      est_present <- sapply(substrings, function(x) any(colnames(Meta[[zz]]) %in% x))
+
+      # Récupérer les index de position correspondants
+      indices <- which(est_present)
+      object <- object[indices,]
 
 
     }}
+
+
+    }
 
 
   Meta[[l+1]] <- object

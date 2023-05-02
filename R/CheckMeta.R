@@ -112,7 +112,7 @@ CheckMeta <- function(MetaData) {
 
   for (i in c){
 
-    if(all(ColN%in%as.matrix(MetaData[[i]]))) {   message(paste(MetaDataN[i]), " colnames : PASS") } else {  message(paste(MetaDataN[i]), " rownames : FAIL") }
+    if(all(ColN%in%as.matrix(MetaData[[i]]))) {   message(paste(MetaDataN[i]), " : PASS") } else {  message(paste(MetaDataN[i]), " : FAIL") }
 
   }
 
