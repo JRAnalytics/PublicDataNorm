@@ -104,7 +104,7 @@ AddObjetToMeta <- function(Meta, object, name ,
       object <- object[indices,]
 
 
-    }}
+    }
 
 
     }
