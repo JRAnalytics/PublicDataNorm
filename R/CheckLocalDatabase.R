@@ -105,22 +105,21 @@ CheckLocalDatabase <- function(Meta,
 
   if(length(NBS)>0){
 
-    TTT.RT <- length(which(str_detect(toupper(Meta[[NBS]][,"Treatment.HasRT"]),"YES|TRUE|1")))
-    TTT.NeoAdj <- length(which(str_detect(toupper(Meta[[NBS]][,"Treatment.HasNeoAdj"]),"YES|TRUE|1")))
+    if(!is.null(Meta[[NBS]][,"HadTreatment"])) {
 
-    TTT <-  TTT.RT+TTT.NeoAdj
+      TTT <- length(which(str_detect(toupper(Meta[[NBS]][,"HadTreatment"]),"YES|TRUE|1")))
+
+    } else { TTT <- 0   }
 
   } else { TTT <- 0 }
 
 
   if( TTT==0  ){
     TTTinfo <- "No"
-    TTTtype <- NA
+
   } else {
     TTTinfo <- "Yes"
-    TTTtype <- paste(unique(Meta[[NBS]][,c("Treatment.NeoAdjType", "Treatment.RT_Type"    )]),collapse = ",")
-    TTTtype <- paste(unique(Meta[[NBS]][,c("Treatment.NeoAdjType", "Treatment.RT_Type"    )]),collapse = ",")
-  }
+    }
 
   if(length(NBP)>0){
     if(all(is.na(Meta[[NBP]]$OSdelay))){ OSinfo <- "No" } else { OSinfo <- "Yes" }
@@ -143,7 +142,6 @@ CheckLocalDatabase <- function(Meta,
                    "Overall.Survival" = OSinfo ,
                    "Progression.Free.Survival" = PFSinfo,
                    "Treatment.Information" = TTTinfo,
-                   "Treatment.Type" = TTTtype,
                    "N.RawGenes" = RawGenes,
                    "N.NormalizedGenes"=NormGenes,
                    "Normalization.Method" = Normalization.Method,
