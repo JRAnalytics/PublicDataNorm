@@ -21,7 +21,7 @@ AddKeyLexic <- function(lexic, Param = c("IDname", "param target")){
 
   } else {
 
-    lexic[Param[1]] <- Param
+    lexic[[Param[1]]] <- Param
 
 
     }
