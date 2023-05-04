@@ -198,14 +198,14 @@ CleaningClinic <- function(Metadata, type = c("Sample", "Patients"), list.files.
 
 
         l <- length(Metadata)
-        if(paste0(project,".",names(Metadata)[k]))%in%names(Metadata)){
+        if(paste0(project,".",names(Metadata)[k])%in%names(Metadata)){
 
           Metadata[[names(Metadata)[k]]] <- clinic2
 
         } else {
 
           Metadata[[l+1]] <- clinic2
-          names(Metadata)[l+1] <- paste0(project,".",names(Metadata)[k]))
+          names(Metadata)[l+1] <- paste0(project,".",names(Metadata)[k])
           if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
             attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Patient.Clinical.data")
             attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"No")}}
@@ -237,7 +237,7 @@ CleaningClinic <- function(Metadata, type = c("Sample", "Patients"), list.files.
           cl_rolled[cl_rolled=="NA"] <- NA
           l <- length(Metadata)
 
-          if(paste0(project,".",names(Metadata)[k]))%in%names(Metadata)){
+          if(paste0(project,".",names(Metadata)[k])%in%names(Metadata)){
 
             Metadata[[paste0(project,".",names(Metadata)[k])]] <- cl_rolled
 
