@@ -93,7 +93,7 @@ ExportCSV <- function (MetaData, list.files.path, project){
            count <- count+1
            message("-------------------------------------------------")
            message(paste("Exporting", count, "/", object,"object: ",names(MetaData)[j]))
-           filename <- paste0(list.files.path$Propject.VerifiedDataset,"/",project,".",names(MetaData)[j],".csv")
+           filename <- paste0(list.files.path$Propject.VerifiedDataset,"/",names(MetaData)[j],".csv")
            z <-  MetaData[[j]]
 
 
@@ -105,7 +105,7 @@ ExportCSV <- function (MetaData, list.files.path, project){
                if(Vnumber2==1){ Vnumber2 = 2}
                if(!is.null(Vnumber) & !is.na(Vnumber)){Vnumber2 = Vnumber }
 
-               filename <- paste0(list.files.path$Propject.VerifiedDataset,"/",project,".",names(MetaData)[j],".V", Vnumber2,".csv")
+               filename <- paste0(list.files.path$Propject.VerifiedDataset,"/",names(MetaData)[j],".V", Vnumber2,".csv")
                write.table(z,row.names = F ,file = filename, sep = "\t")
 
 

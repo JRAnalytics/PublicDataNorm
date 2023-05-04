@@ -93,7 +93,7 @@ ExportTSV <- function (MetaData, list.files.path, project){
            count <- count+1
            message("-------------------------------------------------")
            message(paste("Exporting", count, "/", object,"object: ",names(MetaData)[j]))
-           filename <- paste0(list.files.path$Propject.VerifiedDataset,"/",project,".",names(MetaData)[j],".tsv")
+           filename <- paste0(list.files.path$Propject.VerifiedDataset,"/",names(MetaData)[j],".tsv")
            z <-  MetaData[[j]]
 
 
@@ -105,7 +105,7 @@ ExportTSV <- function (MetaData, list.files.path, project){
                if(Vnumber2==1){ Vnumber2 = 2}
                if(!is.null(Vnumber) & !is.na(Vnumber)){Vnumber2 = Vnumber }
 
-               filename <- paste0(list.files.path$Propject.VerifiedDataset,"/",project,".",names(MetaData)[j],".V", Vnumber2,".tsv")
+               filename <- paste0(list.files.path$Propject.VerifiedDataset,"/",names(MetaData)[j],".V", Vnumber2,".tsv")
                write.table(z,row.names = F ,file = filename, sep = "\t")
 
 
