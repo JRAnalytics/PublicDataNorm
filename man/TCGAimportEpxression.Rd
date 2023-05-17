@@ -6,19 +6,26 @@
 \usage{
 TCGAimportEpxression(
   Meta = NULL,
-  project = c("TCGA-PAAD"),
-  data.category = "Transcriptome Profiling",
-  data.type = "Gene Expression Quantification",
-  experimental.strategy = "RNA-Seq",
-  sample.type = "Primary Tumor",
+  list.files.path = NULL,
+  alt.dir = NULL,
+  project = NULL,
+  data.category = NULL,
+  data.type = NULL,
+  experimental.strategy = NULL,
+  sample.type = NULL,
   platform = NULL,
   file.type = NULL,
   legacy = F,
-  data.norm = c("Raw", "TPM", "FKPM")
+  workflow.type = NULL,
+  data.norm = c("Raw", "TPM", "FKPM", "FKPM_UQ")
 )
 }
 \arguments{
 \item{Meta}{a Meta object. If NULL, will create the Meta object. If exist, will add objects from queries.}
+
+\item{list.files.path}{list.files.path}
+
+\item{alt.dir}{aternaticve dir path for Windows user. Length of path can't exceed 250 character, Downaloading may be altered. The alt.dir path will be remove after moving GDCdata to list.file.path}
 
 \item{project}{a character of TCGA project name}
 
@@ -35,6 +42,8 @@ TCGAimportEpxression(
 \item{file.type}{filetype}
 
 \item{legacy}{legacy T or F}
+
+\item{workflow.type}{workflow.type}
 
 \item{data.norm}{a character "Raw"  = raw count, "TPM" = tpm normalisation gene expression, "FKPM" = fkpm normalisation gene expression if it exist}
 }

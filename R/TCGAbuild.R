@@ -48,10 +48,12 @@ TCGA.build <- function(ask,
         skip = skip
       ))
 
+
   if(legacy == F){
       if(ask=="Raw"){ data <- data[-c(1:4),c(merging.col,"unstranded")]}
       if(ask=="TPM"){ data <- data[-c(1:4),c(merging.col,"tpm_unstranded")]}
-      if(ask=="FKPM"){ data <- data[-c(1:4),c(merging.col,"fpkm_unstranded")]}}
+      if(ask=="FKPM"){ data <- data[-c(1:4),c(merging.col,"fpkm_unstranded")]}
+    if(ask=="FKPM_UQ"){ data <- data[-c(1:4),c(merging.col,"fpkm_uq_unstranded")]}}
 
   if(legacy == T){
 
@@ -80,7 +82,9 @@ TCGA.build <- function(ask,
   df[,merging.col] <- NULL
 
 
+
   patient <- query$results[[1]]$cases.submitter_id
+  if(length(patient)> length(unique(patient))){   patient <- query$results[[1]]$sample.submitter_id }
   colnames(df) <- patient
 
 

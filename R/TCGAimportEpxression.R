@@ -2,6 +2,8 @@
 #'
 #' @param project a character of TCGA project name
 #' @param data.category a character of data categorie
+#' @param list.files.path list.files.path
+#' @param alt.dir aternaticve dir path for Windows user. Length of path can't exceed 250 character, Downaloading may be altered. The alt.dir path will be remove after moving GDCdata to list.file.path
 #' @param data.type a character of data type
 #' @param experimental.strategy a character of experimental.strategy
 #' @param sample.type a character of sample.type
@@ -10,6 +12,7 @@
 #' @param file.type filetype
 #' @param legacy legacy T or F
 #' @param Meta a Meta object. If NULL, will create the Meta object. If exist, will add objects from queries.
+#' @param workflow.type workflow.type
 #' @import data.table
 #' @import TCGAbiolinks
 #' @import dplyr
@@ -21,21 +24,28 @@
 #' @examples "none"
 #'
 TCGAimportEpxression <- function(Meta=NULL,
-                                 project =c("TCGA-PAAD"),
-                                   data.category = "Transcriptome Profiling",
-                                   data.type = "Gene Expression Quantification",
-                                   experimental.strategy = "RNA-Seq",
-                                   sample.type = "Primary Tumor",
+                                 list.files.path= NULL,
+                                 alt.dir = NULL,
+                                 project =NULL,
+                                   data.category = NULL,
+                                   data.type = NULL,
+                                   experimental.strategy = NULL,
+                                   sample.type = NULL,
                                     platform = NULL,
                                     file.type = NULL,
                                     legacy = F,
-                                   data.norm = c("Raw", "TPM", "FKPM")){
+                                    workflow.type = NULL,
+                                   data.norm = c("Raw", "TPM", "FKPM", "FKPM_UQ")){
 
 
+  if(is.null(list.files.path)) { stop("A list.files.path is mandatory.")}
 if(isServeOK()==FALSE){stop("Connection to server GDC failled")}
 
+work.dir= getwd()
 
 message("Querying", paste(project, "Meta"))
+
+if(!exists(x = "query")){
 
 query <- GDCquery(
   project = project ,
@@ -45,11 +55,14 @@ query <- GDCquery(
   experimental.strategy = experimental.strategy,
   platform = platform,
   file.type = file.type,
+  workflow.type =workflow.type,
   sample.type = sample.type
 )
 
-
-
+pos <- 1
+envir = as.environment(pos)
+assign("query", query, envir = envir)
+}
 
 
 
@@ -74,15 +87,127 @@ files <- file.path(
 if(!dir.exists(file.path("GDCdata", project, source, data.norm))){
   message("No ", paste(project, "data found."))
   message("Starting", paste(project, "loading. May take a few times"))
-GDCdownload(
-  query = query,
-  method = "api",
-  files.per.chunk = 10)
+
+
+  ses=sessionInfo()
+
+  if(str_detect(ses$running, "Windows")) {
+
+    if(str_detect(ses$running, "Windows")& nchar(files[1]>150) & is.null(alt.dir)){ stop("File path too long. Try  using an alternative directory to put downloaded data.\n(set 'alt.dir')")}
+
+    if(!is.null(alt.dir)){
+      setwd(file.path(paste0(alt.dir,"/")))
+      message("setwd(file.path(alt.dir))")
+
+      }else { setwd(list.files.path$Project.RawData)
+
+      alt.dir = list.files.path$Project.RawData}
+
+    pb <- txtProgressBar(min = 0,      # Minimum value of the progress bar
+                         max = nrow( query$results[[1]]), # Maximum value of the progress bar
+                         style = 3,    # Progress bar style (also available style = 1 and style = 2)
+                         width = 50,   # Progress bar width. Defaults to getOption("width")
+                         char = "=")   # Character used to create the bar
+
+
+    for(i in 1:nrow( query$results[[1]])) {
+
+      query2 = query
+      query2$results[[1]]=query2$results[[1]][i,]
+
+
+      suppressMessages(capture.output(
+        GDCdownload(
+          query = query2,
+          method = "api",
+          files.per.chunk = NULL)))
+
+
+
+
+      # Sets the progress bar to the current state
+      setTxtProgressBar(pb, i)
+    }
+
+    close(pb)
+
+
+    query$results[[1]]$Rename = NA
+    for (i in c(1:length(query$results[[1]]$file_name))){
+
+      paste0(alt.dir,"/GDCdata")
+      files = file.path(paste0(alt.dir,"/GDCdata"),
+                        query$results[[1]]$project, source,
+                        gsub(" ","_",query$results[[1]]$data_category),
+                        gsub(" ","_",query$results[[1]]$data_type),
+                        gsub(" ","_",query$results[[1]]$file_id),
+                        gsub(" ","_",query$results[[1]]$file_name)
+      )[i]
+
+      file2 = paste0(file.path(paste0(alt.dir,"/GDCdata"),query$results[[1]]$project, source,
+                               gsub(" ","_",query$results[[1]]$data_category),
+                               gsub(" ","_",query$results[[1]]$data_type),
+                               gsub(" ","_",query$results[[1]]$file_id))[i],"/",query[[1]][[1]]$sample.submitter_id[i],".tsv")
+
+      file.rename(from=files,to= file2)
+      query$results[[1]]$Rename[i] = paste0(query[[1]][[1]]$sample.submitter_id[i],".tsv")
+
+    }
+
+
+    file.copy(from = paste0("D:","/GDCdata"),to = list.files.path$Project.RawData,
+              recursive = T,overwrite = T )
+
+
+
+
+
+
+  } else {
+
+    setwd(list.files.path$Project.RawData)
+    GDCdownload(
+      query = query,
+      method = "api",
+      files.per.chunk = 10)
+    }
+
+
+
+
+
 }
+
+setwd(list.files.path$Project.RawData)
 
 if(dir.exists(file.path("GDCdata",project, source))){message(paste(project, "data found"))}
 
-files <- file.path("GDCdata", files)
+
+
+if(str_detect(ses$running, "Windows")) {
+
+  files = file.path("GDCdata",
+                    query$results[[1]]$project, source,
+                    gsub(" ","_",query$results[[1]]$data_category),
+                    gsub(" ","_",query$results[[1]]$data_type),
+                    gsub(" ","_",query$results[[1]]$file_id),
+                    gsub(" ","_",query$results[[1]]$Rename)
+  )
+
+
+
+}else {
+
+  files <- file.path(
+  query$results[[1]]$project, source,
+  gsub(" ","_",query$results[[1]]$data_category),
+  gsub(" ","_",query$results[[1]]$data_type),
+  gsub(" ","_",query$results[[1]]$file_id),
+  gsub(" ","_",query$results[[1]]$file_name)
+)
+
+  files <- file.path("GDCdata", files) }
+
 
 
 cases <- ifelse(grepl("TCGA|TARGET",query$results[[1]]$project %>% unlist()),query$results[[1]]$cases,query$results[[1]]$sample.submitter_id)
@@ -90,8 +215,11 @@ cases <- ifelse(grepl("TCGA|TARGET",query$results[[1]]$project %>% unlist()),que
 
 message("Building gene expression data")
 
+
+
 data <- TCGA.build(
-  ask = data.norm,legacy = legacy,
+  ask = data.norm,
+  legacy = legacy,
   files = files,
   cases = cases,
   genome = ifelse(query$legacy,"hg19","hg38"),
@@ -99,7 +227,7 @@ data <- TCGA.build(
 
 )
 
-data <- data[-which(duplicated(unlist(lapply(str_split(rownames(data),"[|]" ), "[[", 1)))),]
+
 
 rownames(data) <-  unlist(lapply(str_split(rownames(data),"[|]" ), "[[", 1))
 
@@ -184,8 +312,13 @@ rownames(clinic3_rolled) <- clinic3_rolled[,"bcr_patient_barcode"]
 
 
 Meta <- list("DF" = data,
-             "clinic"= clinic3_rolled,
-             "query" = query)
+             "clinic"= clinic3_rolled)
+
+
+attributes(Meta)$Data.Type <- c("Expression.Matrix","Samples.Clinical.data")
+
+attributes(Meta)$Raw.data <- c(ifelse(data.norm=="Raw", "Yes", "No"),"Yes")
+
 
 names(Meta) <- c(paste0(data.norm,"-", project,"-matrix"), paste0("clinic_",project))
 
@@ -196,209 +329,17 @@ names(Meta) <- c(paste0(data.norm,"-", project,"-matrix"), paste0("clinic_",proj
   Meta[[l+1]] <- data
   names(Meta) <- c(name,paste0(data.norm,"-", project,"-matrix"))
 
+  attributes(Meta)$Data.Type[[l+1]] <- c("Expression.Matrix")
+  attributes(Meta)$Raw.data[[l+1]] <- c(ifelse(data.norm=="Raw", "Yes", "No"))
+
 }
 
 
-
-
-if(!file.exists("Readme.txt")){
-
-  tme <- Sys.Date()
-  tme <- format(tme, format="%B %d %Y")
-
-  dt <- data.frame("Type"="File created the : " ,"Description"=tme)
-  sp <- data.frame("Type"="---------:" ,"Description"="---------")
-
-  dt <- rbind(dt,data.frame("Type" = "Files included in folder : ","Description" = "-"),sp)
-
-
-
-  name <- names(Meta)
-
-  for (i in name){
-
-
-    if(str_detect(i, c("matrix"))==T){
-      nr <- nrow(Meta[[i]])
-      nc <- ncol(Meta[[i]])
-
-
-
-      if(str_detect(i, "Raw")){ Assay = "Raw counts"}
-      if(str_detect(i, "TPM")){ Assay="TPM normalization"}
-      if(str_detect(i, "FKPM")){ Assay="FKPM normalization"}
-      if(str_detect(i, "Normalized")){ Assay="Normalized gene expression"}
-
-      ltest <- data.frame("Type"=c("File: " , "Class: " ,"Dimension: ", "Assay: ", "Rownames: ","Colnames: "),"Description" = c(
-        paste0(i,".csv"),
-        class(Meta[[i]]),
-        paste(nr,"x",nc),
-        Assay,
-        paste(rownames(Meta[[i]])[1],"...",rownames(Meta[[i]])[nrow(Meta[[i]])]),
-        paste(colnames(Meta[[i]])[2],"...",colnames(Meta[[i]])[ncol(Meta[[i]])])
-      ))
-
-
-      dt <- rbind(dt, ltest,sp)
-
-    }
-
-    if(str_detect(i, c("gene"))==T){
-      nr <- nrow(Meta[[i]])
-      nc <- ncol(Meta[[i]])
-
-
-
-      if(str_detect(i, "Annotation")){ Assay ="Gene annotation"}
-
-
-      ltest <- data.frame("Type"=c("File: " , "Class: " ,"Dimension: ", "Assay: ", "Rownames: ","Colnames: "),"Description" = c(
-        paste0(i,".csv"),
-        class(Meta[[i]]),
-        paste(nr,"x",nc),
-        Assay,
-        paste(rownames(Meta[[i]])[1],"...",rownames(Meta[[i]])[nrow(Meta[[i]])]),
-        paste(colnames(Meta[[i]])[2],"...",colnames(Meta[[i]])[ncol(Meta[[i]])])
-      ))
-
-
-
-      dt <- rbind(dt, ltest,sp)
-
-
-    }
-
-    if(str_detect(i, c("clinic"))==T){
-      nr <- nrow(Meta[[i]])
-      nc <- ncol(Meta[[i]])
-
-
-
-      if(str_detect(i, "clinic_")){ Assay =  "Original clinical data"}
-      if(str_detect(i, "Patient")){ Assay =  "Patient's clinical data"}
-      if(str_detect(i, "Sample")){ Assay = "Samples pathological records"}
-
-      ltest <- data.frame("Type"=c("File: " , "Class: " ,"Dimension: ", "Assay: ", "Rownames: ","Colnames: "),"Description" = c(
-        paste0(i,".csv"),
-        class(Meta[[i]]),
-        paste(nr,"x",nc),
-        Assay,
-        paste(rownames(Meta[[i]])[1],"...",rownames(Meta[[i]])[nrow(Meta[[i]])]),
-        paste(colnames(Meta[[i]])[2],"...",colnames(Meta[[i]])[ncol(Meta[[i]])])
-      ))
-
-
-
-      dt <- rbind(dt, ltest,sp)
-
-
-    }
-
-    if(str_detect(i, c("pheno"))==T){
-      nr <- nrow(Meta[[i]])
-      nc <- ncol(Meta[[i]])
-
-
-      if(str_detect(i, "clinic_")){ Assay =  "Original clinical data"}
-      if(str_detect(i, "Patient")){ Assay =  "Patient's clinical data"}
-      if(str_detect(i, "Sample")){ Assay = "Samples pathological records"}
-
-      ltest <- data.frame("Type"=c("File: " , "Class: " ,"Dimension: ", "Assay: ", "Rownames: ","Colnames: "),"Description" = c(
-        paste0(i,".csv"),
-        class(Meta[[i]]),
-        paste(nr,"x",nc),
-        Assay,
-        paste(rownames(Meta[[i]])[1],"...",rownames(Meta[[i]])[nrow(Meta[[i]])]),
-        paste(colnames(Meta[[i]])[2],"...",colnames(Meta[[i]])[ncol(Meta[[i]])])
-      ))
-
-
-
-      dt <- rbind(dt, ltest,sp)
-
-    }
-
-  }
-  write.table(dt,"Readme.txt",row.names = F, quote = FALSE)
-  file.show("Readme.txt")
-
-  closeAllConnections()
-} else {
-
-
-  tme <- Sys.Date()
-  tme <- format(tme, format="%B %d %Y")
-
-  name <- paste0(data.norm,"-", project,"-matrix")
-
-  sp <- data.frame("Type"="---------:" ,"Description"="---------")
-  mod <- data.frame("Type"=paste(name, "added the: ") ,"Description"=tme)
-
-  dt <- rbind(sp,mod,sp)
-
-
-  if(str_detect(name, c("matrix"))==T){
-    nr <- nrow(Meta[[name]])
-    nc <- ncol(Meta[[name]])
-
-
-
-    if(str_detect(name, "Raw")){ Assay = "Raw counts"}
-    if(str_detect(name, "TPM")){ Assay="TPM normalization"}
-    if(str_detect(name, "FKPM")){ Assay="FKPM normalization"}
-    if(str_detect(name, "Normalized")){ Assay="Normalized gene expression"}
-
-    ltest <- data.frame("Type"=c("File: " , "Class: " ,"Dimension: ", "Assay: ", "Rownames: ","Colnames: "),"Description" = c(
-      paste0(name,".csv"),
-      class(Meta[[name]]),
-      paste(nr,"x",nc),
-      Assay,
-      paste(rownames(Meta[[name]])[1],"...",rownames(Meta[[name]])[nrow(Meta[[name]])]),
-      paste(colnames(Meta[[name]])[2],"...",colnames(Meta[[name]])[ncol(Meta[[name]])])
-    ))
-
-
-    dt <- rbind(dt, ltest,sp)
-
-  }
-
-
-
-  if(str_detect(name, c("clinic"))==T){
-    nr <- nrow(Meta[[name]])
-    nc <- ncol(Meta[[name]])
-
-
-
-    if(str_detect(name, "clinic_")){ Assay =  "Original clinical data"}
-    if(str_detect(name, "Patient")){ Assay =  "Patient's clinical data"}
-    if(str_detect(name, "Sample")){ Assay = "Samples pathological records"}
-
-    ltest <- data.frame("Type"=c("File: " , "Class: " ,"Dimension: ", "Assay: ", "Rownames: ","Colnames: "),"Description" = c(
-      paste0(name,".csv"),
-      class(Meta[[name]]),
-      paste(nr,"x",nc),
-      Assay,
-      paste(rownames(Meta[[name]])[1],"...",rownames(Meta[[name]])[nrow(Meta[[name]])]),
-      paste(colnames(Meta[[name]])[2],"...",colnames(Meta[[name]])[ncol(Meta[[name]])])
-    ))
-
-
-
-    dt <- rbind(dt, ltest,sp)
-
-
-  }
-
-
-  write.table(dt,"Readme.txt",row.names = F,quote = FALSE, append = T, col.names=FALSE)
-  file.show("Readme.txt")
-  }
-
-
-  closeAllConnections()
-
-
+pos <- 1
+envir = as.environment(pos)
+assign("query", query, envir = envir)
+
+setwd(work.dir)
 
 return(Meta)
 }
