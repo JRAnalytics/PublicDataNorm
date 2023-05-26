@@ -3,7 +3,6 @@
 #' @param Meta Meta object
 #' @param list.files.path dirpath
 #' @param Normalization.Method Defaul = NA
-#' @param Sequencing.DeepenessPerMillionReads Defaul = NA
 #' @param Technology Microarray, RNAseq, Single cell etc
 #' @param Platform Brand of technology
 #' @param Run.spec Deppenes, reads, etc etc

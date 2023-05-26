@@ -8,7 +8,6 @@ TCGA.build(
   ask,
   files,
   cases,
-  genome = "hg38",
   experimental.strategy,
   merging.col = c("gene_id"),
   legacy = F
@@ -20,8 +19,6 @@ TCGA.build(
 \item{files}{a character list of files download from the TCGA in sub directory}
 
 \item{cases}{sample id}
-
-\item{genome}{version of the human genome "hg19" or "hg38"}
 
 \item{experimental.strategy}{a character "Gene expression array" or "RNA-Seq"}
 

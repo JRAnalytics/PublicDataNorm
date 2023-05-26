@@ -18,6 +18,6 @@ un lexic
 completeLexic
 }
 \examples{
-none
+"none"
 
 }

@@ -330,7 +330,6 @@ AddExpressionMatrix <- function(Metadata, local = c(T, F) , query, data.norm, pa
     ask = data.norm,
     files = files,
     cases = cases,
-    genome = ifelse(query$legacy,"hg19","hg38"),
     experimental.strategy = unique(query$results[[1]]$experimental_strategy))
 
   y <- y[,colnames(Metadata[[1]])]

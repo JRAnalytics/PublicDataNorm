@@ -18,5 +18,5 @@ a Lexic
 AddKeyLexic
 }
 \examples{
-None
+"None"
 }

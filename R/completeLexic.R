@@ -7,7 +7,7 @@
 #' @return un lexic
 #' @export
 #'
-#' @examples none
+#' @examples "none"
 #'
 completeLexic=function(liste_de_listes, noms_listes){
   for (nom_liste in noms_listes) {

@@ -6,7 +6,7 @@
 #' @return a Lexic
 #' @export
 #'
-#' @examples None
+#' @examples "None"
 AddKeyLexic <- function(lexic, Param = c("IDname", "param target")){
 
 

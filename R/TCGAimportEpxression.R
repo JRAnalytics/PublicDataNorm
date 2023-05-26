@@ -1,8 +1,10 @@
 #' TCGAimportEpxression allow to import and build the rnaseq data from the TCGA
 #'
 #' @param project a character of TCGA project name
+#' @param name name to applied to expression matrix
 #' @param data.category a character of data categorie
 #' @param list.files.path list.files.path
+#' @param query.Clinic Set F. if exists, set T, will download clincial data
 #' @param alt.dir aternaticve dir path for Windows user. Length of path can't exceed 250 character, Downaloading may be altered. The alt.dir path will be remove after moving GDCdata to list.file.path
 #' @param data.type a character of data type
 #' @param experimental.strategy a character of experimental.strategy
@@ -10,7 +12,6 @@
 #' @param data.norm a character "Raw"  = raw count, "TPM" = tpm normalisation gene expression, "FKPM" = fkpm normalisation gene expression if it exist
 #' @param platform platform
 #' @param file.type filetype
-#' @param legacy legacy T or F
 #' @param Meta a Meta object. If NULL, will create the Meta object. If exist, will add objects from queries.
 #' @param workflow.type workflow.type
 #' @import data.table
@@ -23,9 +24,10 @@
 #'
 #' @examples "none"
 #'
-TCGAimportEpxression <- function(Meta=NULL,
+TCGAimportExpression <- function(Meta=NULL,name = NULL,
                                  list.files.path= NULL,
                                  alt.dir = NULL,
+                                 query.Clinic=F,
                                  project =NULL,
                                    data.category = NULL,
                                    data.type = NULL,
@@ -33,7 +35,6 @@ TCGAimportEpxression <- function(Meta=NULL,
                                    sample.type = NULL,
                                     platform = NULL,
                                     file.type = NULL,
-                                    legacy = F,
                                     workflow.type = NULL,
                                    data.norm = c("Raw", "TPM", "FKPM", "FKPM_UQ")){
 
@@ -51,7 +52,6 @@ query <- GDCquery(
   project = project ,
   data.category = data.category,
   data.type = data.type,
-  legacy = legacy,
   experimental.strategy = experimental.strategy,
   platform = platform,
   file.type = file.type,
@@ -59,21 +59,39 @@ query <- GDCquery(
   sample.type = sample.type
 )
 
+query$results[[1]]$Rename = NA
+
+for (i in c(1:length(query$results[[1]]$file_name))){
+query$results[[1]]$Rename[i] = paste0(query[[1]][[1]]$sample.submitter_id[i],".tsv")}
+
 pos <- 1
 envir = as.environment(pos)
 assign("query", query, envir = envir)
 }
 
+if(exists(x = "query") & is.null(query$results[[1]]$Rename)) { query$results[[1]]$Rename = NA
+
+for (i in c(1:length(query$results[[1]]$file_name))){
+  query$results[[1]]$Rename[i] = paste0(query[[1]][[1]]$sample.submitter_id[i],".tsv")}
+
+pos <- 1
+envir = as.environment(pos)
+assign("query", query, envir = envir)
 
 
 
+  }
+
+
+
+if(query.Clinic==T) {
 query.clinic <- GDCquery(project = project,
                          data.category = "Clinical",
                          data.type = "Clinical Supplement",
                          data.format = "BCR Biotab")
+}
 
-
-source <- ifelse(query$legacy,"legacy","harmonized")
+source <- "harmonized"
 
 
 files <- file.path(
@@ -84,9 +102,29 @@ files <- file.path(
   gsub(" ","_",query$results[[1]]$file_name)
 )
 
-if(!dir.exists(file.path("GDCdata", project, source, data.norm))){
-  message("No ", paste(project, "data found."))
-  message("Starting", paste(project, "loading. May take a few times"))
+Files.brut.exist = file.path(list.files.path$Project.RawData,"GDCdata",
+                   query$results[[1]]$project, source,
+                   gsub(" ","_",query$results[[1]]$data_category),
+                   gsub(" ","_",query$results[[1]]$data_type),
+                   gsub(" ","_",query$results[[1]]$file_id),
+                   gsub(" ","_",query$results[[1]]$file_name))
+
+
+Files.Rename.exist = file.path(list.files.path$Project.RawData,"GDCdata",
+                               query$results[[1]]$project, source,
+                               gsub(" ","_",query$results[[1]]$data_category),
+                               gsub(" ","_",query$results[[1]]$data_type),
+                               gsub(" ","_",query$results[[1]]$file_id),
+                               gsub(" ","_",query$results[[1]]$Rename))
+
+if(!all(file.exists(Files.brut.exist)==T)){
+
+  files.brut.name.missing= Files.brut.exist[!file.exists(Files.brut.exist)]
+  missing.brut = which(!file.exists(Files.brut.exist))
+
+  if(length(files.brut.name.missing)==0){ message("Data already existing, building Meta.")}
+  else { message( "Part of Data already existing, downloading missing cases and building Meta.")}}
+
 
 
   ses=sessionInfo()
@@ -103,67 +141,88 @@ if(!dir.exists(file.path("GDCdata", project, source, data.norm))){
 
       alt.dir = list.files.path$Project.RawData}
 
-    pb <- txtProgressBar(min = 0,      # Minimum value of the progress bar
-                         max = nrow( query$results[[1]]), # Maximum value of the progress bar
-                         style = 3,    # Progress bar style (also available style = 1 and style = 2)
-                         width = 50,   # Progress bar width. Defaults to getOption("width")
-                         char = "=")   # Character used to create the bar
+    if(!all(file.exists(Files.Rename.exist)==T)){
 
+      files.Rename.name.missing= Files.Rename.exist[!file.exists(Files.Rename.exist)]
+      missing.rename = which(!file.exists(Files.Rename.exist))
 
-    for(i in 1:nrow( query$results[[1]])) {
+      if(length(files.Rename.name.missing)!=0){message( "Part of Data already existing, downloading missing cases and building Meta.")
+
 
       query2 = query
-      query2$results[[1]]=query2$results[[1]][i,]
+      if(!is.null(files.Rename.name.missing)){if(length(files.Rename.name.missing)!=0){query2$results[[1]] = query2$results[[1]][missing.rename,]  }}
 
 
-      suppressMessages(capture.output(
-        GDCdownload(
-          query = query2,
-          method = "api",
-          files.per.chunk = NULL)))
+      pb <- txtProgressBar(min = 0,      # Minimum value of the progress bar
+                           max = nrow( query2$results[[1]]), # Maximum value of the progress bar
+                           style = 3,    # Progress bar style (also available style = 1 and style = 2)
+                           width = 50,   # Progress bar width. Defaults to getOption("width")
+                           char = "=")   # Character used to create the bar
+
+
+      query3 = query2
+      for(i in 1:nrow( query2$results[[1]])) {
+
+
+        query3$results[[1]]=query2$results[[1]][i,]
+
+
+
+        if(!is.null(files.Rename.name.missing)){
+
+          suppressMessages(capture.output(
+            GDCdownload(
+              query = query3,
+              method = "api",
+              files.per.chunk = NULL)))}
 
 
 
 
-      # Sets the progress bar to the current state
-      setTxtProgressBar(pb, i)
-    }
+        # Sets the progress bar to the current state
+        setTxtProgressBar(pb, i)
+      }
 
-    close(pb)
-
-
-    query$results[[1]]$Rename = NA
-    for (i in c(1:length(query$results[[1]]$file_name))){
-
-      paste0(alt.dir,"/GDCdata")
-      files = file.path(paste0(alt.dir,"/GDCdata"),
-                        query$results[[1]]$project, source,
-                        gsub(" ","_",query$results[[1]]$data_category),
-                        gsub(" ","_",query$results[[1]]$data_type),
-                        gsub(" ","_",query$results[[1]]$file_id),
-                        gsub(" ","_",query$results[[1]]$file_name)
-      )[i]
-
-      file2 = paste0(file.path(paste0(alt.dir,"/GDCdata"),query$results[[1]]$project, source,
-                               gsub(" ","_",query$results[[1]]$data_category),
-                               gsub(" ","_",query$results[[1]]$data_type),
-                               gsub(" ","_",query$results[[1]]$file_id))[i],"/",query[[1]][[1]]$sample.submitter_id[i],".tsv")
-
-      file.rename(from=files,to= file2)
-      query$results[[1]]$Rename[i] = paste0(query[[1]][[1]]$sample.submitter_id[i],".tsv")
-
-    }
+      close(pb)
 
 
-    file.copy(from = paste0("D:","/GDCdata"),to = list.files.path$Project.RawData,
-              recursive = T,overwrite = T )
+
+      for (i in c(1:length(query2$results[[1]]$file_name))){
 
 
+        files = file.path(paste0(alt.dir,"/GDCdata"),
+                          query$results[[1]]$project, source,
+                          gsub(" ","_",query2$results[[1]]$data_category),
+                          gsub(" ","_",query2$results[[1]]$data_type),
+                          gsub(" ","_",query2$results[[1]]$file_id),
+                          gsub(" ","_",query2$results[[1]]$file_name)
+        )[i]
+
+        file2 = paste0(file.path(paste0(alt.dir,"/GDCdata"),query2$results[[1]]$project, source,
+                                 gsub(" ","_",query2$results[[1]]$data_category),
+                                 gsub(" ","_",query2$results[[1]]$data_type),
+                                 gsub(" ","_",query2$results[[1]]$file_id))[i],"/",query2[[1]][[1]]$sample.submitter_id[i],".tsv")
+
+        file.rename(from=files,to= file2)
+        query2$results[[1]]$Rename[i] = paste0(query2[[1]][[1]]$sample.submitter_id[i],".tsv")
+
+      }
+
+
+      file.copy(from = paste0(alt.dir,"/GDCdata"),to = list.files.path$Project.RawData,
+                recursive = T,overwrite = T )
+
+      unlink(paste0(alt.dir,"/GDCdata"),recursive = T)
+
+
+     }else {  message("Data already existing, building Meta.")}}
 
 
 
 
   } else {
+
+
 
     setwd(list.files.path$Project.RawData)
     GDCdownload(
@@ -176,7 +235,6 @@ if(!dir.exists(file.path("GDCdata", project, source, data.norm))){
 
 
 
-}
 
 setwd(list.files.path$Project.RawData)
 
@@ -219,10 +277,9 @@ message("Building gene expression data")
 
 data <- TCGA.build(
   ask = data.norm,
-  legacy = legacy,
+  legacy = F,
   files = files,
   cases = cases,
-  genome = ifelse(query$legacy,"hg19","hg38"),
   experimental.strategy = unique(query$results[[1]]$experimental_strategy)
 
 )
@@ -237,13 +294,13 @@ rownames(data) <-  unlist(lapply(str_split(rownames(data),"[|]" ), "[[", 1))
 
 
 
-
+if(query.Clinic==T) {
 if(!dir.exists(file.path("GDCdata",project,source,"Clinical"))){
 
   message(paste(project, "clinical data  not found"))
   message(paste("Downloading", project, "clinical data."))
   GDCdownload(query.clinic)
-  }
+  }}
 
 
 
@@ -255,7 +312,7 @@ if(dir.exists(file.path("GDCdata",project,source,"Clinical"))){
   message(paste("Building",project, "clinical data"))}
 
 
-
+if(query.Clinic==T) {
 clinic2 <- GDCprepare(query.clinic)
 
 
@@ -308,8 +365,19 @@ clinic3_rolled <- clinic3 %>%
 clinic3_rolled <- as.data.frame(clinic3_rolled)
 rownames(clinic3_rolled) <- clinic3_rolled[,"bcr_patient_barcode"]
 
+}
+
+if(query.Clinic==F) {
+
+Meta <- list("DF" = data)
+attributes(Meta)$Data.Type <- c("Expression.Matrix")
+attributes(Meta)$Raw.data <- c(ifelse(data.norm=="Raw", "Yes", "No"))
 
 
+  if(is.null(name)){names(Meta) <- c(paste0(data.norm,".", project,".matrix"))} else {names(Meta) <- c(name)}
+
+
+} else {
 
 Meta <- list("DF" = data,
              "clinic"= clinic3_rolled)
@@ -320,17 +388,31 @@ attributes(Meta)$Data.Type <- c("Expression.Matrix","Samples.Clinical.data")
 attributes(Meta)$Raw.data <- c(ifelse(data.norm=="Raw", "Yes", "No"),"Yes")
 
 
-names(Meta) <- c(paste0(data.norm,"-", project,"-matrix"), paste0("clinic_",project))
+ if(is.null(name)){names(Meta) <- c(paste0(data.norm,".", project,".matrix"), "Raw.clinic")}else {
+
+   names(Meta) <- c(name, "Raw.clinic")
+
+ }}
+
 
 } else {
 
   l <- length(Meta)
-  name <- names(Meta)
-  Meta[[l+1]] <- data
-  names(Meta) <- c(name,paste0(data.norm,"-", project,"-matrix"))
 
-  attributes(Meta)$Data.Type[[l+1]] <- c("Expression.Matrix")
-  attributes(Meta)$Raw.data[[l+1]] <- c(ifelse(data.norm=="Raw", "Yes", "No"))
+
+  if(!is.null(names) & name%in%names(Meta)) {
+
+    Meta[[names(Meta)%in%name]] <- data
+
+  } else {
+    Meta[[l+1]] <- data
+    names(Meta) <- c(name,paste0(data.norm,"-", project,"-matrix"))
+
+    attributes(Meta)$Data.Type[[l+1]] <- c("Expression.Matrix")
+    attributes(Meta)$Raw.data[[l+1]] <- c(ifelse(data.norm=="Raw", "Yes", "No"))
+    }
+
+
 
 }
 

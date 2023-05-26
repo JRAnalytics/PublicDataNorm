@@ -3,7 +3,6 @@
 #' @param ask a character "Raw"  = raw count, "TPM" = tpm normalisation gene expression, "FKPM" = fkpm normalisation gene expression if it exist
 #' @param files a character list of files download from the TCGA in sub directory
 #' @param cases sample id
-#' @param genome version of the human genome "hg19" or "hg38"
 #' @param experimental.strategy a character "Gene expression array" or "RNA-Seq"
 #' @param merging.col column name to merge files c("gene_id", "gene_name")
 #' @param legacy True or False. True : Leagcy files in TCGA
@@ -25,7 +24,6 @@
 TCGA.build <- function(ask,
   files,
   cases,
-  genome = "hg38",
   experimental.strategy,
   merging.col = c("gene_id"),
   legacy = F

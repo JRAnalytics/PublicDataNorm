@@ -40,8 +40,6 @@ CheckLocalDatabase(
 \item{Comment}{specify a comment for this export}
 
 \item{User}{User who export the cleaned Meta object}
-
-\item{Sequencing.DeepenessPerMillionReads}{Defaul = NA}
 }
 \value{
 a .text tab delimited database summary
