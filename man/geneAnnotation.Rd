@@ -4,11 +4,7 @@
 \alias{geneAnnotation}
 \title{geneAnnotation function to form a genes annotated data frame for data claening rnaseq data.}
 \usage{
-geneAnnotation(
-  gtf.files = "gencode.v40.annotation.gtf",
-  saverds = TRUE,
-  file = ".rds"
-)
+geneAnnotation(gtf.files = NULL, saverds = F, file = ".rds")
 }
 \arguments{
 \item{gtf.files}{GTF file to load, a character if wd is already set, or an object of GTF file already load}

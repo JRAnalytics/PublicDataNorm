@@ -12,9 +12,9 @@
 #' "none"
 #'
 #' @export
-geneAnnotation <- function(gtf.files = "gencode.v40.annotation.gtf", saverds=TRUE, file= ".rds" ){
+geneAnnotation <- function(gtf.files = NULL, saverds=F, file= ".rds" ){
 
-
+if(is.null(gtf.files)){stop("A path to gtf files is mandatory.")}
 #loading of the gtf files
    if(class(gtf.files)=="character") {
 
@@ -41,17 +41,22 @@ geneAnnotation <- function(gtf.files = "gencode.v40.annotation.gtf", saverds=TRU
   rownames(split_gene ) <- split_gene$EnsemblID
 
   split_gene$GeneSymbol <- unlist(lapply(split_gene $attributes, extract_attributes, "gene_name"))
+
   split_gene$GeneType <- unlist(lapply(split_gene $attributes, extract_attributes, "gene_type"))
 
   if(!all(is.na(unlist(lapply(split_gene $attributes, extract_attributes, "hgnc_id"))))) { split_gene $GeneType <- unlist(lapply(split_gene $attributes, extract_attributes, "gene_type"))}
 
+message("1")
+  site = NA
   if(str_detect(gtf.files, "19")) {site <-"http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=" }
   if(str_detect(gtf.files, "v33")) {site <-"http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg33&position=" }
+  if(str_detect(gtf.files, "v37")) {site <-"http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg37&position=" }
   if(str_detect(gtf.files, "v40")) {site <-"http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg40&position=" }
   if(str_detect(gtf.files, "v41")) {site <-"http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg41&position=" }
   if(str_detect(gtf.files, "v42")) {site <-"http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg42&position=" }
+message("2")
 
-  split_gene$UCSC_link <- paste0(site,split_gene$chr,"%3A",split_gene$start ,"%2D",split_gene$end)
+if(is.na(site)) {split_gene$UCSC_link = NA} else { split_gene$UCSC_link <- paste0(site,split_gene$chr,"%3A",split_gene$start ,"%2D",split_gene$end)  }
 
 
   zz <- which(unlist(lapply(strsplit(split_gene$chr,"chr"), length))>1)
