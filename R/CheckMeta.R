@@ -1,6 +1,6 @@
 #' CheckMeta : Checking samples accors MetaData files
 #'
-#' @param MetaData a mMetaData list
+#' @param MetaData a MetaData list
 #'
 #' @return none
 #' @export
@@ -17,7 +17,12 @@ CheckMeta <- function(MetaData) {
 
 
   m <- which(attributes(MetaData)$Data.Type=="Expression.Matrix")
-  c <- which(attributes(MetaData)$Data.Type=="Patient.Clinical.data" |attributes(MetaData)$Data.Type=="Samples.Clinical.data")
+
+  if(attributes(MetaData)$Omics.type!="Single.Cell"){
+  c <- which(attributes(MetaData)$Data.Type=="Patient.Clinical.data" | attributes(MetaData)$Data.Type=="Samples.Clinical.data")}
+
+  if(attributes(MetaData)$Omics.type=="Single.Cell"){
+    c <- which(attributes(MetaData)$Data.Type=="Patient.Clinical.data" & attributes(MetaData)$Raw.data=="Yes")}
 
   ColN <- colnames(MetaData[[m[1]]])
 
@@ -107,13 +112,43 @@ CheckMeta <- function(MetaData) {
 
   message("-------------------------")
 
-  message(paste("Checking colnames of matrices in MetaData from", names(MetaData)[m[1]]), "in clinical data.")
+  message(paste("Checking colnames of", names(MetaData)[m[1]] ,"in MetaData in clinical data."))
   message("-------------------------")
 
   for (i in c){
 
-    if(all(ColN%in%as.matrix(MetaData[[i]]))) {   message(paste(MetaDataN[i]), " : PASS") } else {  message(paste(MetaDataN[i]), " : FAIL") }
+    if(attributes(MetaData)$Omics.type!="Single.Cell"){
 
+    if(all(ColN%in%as.matrix(MetaData[[i]]))) {   message(paste(MetaDataN[i]), " : PASS") } else {  message(paste(MetaDataN[i]), " : FAIL") }
+    }
+
+
+    if(attributes(MetaData)$Omics.type=="Single.Cell"){
+
+      message(paste("Patients from Single.Cell data:", names(MetaData)[i]))
+      tot=0
+      for (z in rownames(MetaData[[i]])) {
+        t = summary(str_detect(pattern = z, ColN))["TRUE"][1]
+        tot=tot+as.numeric(t)
+      message(c(z," N= ",as.numeric(t)))
+
+      }
+      message("Total = " , tot, "\nAre all Patients found in Expression matrix ? ", tot/length(ColN)==1)
+      message("-------------------------")
+
+
+
+     p =  which(attributes(MetaData)$Data.Type=="Samples.Clinical.data" & attributes(MetaData)$Raw.data=="Yes")
+
+     if(!is.null(p)){
+
+      message(paste("Samples from Single.Cell data:", names(MetaData)[p]))
+       tot = as.numeric(summary(rownames(MetaData[[p]])%in%ColN)["TRUE"][1])
+       message("Total = " , tot, "\nAre all Patients found in Expression matrix ? ", tot/length(ColN)==1)
+       message("-------------------------")
+   }
+
+    }
   }
 
 

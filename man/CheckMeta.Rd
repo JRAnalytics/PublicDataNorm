@@ -7,7 +7,7 @@
 CheckMeta(MetaData)
 }
 \arguments{
-\item{MetaData}{a mMetaData list}
+\item{MetaData}{a MetaData list}
 }
 \value{
 none

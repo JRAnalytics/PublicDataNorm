@@ -115,6 +115,8 @@ AddClinic <- function(Metadata, path, merge = F, Raw = T,mergeBy, name, type = c
 
 
 
+            if(!type%in%c("Samples","Patients")){stop("type must be set to Samples or Patients")}
+
             if(l==0) {   if(type == "Samples") {attributes(Metadata)$Data.Type <-  c("Samples.Clinical.data")}
               if(type == "Patients") {attributes(Metadata)$Data.Type <-  c("Patient.Clinical.data")}
             if(Raw==T){attributes(Metadata)$Raw.data <- c("Yes") } else {attributes(Metadata)$Raw.data <- c("No") }

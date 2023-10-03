@@ -15,8 +15,18 @@ CleaningClinic <- function(Metadata, type = c("Sample", "Patients"), list.files.
 
 
 
-
+ if(attributes(Metadata)$Omics.type!="Single.Cell"){
    NB <- which(str_detect(attributes(Metadata)$Data.Type ,"Clinical.data") & attributes(Metadata)$Raw.data=="Yes")
+ }
+
+  if(attributes(Metadata)$Omics.type=="Single.Cell" & type == "Sample"){
+    NB <- which(str_detect(attributes(Metadata)$Data.Type ,"Samples.Clinical.data") & attributes(Metadata)$Raw.data=="Yes")
+  }
+
+  if(attributes(Metadata)$Omics.type=="Single.Cell" & type == "Patients"){
+    NB <- which(str_detect(attributes(Metadata)$Data.Type ,"Patient.Clinical.data") & attributes(Metadata)$Raw.data=="Yes")
+  }
+
 
   if(length(NB)==0){stop("No clinical data in meta object")}
 

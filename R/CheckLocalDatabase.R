@@ -132,7 +132,7 @@ CheckLocalDatabase <- function(Meta,
 
   dt <- data.frame("Project" = project,
                    "Version" = Version,
-                   "Date.of.Data.Norm" = Sys.Date(),
+                   "Date.of.Data.Norm" = format(Sys.Date(),format = "%d/%m/%Y" ),
                    "N.Patients" = Npatient,
                    "N.Samples" = Nsamples,
                    "N.TumoralSamples" = tumor,

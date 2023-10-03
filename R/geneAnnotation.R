@@ -16,7 +16,8 @@ geneAnnotation <- function(gtf.files = NULL, saverds=F, file= ".rds" ){
 
 if(is.null(gtf.files)){stop("A path to gtf files is mandatory.")}
 #loading of the gtf files
-   if(class(gtf.files)=="character") {
+
+   if(inherits(gtf.files, "character")) {
 
 
 

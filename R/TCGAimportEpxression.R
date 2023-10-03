@@ -54,7 +54,7 @@ query <- GDCquery(
   data.type = data.type,
   experimental.strategy = experimental.strategy,
   platform = platform,
-  file.type = file.type,
+  #file.type = file.type,
   workflow.type =workflow.type,
   sample.type = sample.type
 )
