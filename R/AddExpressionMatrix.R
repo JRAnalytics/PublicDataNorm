@@ -95,7 +95,11 @@ AddExpressionMatrix <- function(Metadata=NULL, local = c(T, F) , Omics.type = c(
                      message(paste("Loading",Cell.file ))
                      Cells <- read.csv(file.path(path,Cell.file))
                      if("cell_name"%in%colnames(Cells)){
-                     rownames(Cells)  = Cells$cell_name} else { stop("Cell.file mus have a colnames specified 'cell_name'")}
+                     rownames(Cells)  = Cells$cell_name} else {
+                       message("Cell.file has no colnames specified 'cell_name'")
+
+                       Cells <- read.csv(file.path(path,Cell.file),header = F)
+                       rownames(Cells) = Cells[,1]}
 
 
                      if(length(rownames(Cells)==length(colnames(dt)))) {  colnames(dt) = rownames(Cells)} else

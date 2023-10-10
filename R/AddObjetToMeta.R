@@ -110,7 +110,7 @@ AddObjetToMeta <- function(Meta, object, name ,
     }
 
 
-  Meta[[l+1]] <- as.data.frame(object)
+  Meta[[l+1]] <- object
   names( Meta )[l+1] <- name
 
   attributes(Meta)$Data.Type[l+1] <- Data.type

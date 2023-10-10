@@ -167,7 +167,7 @@ ExportCSV <- function (MetaData, list.files.path, project){
              message(paste0("Exporting ", count, " / ", object,"object: ",names(MetaData)[j]))
              filename3 <- unlist(lapply(str_split(filename2,".V"),"[[",1))
              filepath2 <- paste0(list.files.path$Propject.VerifiedDataset,"/",filename3,".V",Vnumber2,".csv")
-             z <- cbind( MetaData[[j]])
+             z <-  MetaData[[j]]
              write.table(z,row.names = F ,file = filepath2, sep = "\t")
 
          }
@@ -195,12 +195,13 @@ ExportCSV <- function (MetaData, list.files.path, project){
             filename <- paste0(list.files.path$Propject.VerifiedDataset,"/",project,".",names(MetaData)[j], ".csv")
           }
 
-          z <- cbind("GeneSymbol" = rownames(MetaData[[j]]), MetaData[[j]])
+          z <- try(cbind("GeneSymbol" = rownames(MetaData[[j]]), MetaData[[j]]),silent = T)
 
 
           if(attributes(MetaData)$Omics.type=="Single.Cell"){
+            z = MetaData[[j]]
             filename <- paste0(list.files.path$Propject.VerifiedDataset,"/",project,".",names(MetaData)[j],".mtx")
-            filename.genes <- paste0(list.files.path$Propject.VerifiedDataset,"/",project,".GenesInfo.csv")
+            filename.genes <- paste0(list.files.path$Propject.VerifiedDataset,"/",project,names(MetaData)[j],".GenesInfo.csv")
           }
 
 
@@ -217,7 +218,7 @@ ExportCSV <- function (MetaData, list.files.path, project){
               count <- count+1
               message("-------------------------------------------------")
               message(paste("Exporting", count, "/", object,"object: ","GeneInfo", "file"))
-              write.table(rownames(MetaData[[j]]),row.names = F ,file = filename.genes, sep = "\t")
+              write.table(rownames(MetaData[[j]]),row.names = F ,col.names = F ,file = filename.genes, sep = "\t")
 
               writeMM(Matrix(MetaData[[j]], sparse = T),file = filename)
               message(paste("Compressing"))
@@ -320,10 +321,11 @@ ExportCSV <- function (MetaData, list.files.path, project){
             message(paste0("Exporting ", count, " / ", object," object: ",names(MetaData)[j]))
             filename3 <- unlist(lapply(str_split(filename2,".V"),"[[",1))
                    filepath2 <- paste0(list.files.path$Propject.VerifiedDataset,"/",filename3,".V",Vnumber2,".csv")
-            z <- cbind("GeneSymbol" = rownames(MetaData[[j]]), MetaData[[j]])
+                   z <- try(cbind("GeneSymbol" = rownames(MetaData[[j]]), MetaData[[j]]),silent = T)
 
 
             if(attributes(MetaData)$Omics.type=="Single.Cell"){
+              z=  MetaData[[j]]
               filepath2 <- paste0(list.files.path$Propject.VerifiedDataset,"/",project,".",names(MetaData)[j],".V", Vnumber2, ".mtx")
               filename.genes <- paste0(list.files.path$Propject.VerifiedDataset,"/",project,".",names(MetaData)[j],".GenesInfo",".V", Vnumber2, ".csv")
             }
@@ -339,7 +341,7 @@ ExportCSV <- function (MetaData, list.files.path, project){
             count <- count+1
             message("-------------------------------------------------")
             message(paste("Exporting", count, "/", object,"object: ","GeneInfo", "file"))
-            write.table(rownames(MetaData[[j]]),row.names = F ,file = filename.genes, sep = "\t")
+            write.table(rownames(MetaData[[j]]),row.names = F ,col.names = F,file = filename.genes, sep = "\t")
             message("-------------------------------------------------")
 
             writeMM(Matrix(MetaData[[j]], sparse = T),file = filepath2)
@@ -427,7 +429,7 @@ ExportCSV <- function (MetaData, list.files.path, project){
           message(paste0("Exporting ", count, " / ", object,"object: ",names(MetaData)[j]))
           filename3 <- unlist(lapply(str_split(filename2,".V"),"[[",1))
           filepath2 <- paste0(list.files.path$Propject.VerifiedDataset,"/",filename3,".V",Vnumber2,".csv")
-          z <- cbind( MetaData[[j]])
+          z <-  MetaData[[j]]
           write.table(z,row.names = F ,file = filepath2, sep = "\t")
           message(paste("Compressing"))
           R.utils::gzip(filepath2, destname=sprintf("%s.gz", filepath2), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)

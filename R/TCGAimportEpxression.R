@@ -91,7 +91,7 @@ query.clinic <- GDCquery(project = project,
                          data.format = "BCR Biotab")
 }
 
-source <- "harmonized"
+source <- "" #enlever source
 
 
 files <- file.path(
