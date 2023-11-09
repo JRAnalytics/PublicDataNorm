@@ -5,13 +5,14 @@
 #' @param list.files.path file path to find lexique of colnames
 #' @param project project
 #' @param ForceCleaning If TRUE, Force a cleaning method from Samples.clinical data into Patient.clinical data and vice versa.
+#' @param all.col default F, if T, copy all column from clinic.
 #' @importFrom utils menu
 #' @import dplyr
 #' @return a data frame of Samples pheno or patients clinical data. If Sample ID and Patients ID are the sames, so Samples.pheno and Patient_clinic are the same data frame
 #' @export
 #'
 #' @examples "none"
-CleaningClinic <- function(Metadata, type = c("Sample", "Patients"), list.files.path, project, ForceCleaning = F){
+CleaningClinic <- function(Metadata, type = c("Sample", "Patients"), list.files.path, project, ForceCleaning = F, all.col = F){
 
 
 
@@ -65,7 +66,17 @@ CleaningClinic <- function(Metadata, type = c("Sample", "Patients"), list.files.
 
     clinic <- as.data.frame(Metadata[[NBS]])
 
-    LexicClinic <- SamplesLexic
+    if(all.col==T){
+
+      for (i in colnames(Metadata$Clinic)){
+
+        if (!i %in% names(SamplesLexic)){SamplesLexic <- AddKeyLexic(lexic = SamplesLexic, Param = c(i) ) }
+
+      }
+      LexicClinic=SamplesLexic
+
+    }else {  LexicClinic <- SamplesLexic }
+
 
     clcl <-  data.frame(matrix(nrow = nrow(clinic), ncol = length(LexicClinic)))
     colnames(clcl) = names(LexicClinic)
@@ -177,11 +188,22 @@ CleaningClinic <- function(Metadata, type = c("Sample", "Patients"), list.files.
     } else { if(length(NBP)==0){ NBP <- which(str_detect(attributes(Metadata)$Data.Type ,"Clinical.data") & attributes(Metadata)$Raw=="Yes")    }}
 
 
-    print(attributes(Metadata))
 
     clinic <- as.data.frame(Metadata[[NBP]])
 
-    LexicClinic <- PatientLexic
+
+    if(all.col==T){
+
+      for (i in colnames(Metadata$Clinic)){
+
+        if (!i %in% names(PatientLexic)){PatientLexic <- AddKeyLexic(lexic = PatientLexic, Param = c(i) ) }
+
+      }
+      LexicClinic <- PatientLexic
+
+    }else {  LexicClinic <- PatientLexic}
+
+
 
     clcl <-  data.frame(matrix(nrow = nrow(clinic), ncol = length(LexicClinic)))
     colnames(clcl) = names(LexicClinic)

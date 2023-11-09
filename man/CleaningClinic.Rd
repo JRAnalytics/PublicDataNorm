@@ -9,7 +9,8 @@ CleaningClinic(
   type = c("Sample", "Patients"),
   list.files.path,
   project,
-  ForceCleaning = F
+  ForceCleaning = F,
+  all.col = F
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ CleaningClinic(
 \item{project}{project}
 
 \item{ForceCleaning}{If TRUE, Force a cleaning method from Samples.clinical data into Patient.clinical data and vice versa.}
+
+\item{all.col}{default F, if T, copy all column from clinic.}
 }
 \value{
 a data frame of Samples pheno or patients clinical data. If Sample ID and Patients ID are the sames, so Samples.pheno and Patient_clinic are the same data frame

@@ -129,7 +129,12 @@ CheckMeta <- function(MetaData) {
       tot=0
       for (z in rownames(MetaData[[i]])) {
         t = summary(str_detect(pattern = z, ColN))["TRUE"][1]
+
+        if(is.na(as.numeric(t))){ t = 0}
+
         tot=tot+as.numeric(t)
+
+
       message(c(z," N= ",as.numeric(t)))
 
       }
@@ -143,7 +148,9 @@ CheckMeta <- function(MetaData) {
      if(!is.null(p)){
 
       message(paste("Samples from Single.Cell data:", names(MetaData)[p]))
+
        tot = as.numeric(summary(rownames(MetaData[[p]])%in%ColN)["TRUE"][1])
+
        message("Total = " , tot, "\nAre all Patients found in Expression matrix ? ", tot/length(ColN)==1)
        message("-------------------------")
    }

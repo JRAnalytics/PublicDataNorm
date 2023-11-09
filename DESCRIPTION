@@ -34,4 +34,5 @@ Imports:
     survminer,
     TCGAbiolinks,
     utils,
-    matrixStats
+    matrixStats,
+    readr

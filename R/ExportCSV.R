@@ -201,7 +201,9 @@ ExportCSV <- function (MetaData, list.files.path, project){
           if(attributes(MetaData)$Omics.type=="Single.Cell"){
             z = MetaData[[j]]
             filename <- paste0(list.files.path$Propject.VerifiedDataset,"/",project,".",names(MetaData)[j],".mtx")
-            filename.genes <- paste0(list.files.path$Propject.VerifiedDataset,"/",project,names(MetaData)[j],".GenesInfo.csv")
+
+            if(!"geneAnnotation.file"%in%attributes(MetaData)$Data.Type){
+            filename.genes <- paste0(list.files.path$Propject.VerifiedDataset,"/",project,".",names(MetaData)[j],".GenesInfo.csv")}
           }
 
 
@@ -217,8 +219,11 @@ ExportCSV <- function (MetaData, list.files.path, project){
 
               count <- count+1
               message("-------------------------------------------------")
+              if(!"geneAnnotation.file"%in%attributes(MetaData)$Data.Type){
               message(paste("Exporting", count, "/", object,"object: ","GeneInfo", "file"))
-              write.table(rownames(MetaData[[j]]),row.names = F ,col.names = F ,file = filename.genes, sep = "\t")
+              write.table(rownames(MetaData[[j]]),row.names = F ,col.names = F ,file = filename.genes, sep = "\t")}
+
+              if(!class(MetaData[[j]])[1]=="dgCMatrix"){MetaData[[j]] = as.matrix(MetaData[[j]]) }
 
               writeMM(Matrix(MetaData[[j]], sparse = T),file = filename)
               message(paste("Compressing"))
@@ -238,7 +243,8 @@ ExportCSV <- function (MetaData, list.files.path, project){
 
               if(attributes(MetaData)$Omics.type=="Single.Cell"){
                 filename <- paste0(list.files.path$Propject.VerifiedDataset,"/",project,".",names(MetaData)[j],".V", Vnumber2, ".mtx")
-                filename.genes <- paste0(list.files.path$Propject.VerifiedDataset,"/",project,".GenesInfo",".V", Vnumber2, ".csv")
+                if(!"geneAnnotation.file"%in%attributes(MetaData)$Data.Type){
+                filename.genes <- paste0(list.files.path$Propject.VerifiedDataset,"/",project,".GenesInfo",".V", Vnumber2, ".csv")}
               }
 
 
@@ -249,7 +255,12 @@ ExportCSV <- function (MetaData, list.files.path, project){
                 R.utils::gzip(filename, destname=sprintf("%s.gz", filename), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)}
 
               if(attributes(MetaData)$Omics.type=="Single.Cell") {
-                write.table(rownames(MetaData[[j]]),row.names = F ,file = filename.genes, sep = "\t")
+
+                if(!"geneAnnotation.file"%in%attributes(MetaData)$Data.Type){
+                write.table(rownames(MetaData[[j]]),row.names = F ,file = filename.genes, sep = "\t")}
+
+                if(!class(MetaData[[j]])[1]=="dgCMatrix"){MetaData[[j]] = as.matrix(MetaData[[j]]) }
+
                 writeMM(Matrix(MetaData[[j]], sparse = T),file = paste0(filename,".mtx"))
                 message(paste("Compressing"))
                 R.utils::gzip(filename, destname=sprintf("%s.gz", filename), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)
@@ -302,11 +313,11 @@ ExportCSV <- function (MetaData, list.files.path, project){
                 filepath2 <- paste0(list.files.path$Propject.VerifiedDataset,"/",filename2,".V",Vnumber2,".mtx",extension)
                 file.rename(from = filepath, to = filepath2)
 
-
+                if(!"geneAnnotation.file"%in%attributes(MetaData)$Data.Type){
                 message(paste(project, "Single cell GenesInfo exported file exist. Versionning data."))
 
-                file.rename(from =  paste0(list.files.path$Propject.VerifiedDataset,"/",project,".GenesInfo.csv"),
-                            to = paste0(list.files.path$Propject.VerifiedDataset,"/",project,".GenesInfo",".V", Vnumber2, ".csv") )
+                file.rename(from =  paste0(list.files.path$Propject.VerifiedDataset,"/",project,".",names(MetaData)[j],".GenesInfo.csv"),
+                            to = paste0(list.files.path$Propject.VerifiedDataset,"/",project,".",names(MetaData)[j],".GenesInfo",".V", Vnumber2, ".csv") )}
 
 
               }
@@ -327,7 +338,8 @@ ExportCSV <- function (MetaData, list.files.path, project){
             if(attributes(MetaData)$Omics.type=="Single.Cell"){
               z=  MetaData[[j]]
               filepath2 <- paste0(list.files.path$Propject.VerifiedDataset,"/",project,".",names(MetaData)[j],".V", Vnumber2, ".mtx")
-              filename.genes <- paste0(list.files.path$Propject.VerifiedDataset,"/",project,".",names(MetaData)[j],".GenesInfo",".V", Vnumber2, ".csv")
+              if(!"geneAnnotation.file"%in%attributes(MetaData)$Data.Type){
+              filename.genes <- paste0(list.files.path$Propject.VerifiedDataset,"/",project,".",names(MetaData)[j],".GenesInfo",".V", Vnumber2, ".csv")}
             }
 
 
@@ -340,9 +352,12 @@ ExportCSV <- function (MetaData, list.files.path, project){
             if(attributes(MetaData)$Omics.type=="Single.Cell") {
             count <- count+1
             message("-------------------------------------------------")
+            if(!"geneAnnotation.file"%in%attributes(MetaData)$Data.Type){
             message(paste("Exporting", count, "/", object,"object: ","GeneInfo", "file"))
             write.table(rownames(MetaData[[j]]),row.names = F ,col.names = F,file = filename.genes, sep = "\t")
-            message("-------------------------------------------------")
+            message("-------------------------------------------------")}
+
+            if(!class(MetaData[[j]])[1]=="dgCMatrix"){MetaData[[j]] = as.matrix(MetaData[[j]]) }
 
             writeMM(Matrix(MetaData[[j]], sparse = T),file = filepath2)
 
