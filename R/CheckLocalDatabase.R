@@ -106,7 +106,7 @@ CheckLocalDatabase <- function(Meta,
 
     if(!is.null(Meta[[NBS]][,"HadTreatment"])) {
 
-      TTT <- length(which(str_detect(toupper(Meta[[NBS]][,"HadTreatment"]),"YES|TRUE|1")))
+      TTT <- length(which(str_detect(toupper(Meta[[NBS]][,"HadTreatment"]),"YES|OUI|TRUE|1")))
 
     } else { TTT <- 0   }
 
