@@ -10,7 +10,7 @@
 #' @export
 #'
 #' @examples "none"
-LexicData <- function(list.files.path,MetaData=NULL, replaceLexic =F){
+LexicData <- function(list.files.path, MetaData=NULL, replaceLexic =F){
 
 
 
@@ -47,7 +47,7 @@ if(c(exists("PatientLexic", mode = "any") | exists("SamplesLexic", mode = "any")
 
     assign("SamplesLexic", SL, envir = envir)}
 
-  if(attributes== "Single.Cell" & file.exists(paste0(list.files.path$Project.Processes, "/",project,".SC.SamplesLexic.txt"))){
+  if(attributes== "Single.Cell" & file.exists(paste0(list.files.path$Project.Processes, "/",project,".SamplesLexic.txt"))){
     message(paste("Importing SC.SamplesLexic.txt from",project, "directory."))
     x <- scan(paste0(list.files.path$Project.Processes, "/",project,".SamplesLexic.txt"), what="", sep="\n")%>%strsplit("[[:space:]]+")
     names(x) <- sapply(x, `[[`, 1)

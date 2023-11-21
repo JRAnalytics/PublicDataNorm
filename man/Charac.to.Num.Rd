@@ -6,6 +6,9 @@
 \usage{
 Charac.to.Num(clinic)
 }
+\arguments{
+\item{clinic}{clinic data to perform}
+}
 \description{
 Charac.to.Num  transform only numbers column from character to numeric
 }

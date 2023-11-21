@@ -22,7 +22,6 @@ DirCheck <- function(project,path){
 
       file.path.RawData <- paste(c(unlist(strsplit(path, "/")),"01RawData"),collapse = "/")
             file.path.Project.RawData <- paste(c(file.path.RawData,project),collapse = "/")
-            file.path.PipelineDump <- paste(c(file.path.RawData,"PipelineDump"),collapse = "/")
 
       file.path.VerifiedDataSet <- paste(c(unlist(strsplit(path, "/")),"04VerifiedDataSet"),collapse = "/")
             file.path.Project.VerifiedDataset <- paste(c(file.path.VerifiedDataSet,project),collapse = "/")
@@ -31,7 +30,6 @@ DirCheck <- function(project,path){
   if(!dir.exists(file.path.RawData)){dir.create(file.path.RawData)}
   if(!dir.exists(file.path.Project.RawData)){dir.create(file.path.Project.RawData)}
   if(!dir.exists(file.path.References)){dir.create(file.path.References)}
-  if(!dir.exists(file.path.PipelineDump)){dir.create(file.path.PipelineDump)}
   if(!dir.exists(file.path.VerifiedDataSet)){dir.create(file.path.VerifiedDataSet)}
   if(!dir.exists(file.path.Project.VerifiedDataset)){dir.create(file.path.Project.VerifiedDataset)}
   if(!dir.exists(file.path.Project.Processes)){dir.create(file.path.Project.Processes)}
