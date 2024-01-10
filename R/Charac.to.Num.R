@@ -2,10 +2,10 @@
 #'
 #' @param clinic clinic data to perform
 #' @import readr
-#' @return
+#' @return a data.frame with corrected str
 #' @export
 #'
-#' @examples
+#' @examples "non"
 Charac.to.Num=function(clinic) {
   numbers_only <- function(x) { t = gsub("[.]", "", x)
   t = gsub("[-]", "", t )

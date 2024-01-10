@@ -11,7 +11,7 @@ LexicData(list.files.path, MetaData = NULL, replaceLexic = F)
 
 \item{MetaData}{a MetaData list. Default NULL. Not mandatory. If Single.cell data, please specify your MetaData object to load specific lexic.}
 
-\item{replaceLexic}{repalce Smaples and Patient Lexis if already loaded}
+\item{replaceLexic}{replace Samples and Patient Lexis if already loaded}
 }
 \value{
 a list

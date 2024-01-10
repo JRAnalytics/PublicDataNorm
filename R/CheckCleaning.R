@@ -7,7 +7,7 @@
 #'
 #' @examples "non"
 CheckCleaning <- function(Metadata) {
-for (j in which(c(attributes(Metadata)$Data.Type =="Samples.Clinical.data" | attributes(Metadata)$Data.Type =="Patient.Clinical.data") & attributes(Metadata)$Raw.data =="No" )) {
+for (j in which(c(attributes(Metadata)$Data.Type =="SamplesAnnot" | attributes(Metadata)$Data.Type =="Clinic") & attributes(Metadata)$Export =="Yes" )) {
 
   {res <- list()
 

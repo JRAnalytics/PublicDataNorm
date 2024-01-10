@@ -1,12 +1,11 @@
 ---
-title: "Public-data-norm-Vignette"
+title: "Using PublicDataNorm package for dumies"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Public-data-norm-Vignette}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
-
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
@@ -15,9 +14,104 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+
+*Quick protocol to build a database from public Omics data.*
+
+`PublicDataNorm` provides R functions to build a Metaobject (`AddExpressionMatrix()`) with Expression datasets, Patients and Samples clinical, pathological and so on annotations and Gene/Probes annotation. Then help to "Clean" public data (`CleaningClinic()`)into a customizable references for Patients and Samples annotations (`LexicData()`).
+
+The database is built into a folder tree as follow:\n
+
+* "Parent dir" of your choice.\n
+  * 01RawData\n
+  * 02Processes\n
+  * 03References\n
+  * 04VerifiedDataSet\n
+
+Public genes expression dataset form The Cancer Genome Atlas (TCGA) can be retrive with the incorporation of `TCGAbiolinks` R apckage, incorporated in `PublicDataNorm` functions.
+
+Export from Metaobject can be in CSV or TSV format, then compressed in gz using `gzip` package for gene expression data.
+
+Along building and exporting the cleaned fetched public data, a summary of an exported project can be created into a Database summary `.txt` file. 
+
+## Installation and loading package
+```{r chunk, eval=c(3), message=F, warning=F, include=TRUE}
+#Download zip file from : 
+download.file("https://github.com/JRAnalytics/PublicDataNorm/tree/V2",method = "wget")
 library(PublicDataNorm)
 ```
+
+
+
+## Data base building steps
+
+### Create dataBase directory and project directories
+
+```{r DataBaseCreation}
+  project <- "Maurer"
+
+  Parent.Dir.path <- "./Parent" # Change parent path matching your own Dir
+  
+  #if it is the first time that you create the database,
+  #list.files(Parent.Dir.path) will display zero character.
+  list.files(Parent.Dir.path) 
+```  
+  
+  DirCheck function will create Parent subdirectories\n
+  * 01RawData\n
+  * 02Processes\n
+  * 03References\n
+  * 04VerifiedDataSet\n
+
+```{r DataBaseCreation2}
+  #building data base in Parent dir, with Project sub directories.
+  list.files.path <- DirCheck(project,Parent.Dir.path)
+```
+
+
+
+
+Filepaths are stock in list.files.path object. It will be usefull to keep path for subsequent package functions.
+```{r DataBaseCreation3}
+  list.files.path
+```
+
+
+## Building Meta object
+
+### A-RNAseq projects
+
+#### 1- Creating Meta object 
+
+The first step is to create a meta object with en expression matrix saved in the project directory '~/parent/01RawData/Project'
+```{r RNAseq, eval=FALSE}
+Metadata <- AddExpressionMatrixRNAseq(
+                            Raw = T, # T for Raw data. F if  normalised data.
+                            Raw.file.path = list.files.path$Project.RawData, 
+                            name.local.file ="MaurerRaw.matrix.csv.gz",
+                            name = "count")
+```
+
+If a Metadata object already exist, you can add another expression matrix to the meta object.
+```{r RNAseq2, eval=FALSE}
+Metadata <- AddExpressionMatrixRNAseq(
+                            Metadata = Metadata,
+                            Raw = F, # T for Raw data. F if  normalised data.
+                            Raw.file.path = list.files.path$Project.RawData, 
+                            name.local.file ="MaurerRaw.matrixNorm.csv.gz",
+                            name = "Norm.count")
+```
+
+Also, if a sub-object in Metadata has to be replaced, you can set 'force.replace' parameter to T.
+```{r RNAseq3, eval=FALSE}
+Metadata <- AddExpressionMatrixRNAseq(Metadata = Metadata,
+                            Raw = F, # T for Raw data. F if  normalised data.
+                            Raw.file.path = list.files.path$Project.RawData, 
+                            name.local.file ="MaurerRaw.matrixNorm.csv.gz",
+                            name = "Norm.count",
+                            force.replace = T
+                              )
+```
+
 
 
 

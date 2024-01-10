@@ -11,7 +11,7 @@
 #' @param Cell.file name of single cell cell annotation file specific to expression matrix. Not mandatory.
 #' @param Genes.file name of single cell gene annotation file specific to expression matrix. Not mandatory.
 #' @param force.replace set as F. T : replace an already object with the same name
-#' @param Raw TRUE or FALSE. If Raw data, to be specified.
+#' @param Export TRUE or FALSE. If data to be Exported, set T.
 #' @importFrom utils menu
 #' @importFrom Matrix readMM
 #' @import data.table
@@ -19,8 +19,11 @@
 #' @export
 #'
 #' @examples "none"
-AddExpressionMatrix <- function(Metadata=NULL, local = c(T, F) , Omics.type = c("RNAseq", "Single.Cell", "Microarray", "Spatial"),
-                                Cell.file=NULL, Genes.file=NULL, query, data.norm, path, name, Raw=T, name.local.file = NULL, force.replace=F ) {
+AddExpressionMatrix <- function(Metadata=NULL, local = c(T, F) ,
+                                Omics.type = c("RNAseq", "Single.Cell", "Microarray", "Spatial"),
+                                Cell.file=NULL,
+                                Genes.file=NULL,
+                                query, data.norm, path, name, Export=T, name.local.file = NULL, force.replace=F ) {
 
   if(is.null(Omics.type)){
     if(!inherits(Omics.type, "character")){ stop("Omics.type  is not a character string")}
@@ -35,7 +38,7 @@ AddExpressionMatrix <- function(Metadata=NULL, local = c(T, F) , Omics.type = c(
   if(!is.null(Metadata)){
 
     if(!attributes(Metadata)$Omics.type==Omics.type){
-      warning(paste("Omics.type is", Omics.type,"different than attributes(Metadata)Omics.type",
+      warning(paste("Omics.type is", Omics.type,"different than attributes(Metadata)$Omics.type",
                     attributes(Metadata)$Omics.type, "\nWill be replace"))
 
               attributes(Metadata)$Omics.type = Omics.type
@@ -146,9 +149,9 @@ AddExpressionMatrix <- function(Metadata=NULL, local = c(T, F) , Omics.type = c(
         names(Metadata)[l+1] <- paste0(name,".matrix")}
 
         if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
-        attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type, "Expression.Matrix")
+        attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type, "Count")
 
-        if(Raw==T){attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"Yes") } else {attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"No") }
+        if(Export==T){attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes") } else {attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"No") }
 }
 
         return(Metadata)} # Metadat >1
@@ -158,8 +161,8 @@ AddExpressionMatrix <- function(Metadata=NULL, local = c(T, F) , Omics.type = c(
         names(Metadata)[1] <- paste0(name,".matrix")
 
         if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
-        attributes(Metadata)$Data.Type <-  c("Expression.Matrix")
-        if(Raw==T){attributes(Metadata)$Raw.data <- "Yes" } else {attributes(Metadata)$Raw.data <- "No" }}
+        attributes(Metadata)$Data.Type <-  c("Count")
+        if(Export==T){attributes(Metadata)$Export <- "Yes" } else {attributes(Metadata)$Export <- "No" }}
         return(Metadata)
         } # Metadata = 0
 
@@ -186,8 +189,8 @@ AddExpressionMatrix <- function(Metadata=NULL, local = c(T, F) , Omics.type = c(
               Metadata[[paste0(name,".matrix")]] <- dt    } else { Metadata[[l+1]] <- dt
             names(Metadata)[l+1] <- paste0(name,".matrix")}
 
-            attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type, "Expression.Matrix")
-            if(Raw==T){attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"Yes") } else {attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"No") }
+            attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type, "Count")
+            if(Export==T){attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes") } else {attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"No") }
             }  else {
               if(str_detect(i, ".csv", negate = FALSE)){
                 dt <- suppressWarnings(as.data.frame(data.table::fread(i)))
@@ -199,8 +202,8 @@ AddExpressionMatrix <- function(Metadata=NULL, local = c(T, F) , Omics.type = c(
                   Metadata[[paste0(name,".matrix")]] <- dt    } else { Metadata[[l+1]] <- dt
                 names(Metadata)[l+1] <- paste0(name,".matrix")}
 
-                attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type, "Expression.Matrix")
-                if(Raw==T){attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"Yes") } else {attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"No") }} else {
+                attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type, "Count")
+                if(Export==T){attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes") } else {attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"No") }} else {
 
                   if(str_detect(i, ".tsv", negate = FALSE)){
                     dt <- suppressWarnings(as.data.frame(data.table::fread(i)))
@@ -213,8 +216,8 @@ AddExpressionMatrix <- function(Metadata=NULL, local = c(T, F) , Omics.type = c(
                     names(Metadata)[l+1] <- paste0(name,".matrix")}
 
                     }
-                    attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type, "Expression.Matrix")
-                    if(Raw==T){attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"Yes") } else {attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"No") }}
+                    attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type, "Count")
+                    if(Export==T){attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes") } else {attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"No") }}
             } }
 
         names(Metadata)[l+1] <- paste0(name,".matrix.",which(lf[str_detect(lf, "matrix")]%in%i))
@@ -242,8 +245,8 @@ AddExpressionMatrix <- function(Metadata=NULL, local = c(T, F) , Omics.type = c(
         names(Metadata)[l+1] <- paste0(name,".matrix")}
 
         if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
-        attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type, "Expression.Matrix")
-        if(Raw==T){attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"Yes") } else {attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"No") }}  else {
+        attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type, "Count")
+        if(Export==T){attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes") } else {attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"No") }}  else {
 }
           if(str_detect(lf, ".csv", negate = FALSE)){
             dt <- suppressWarnings(as.data.frame(data.table::fread(lf)))
@@ -258,8 +261,8 @@ AddExpressionMatrix <- function(Metadata=NULL, local = c(T, F) , Omics.type = c(
             names(Metadata)[l+1] <- paste0(name,".matrix")}
 
             if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
-            attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type, "Expression.Matrix")
-            if(Raw==T){attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"Yes") } else {attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"No") }
+            attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type, "Count")
+            if(Export==T){attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes") } else {attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"No") }
             }} else {
 
               if(str_detect(lf, ".tsv", negate = FALSE)){
@@ -276,8 +279,8 @@ AddExpressionMatrix <- function(Metadata=NULL, local = c(T, F) , Omics.type = c(
 
 
               if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
-              attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type, "Expression.Matrix")
-              if(Raw==T){attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"Yes") } else {attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"No") }
+              attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type, "Count")
+              if(Export==T){attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes") } else {attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"No") }
               }
               }
               }
@@ -298,23 +301,23 @@ AddExpressionMatrix <- function(Metadata=NULL, local = c(T, F) , Omics.type = c(
         rownames(dt) <- dt[,1]
 
         Metadata[[1]] <- dt
-        attributes(Metadata)$Data.Type <-  c("Expression.Matrix")
-        if(Raw==T){attributes(Metadata)$Raw.data <- "Yes" } else {attributes(Metadata)$Raw.data <- "No" } }  else {
+        attributes(Metadata)$Data.Type <-  c("Count")
+        if(Export==T){attributes(Metadata)$Export <- "Yes" } else {attributes(Metadata)$Export <- "No" } }  else {
           if(str_detect(lf, ".csv", negate = FALSE)){
             dt <- suppressWarnings(as.data.frame(data.table::fread(lf)))
             rownames(dt) <- dt[,1]
 
             Metadata[[1]] <- dt
-            attributes(Metadata)$Data.Type <-  c("Expression.Matrix")
-            if(Raw==T){attributes(Metadata)$Raw.data <- "Yes" } else {attributes(Metadata)$Raw.data <- "No" } }else {
+            attributes(Metadata)$Data.Type <-  c("Count")
+            if(Export==T){attributes(Metadata)$Export <- "Yes" } else {attributes(Metadata)$Export <- "No" } }else {
 
               if(str_detect(lf, ".tsv", negate = FALSE)){
                 dt <- suppressWarnings(as.data.frame(data.table::fread(lf)))
                 rownames(dt) <- dt[,1]
 
                 Metadata[[1]] <- dt
-                attributes(Metadata)$Data.Type <-  c("Expression.Matrix")
-                if(Raw==T){attributes(Metadata)$Raw.data <- "Yes" } else {attributes(Metadata)$Raw.data <- "No" } }}
+                attributes(Metadata)$Data.Type <-  c("Count")
+                if(Export==T){attributes(Metadata)$Export <- "Yes" } else {attributes(Metadata)$Export <- "No" } }}
         }
         }
 
@@ -377,13 +380,13 @@ AddExpressionMatrix <- function(Metadata=NULL, local = c(T, F) , Omics.type = c(
   Metadata[[l+1]]<- y
   names(Metadata)[l+1] <- c(paste0(data.norm,".",project,".matrix"))
   if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
-  if(l==0) {   attributes(Metadata)$Data.Type <-  c("Expression.Matrix")
-  if(Raw==T){attributes(Metadata)$Raw.data <- "Yes" } else {attributes(Metadata)$Raw.data <- "No" }
+  if(l==0) {   attributes(Metadata)$Data.Type <-  c("Count")
+  if(Export==T){attributes(Metadata)$Export <- "Yes" } else {attributes(Metadata)$Export <- "No" }
   }} else {
     if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
-      attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Expression.Matrix")
+      attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Count")
 
-  if(Raw==T){attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"Yes") } else {attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"No") } }
+  if(Export==T){attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes") } else {attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"No") } }
 }
 
 

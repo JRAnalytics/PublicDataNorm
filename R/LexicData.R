@@ -1,7 +1,7 @@
 #' LexicData function to prepare constant colnames to find in clinical data from lexiue .txt
 #'
 #' @param list.files.path file path to find lexique of colnames
-#' @param replaceLexic repalce Smaples and Patient Lexis if already loaded
+#' @param replaceLexic replace Samples and Patient Lexis if already loaded
 #' @param MetaData a MetaData list. Default NULL. Not mandatory. If Single.cell data, please specify your MetaData object to load specific lexic.
 #' @importFrom data.table fread
 #' @import dplyr
@@ -10,7 +10,7 @@
 #' @export
 #'
 #' @examples "none"
-LexicData <- function(list.files.path, MetaData=NULL, replaceLexic =F){
+LexicData <- function(list.files.path, MetaData=NULL, replaceLexic = F){
 
 
 

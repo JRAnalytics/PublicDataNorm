@@ -9,6 +9,12 @@ Charac.to.Num(clinic)
 \arguments{
 \item{clinic}{clinic data to perform}
 }
+\value{
+a data.frame with corrected str
+}
 \description{
 Charac.to.Num  transform only numbers column from character to numeric
+}
+\examples{
+"non"
 }

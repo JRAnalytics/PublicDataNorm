@@ -16,13 +16,17 @@ CheckMeta <- function(MetaData) {
   MetaDataN <- names(MetaData)
 
 
-  m <- which(attributes(MetaData)$Data.Type=="Expression.Matrix")
+  m <- which(attributes(MetaData)$Data.Type=="Count")
+
+  g =  which(attributes(MetaData)$Data.Type=="geneAnnot")[1]
+  if(!is.na(g)){geneAnnot = as.matrix(MetaData[[g]])}
+
 
   if(attributes(MetaData)$Omics.type!="Single.Cell"){
-  c <- which(attributes(MetaData)$Data.Type=="Patient.Clinical.data" | attributes(MetaData)$Data.Type=="Samples.Clinical.data")}
+  c <- which(attributes(MetaData)$Data.Type=="Clinic" | attributes(MetaData)$Data.Type=="SamplesAnnot")}
 
   if(attributes(MetaData)$Omics.type=="Single.Cell"){
-    c <- which(attributes(MetaData)$Data.Type=="Patient.Clinical.data" & attributes(MetaData)$Raw.data=="Yes")}
+    c <- which(attributes(MetaData)$Data.Type=="Clinic" & attributes(MetaData)$Export=="No")}
 
   ColN <- colnames(MetaData[[m[1]]])
 
@@ -36,6 +40,8 @@ CheckMeta <- function(MetaData) {
     if(all(ColN %in% colnames(MetaData[[i]]))==T) {   message(paste(MetaDataN[i]), " colnames : PASS") } else {  message(paste(MetaDataN[i]), " colnames : FAIL") }
 
   }
+
+  if(!is.na(g)){
   message("-------------------------")
   message("Checking Matrices probes")
   message("-------------------------")
@@ -43,20 +49,24 @@ CheckMeta <- function(MetaData) {
 
     for (i in m){
 
+      gene = rownames(MetaData[[i]])
+      sel = which(geneAnnot %in% gene)
+      col = which(apply(geneAnnot, 2, function(x) which(x %in% geneAnnot[sel[1]]))>0)[1]
 
 
-      if(all(str_detect(rownames(MetaData[[i]]), "ENSG")==T)) { message(paste(names(MetaData[i]), " gene probes as ENSEMBL"))
+      if(all(str_detect(gene, "ENSG")==T)) { message(paste(names(MetaData[i]), " gene probes as ENSEMBL"))
 
-        suma <- summary(rownames(MetaData[[i]])%in%MetaData$geneAnnotation$EnsemblID)
+
+        suma <- summary(gene%in%geneAnnot[,col])
         if(length(suma)==3) {  names(suma) <- c("Mode", "Gene not found", "Found")  }
         if(length(suma)==2 & names(suma)[2]=="TRUE") {  names(suma) <- c("Mode", "Found") }
         if(length(suma)==2 & names(suma)[2]=="FALSE") {  names(suma) <- c("Mode", "Gene not found") }
         print(suma)
       } else {
 
-      if(all(rownames(MetaData[[i]])%in%MetaData$geneAnnotation$Entrez.id)==T)  { message(paste(names(MetaData[i]), " gene probes as ENTREZ gene id"))
+      if(all(is.numeric(as.numeric(gene))))  { message(paste(names(MetaData[i]), " gene probes as ENTREZ gene id"))
 
-        suma <- summary(rownames(MetaData[[i]])%in%MetaData$geneAnnotation$Entrez.id)
+        suma <- summary(gene%in%geneAnnot[,col])
         if(length(suma)==3) {  names(suma) <- c("Mode", "Gene not found", "Found")  }
         if(length(suma)==2 & names(suma)[2]=="TRUE") {  names(suma) <- c("Mode", "Found") }
         if(length(suma)==2 & names(suma)[2]=="FALSE") {  names(suma) <- c("Mode", "Gene not found") }
@@ -64,9 +74,9 @@ CheckMeta <- function(MetaData) {
       } else {
 
 
-       if(all(str_detect(rownames(MetaData[[i]]), "ILMN_")==T)) { message(paste(names(MetaData[i]), " gene probes as Illumina Bead Array Probes"))
+       if(all(str_detect(gene, "ILMN_")==T)) { message(paste(names(MetaData[i]), " gene probes as Illumina Bead Array Probes"))
 
-        suma <- summary(rownames(MetaData[[i]])%in%rownames(MetaData$geneAnnotation))
+         suma <- summary(gene%in%geneAnnot[,col])
         if(length(suma)==3) {  names(suma) <- c("Mode", "Gene not found", "Found")  }
         if(length(suma)==2 & names(suma)[2]=="TRUE") {  names(suma) <- c("Mode", "Found") }
         if(length(suma)==2 & names(suma)[2]=="FALSE") {  names(suma) <- c("Mode", "Gene not found") }
@@ -74,9 +84,9 @@ CheckMeta <- function(MetaData) {
       } else{
 
 
-      if(all(str_detect(rownames(MetaData[[i]]), "_at")==T)) { message(paste(names(MetaData[i]), " gene probes as Illumina Microarray Probes"))
+      if(all(str_detect(gene, "_at")==T)) { message(paste(names(MetaData[i]), " gene probes as Illumina Microarray Probes"))
 
-        suma <- summary(rownames(MetaData[[i]])%in%rownames(MetaData$geneAnnotation))
+        suma <- summary(gene%in%geneAnnot[,col])
         if(length(suma)==3) {  names(suma) <- c("Mode", "Gene not found", "Found")  }
         if(length(suma)==2 & names(suma)[2]=="TRUE") {  names(suma) <- c("Mode", "Found") }
         if(length(suma)==2 & names(suma)[2]=="FALSE") {  names(suma) <- c("Mode", "Gene not found") }
@@ -85,33 +95,33 @@ CheckMeta <- function(MetaData) {
 
 
 
-      if(length(which(rownames(MetaData[[i]])%in%MetaData$geneAnnotation$GeneSymbol))>1)   {
+      if(length(which(gene%in%geneAnnot$GeneSymbol))>1)   {
 
         message(paste(names(MetaData[i]), " gene probes as genes Symbols"))
 
-        suma <- summary(rownames(MetaData[[i]])%in%MetaData$geneAnnotation$GeneSymbol)
+        suma <- summary(gene%in%geneAnnot[,col])
         if(length(suma)==3) {  names(suma) <- c("Mode", "Gene not found", "Found")  }
         if(length(suma)==2 & names(suma)[2]=="TRUE") {  names(suma) <- c("Mode", "Found") }
         if(length(suma)==2 & names(suma)[2]=="FALSE") {  names(suma) <- c("Mode", "Gene not found") }
         print(suma)
       } else {
 
-      if(all(rownames(MetaData[[i]])%in%rownames(MetaData$geneAnnotation))) { message(paste(names(MetaData[i]), " gene probes manualy entered from published data."))
+      if(all(gene%in%geneAnnot)) { message(paste(names(MetaData[i]), " gene probes manualy entered from published data."))
 
-        suma <- summary(rownames(MetaData[[i]])%in%rownames(MetaData$geneAnnotation))
+        suma <- summary(gene%in%geneAnnot[,col])
         if(length(suma)==3) {  names(suma) <- c("Mode", "Gene not found", "Found")  }
         if(length(suma)==2 & names(suma)[2]=="TRUE") {  names(suma) <- c("Mode", "Found") }
         if(length(suma)==2 & names(suma)[2]=="FALSE") {  names(suma) <- c("Mode", "Gene not found") }
         print(suma)
       }
 
-    }}}}}}
+    }}}}}}}
 
 
 
 
   message("-------------------------")
-
+if(length(c>0)){
   message(paste("Checking colnames of", names(MetaData)[m[1]] ,"in MetaData in clinical data."))
   message("-------------------------")
 
@@ -127,7 +137,7 @@ CheckMeta <- function(MetaData) {
 
       message(paste("Patients from Single.Cell data:", names(MetaData)[i]))
       tot=0
-      for (z in rownames(MetaData[[i]])) {
+      for (z in gene) {
         t = summary(str_detect(pattern = z, ColN))["TRUE"][1]
 
         if(is.na(as.numeric(t))){ t = 0}
@@ -143,7 +153,7 @@ CheckMeta <- function(MetaData) {
 
 
 
-     p =  which(attributes(MetaData)$Data.Type=="Samples.Clinical.data" & attributes(MetaData)$Raw.data=="Yes")
+     p =  which(attributes(MetaData)$Data.Type=="SamplesAnnot" & attributes(MetaData)$Export=="No")
 
      if(!is.null(p)){
 
@@ -156,7 +166,7 @@ CheckMeta <- function(MetaData) {
    }
 
     }
-  }
+  }}
 
 
 

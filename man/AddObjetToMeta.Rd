@@ -5,34 +5,39 @@
 \title{AddObjetToMeta}
 \usage{
 AddObjetToMeta(
-  Meta,
+  Metadata,
   object,
+  Omics.type = c("RNAseq", "Single.Cell", "Microarray", "Spatial"),
   name,
   geneFilter = F,
   SamplesFilter = F,
-  Data.type = c("Expression.Matrix", "Patient.Clinical.data", "Samples.Clinical.data",
-    "geneAnnotation.file"),
-  Raw = c("Yes", "No")
+  Data.type = c("Count", "Clinic", "SamplesAnnot", "geneAnnot", "CellAnnot"),
+  Export = c("Yes", "No")
 )
 }
 \arguments{
-\item{Meta}{a Meta Object to fill}
+\item{Metadata}{a Metadata Object to fill}
 
 \item{object}{an object to add}
 
-\item{name}{name to apply in Meta objet list}
+\item{Omics.type}{one of these categories : "RNAseq", "Single.Cell", "Microarray", "Spatial".}
 
-\item{geneFilter}{Default F, select only genes found in both the geneAnnotation.file and the Expression Matrix.}
+\item{name}{name to apply in Metadata objet list}
+
+\item{geneFilter}{Default F, select only genes found in both the geneAnnot and the Expression Matrix.}
 
 \item{SamplesFilter}{Default F, select only samples found in both the clinical data and the Expression Matrix.}
 
-\item{Data.type}{attribute c("Expression.Matrix","Patient.Clinical.data", "Samples.Clinical.data","geneAnnotation.file" )}
+\item{Data.type}{attribute c("Count","Clinic", "SamplesAnnot","geneAnnot","CellAnnot" )}
 
-\item{Raw}{attribute c("Yes", "No")}
+\item{Export}{data to export after cleaning c("Yes", "No")}
 }
 \value{
-a Meta Object
+a Metadata Object
 }
 \description{
 AddObjetToMeta
+}
+\examples{
+"none"
 }

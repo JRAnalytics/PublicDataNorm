@@ -24,9 +24,9 @@ ExportCSV <- function (MetaData, list.files.path, project){
 
   Vnumber <- NA
 
-  LF <- list.files(list.files.path$Propject.VerifiedDataset)
+  LF <- list.files(list.files.path$Project.VerifiedDataset)
   if(length(LF)!=0){
-    df <- file.info(list.files(list.files.path$Propject.VerifiedDataset, full.names = T))
+    df <- file.info(list.files(list.files.path$Project.VerifiedDataset, full.names = T))
     df$Filenames <- unlist(lapply(str_split(rownames(df),paste0(project,"/")),"[[",2))
     filepath <- rownames(df)
     filename <-  unlist(lapply(str_split(filepath,paste0(project,"/")),"[[",2))
@@ -41,7 +41,7 @@ ExportCSV <- function (MetaData, list.files.path, project){
     }
 
     version <- str_extract(filename2,"V[0-9]*")
-    Vnumber <- max(as.numeric(str_extract(version,"([0-9]+).*$")))+1
+    Vnumber <- max(na.omit(as.numeric(str_extract(version,"([0-9]+).*$"))))+1
     Vnumber2 <- Vnumber
   }
 
@@ -54,7 +54,7 @@ ExportCSV <- function (MetaData, list.files.path, project){
 
   message(paste("Exporting", object, "objects"))
 
-  NB.raw.clinic <- which(c(attributes(MetaData)$Data.Type=="Patient.Clinical.data" | attributes(MetaData)$Data.Type=="Samples.Clinical.data" ) & attributes(MetaData)$Raw.data=="Yes" )
+  NB.raw.clinic <- which(c(attributes(MetaData)$Data.Type=="Clinic" | attributes(MetaData)$Data.Type=="SamplesAnnot" ) & attributes(MetaData)$Export=="Yes" )
   if(length(NB.raw.clinic)>0) {
     count <- count+1
     message("-------------------------------------------------")
@@ -94,20 +94,20 @@ ExportCSV <- function (MetaData, list.files.path, project){
 
 
 
-     NB.Samples.Patients.pheno <-   which(c(attributes(MetaData)$Data.Type=="Patient.Clinical.data" |attributes(MetaData)$Data.Type=="Samples.Clinical.data" ) & attributes(MetaData)$Raw.data=="No" )
+     NB.Samples.Patients.pheno <-   which(c(attributes(MetaData)$Data.Type=="Clinic" |attributes(MetaData)$Data.Type=="SamplesAnnot" ) & attributes(MetaData)$Export=="Yes" )
 
         if(length(NB.Samples.Patients.pheno)!=0) {
 
        for (j in NB.Samples.Patients.pheno) {
 
-         LF <- list.files(list.files.path$Propject.VerifiedDataset)
+         LF <- list.files(list.files.path$Project.VerifiedDataset)
          lengthSTR <- length(LF[str_detect(LF,names(MetaData)[j])])
 
          if(lengthSTR==0){
            count <- count+1
            message("-------------------------------------------------")
            message(paste("Exporting", count, "/", object,"object: ",names(MetaData)[j]))
-           filename <- paste0(list.files.path$Propject.VerifiedDataset,"/",names(MetaData)[j],".csv")
+           filename <- paste0(list.files.path$Project.VerifiedDataset,"/",names(MetaData)[j],".csv")
            z <-  MetaData[[j]]
 
 
@@ -119,7 +119,7 @@ ExportCSV <- function (MetaData, list.files.path, project){
                if(Vnumber2==1){ Vnumber2 = 2}
                if(!is.null(Vnumber) & !is.na(Vnumber)){Vnumber2 = Vnumber }
 
-               filename <- paste0(list.files.path$Propject.VerifiedDataset,"/",names(MetaData)[j],".V", Vnumber2,".csv")
+               filename <- paste0(list.files.path$Project.VerifiedDataset,"/",names(MetaData)[j],".V", Vnumber2,".csv")
                write.table(z,row.names = F ,file = filename, sep = "\t")
 
 
@@ -135,7 +135,7 @@ ExportCSV <- function (MetaData, list.files.path, project){
 
 
 
-           df <- file.info(list.files(list.files.path$Propject.VerifiedDataset, full.names = T))
+           df <- file.info(list.files(list.files.path$Project.VerifiedDataset, full.names = T))
            df$Filenames <- unlist(lapply(str_split(rownames(df),paste0(project,"/")),"[[",2))
            df <- df[str_detect(df$Filenames, names(MetaData)[j]),]
 
@@ -150,7 +150,7 @@ ExportCSV <- function (MetaData, list.files.path, project){
 
              if(is.na(Vnumber)) {
                Vnumber2 = 1
-               filepath2 <- paste0(list.files.path$Propject.VerifiedDataset,"/",filename2,".V",Vnumber2,".csv",extension)
+               filepath2 <- paste0(list.files.path$Project.VerifiedDataset,"/",filename2,".V",Vnumber2,".csv",extension)
                file.rename(from = filepath, to = filepath2)
 
 
@@ -166,7 +166,7 @@ ExportCSV <- function (MetaData, list.files.path, project){
 
              message(paste0("Exporting ", count, " / ", object,"object: ",names(MetaData)[j]))
              filename3 <- unlist(lapply(str_split(filename2,".V"),"[[",1))
-             filepath2 <- paste0(list.files.path$Propject.VerifiedDataset,"/",filename3,".V",Vnumber2,".csv")
+             filepath2 <- paste0(list.files.path$Project.VerifiedDataset,"/",filename3,".V",Vnumber2,".csv")
              z <-  MetaData[[j]]
              write.table(z,row.names = F ,file = filepath2, sep = "\t")
 
@@ -178,13 +178,13 @@ ExportCSV <- function (MetaData, list.files.path, project){
      } # if( length(NB.Samples.Patients.pheno)!=0)
 
 
-     NB.Expression.Matrix <-  which(attributes(MetaData)$Data.Type=="Expression.Matrix")
+     NB.Count <-  which(attributes(MetaData)$Data.Type=="Count")
 
-        if(length(NB.Expression.Matrix)!=0) {
+        if(length(NB.Count)!=0) {
 
-          for (j in NB.Expression.Matrix) {
+          for (j in NB.Count) {
 
-        LF <- list.files(list.files.path$Propject.VerifiedDataset)
+        LF <- list.files(list.files.path$Project.VerifiedDataset)
         lengthSTR <- length(LF[str_detect(LF,names(MetaData)[j])])
 
         if(lengthSTR==0){
@@ -192,7 +192,7 @@ ExportCSV <- function (MetaData, list.files.path, project){
           message("-------------------------------------------------")
           message(paste("Exporting", count, "/", object,"object: ",names(MetaData)[j]))
           if(attributes(MetaData)$Omics.type!="Single.Cell"){
-            filename <- paste0(list.files.path$Propject.VerifiedDataset,"/",project,".",names(MetaData)[j], ".csv")
+            filename <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(MetaData)[j], ".csv")
           }
 
           z <- try(cbind("GeneSymbol" = rownames(MetaData[[j]]), MetaData[[j]]),silent = T)
@@ -200,10 +200,10 @@ ExportCSV <- function (MetaData, list.files.path, project){
 
           if(attributes(MetaData)$Omics.type=="Single.Cell"){
             z = MetaData[[j]]
-            filename <- paste0(list.files.path$Propject.VerifiedDataset,"/",project,".",names(MetaData)[j],".mtx")
+            filename <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(MetaData)[j],".mtx")
 
-            if(!"geneAnnotation.file"%in%attributes(MetaData)$Data.Type){
-            filename.genes <- paste0(list.files.path$Propject.VerifiedDataset,"/",project,".",names(MetaData)[j],".GenesInfo.csv")}
+            if(!"geneAnnot"%in%attributes(MetaData)$Data.Type){
+            filename.genes <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(MetaData)[j],".GenesInfo.csv")}
           }
 
 
@@ -219,7 +219,7 @@ ExportCSV <- function (MetaData, list.files.path, project){
 
               count <- count+1
               message("-------------------------------------------------")
-              if(!"geneAnnotation.file"%in%attributes(MetaData)$Data.Type){
+              if(!"geneAnnot"%in%attributes(MetaData)$Data.Type){
               message(paste("Exporting", count, "/", object,"object: ","GeneInfo", "file"))
               write.table(rownames(MetaData[[j]]),row.names = F ,col.names = F ,file = filename.genes, sep = "\t")}
 
@@ -239,12 +239,12 @@ ExportCSV <- function (MetaData, list.files.path, project){
               if(Vnumber2==1){ Vnumber2 = 2}
               if(!is.null(Vnumber) & !is.na(Vnumber)){Vnumber2 = Vnumber }
 
-              filename <- paste0(list.files.path$Propject.VerifiedDataset,"/",project,".",names(MetaData)[j],".V", Vnumber2)
+              filename <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(MetaData)[j],".V", Vnumber2)
 
               if(attributes(MetaData)$Omics.type=="Single.Cell"){
-                filename <- paste0(list.files.path$Propject.VerifiedDataset,"/",project,".",names(MetaData)[j],".V", Vnumber2, ".mtx")
-                if(!"geneAnnotation.file"%in%attributes(MetaData)$Data.Type){
-                filename.genes <- paste0(list.files.path$Propject.VerifiedDataset,"/",project,".GenesInfo",".V", Vnumber2, ".csv")}
+                filename <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(MetaData)[j],".V", Vnumber2, ".mtx")
+                if(!"geneAnnot"%in%attributes(MetaData)$Data.Type){
+                filename.genes <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".GenesInfo",".V", Vnumber2, ".csv")}
               }
 
 
@@ -256,7 +256,7 @@ ExportCSV <- function (MetaData, list.files.path, project){
 
               if(attributes(MetaData)$Omics.type=="Single.Cell") {
 
-                if(!"geneAnnotation.file"%in%attributes(MetaData)$Data.Type){
+                if(!"geneAnnot"%in%attributes(MetaData)$Data.Type){
                 write.table(rownames(MetaData[[j]]),row.names = F ,file = filename.genes, sep = "\t")}
 
                 if(!class(MetaData[[j]])[1]=="dgCMatrix"){MetaData[[j]] = as.matrix(MetaData[[j]]) }
@@ -280,10 +280,10 @@ ExportCSV <- function (MetaData, list.files.path, project){
           message("-------------------------------------------------")
           message(paste("Exporting", count, "/", object,"object: ",names(MetaData)[j]))
 
-          if( attributes(MetaData)$Raw.data[j]=="Yes"){ Raw = "Raw" } else { Raw = "Normalized"}
-          message(paste(Raw, attributes(MetaData)$Data.Type[j],"exported file exist. Versionning data."))
 
-          df <- file.info(list.files(list.files.path$Propject.VerifiedDataset, full.names = T))
+          message(paste(names(MetaData)[j],"exported file exist. Versionning data."))
+
+          df <- file.info(list.files(list.files.path$Project.VerifiedDataset, full.names = T))
           df$Filenames <- unlist(lapply(str_split(rownames(df),paste0(project,"/")),"[[",2))
           df <- df[str_detect(df$Filenames, names(MetaData)[j]),]
           filepath <- rownames(df)[which.max(df$mtime)]
@@ -305,19 +305,19 @@ ExportCSV <- function (MetaData, list.files.path, project){
               Vnumber2 = 1
 
               if(attributes(MetaData)$Omics.type!="Single.Cell") {
-                filepath2 <- paste0(list.files.path$Propject.VerifiedDataset,"/",filename2,".V",Vnumber2,".csv",extension)
+                filepath2 <- paste0(list.files.path$Project.VerifiedDataset,"/",filename2,".V",Vnumber2,".csv",extension)
                 file.rename(from = filepath, to = filepath2)
               }
 
               if(attributes(MetaData)$Omics.type=="Single.Cell") {
-                filepath2 <- paste0(list.files.path$Propject.VerifiedDataset,"/",filename2,".V",Vnumber2,".mtx",extension)
+                filepath2 <- paste0(list.files.path$Project.VerifiedDataset,"/",filename2,".V",Vnumber2,".mtx",extension)
                 file.rename(from = filepath, to = filepath2)
 
-                if(!"geneAnnotation.file"%in%attributes(MetaData)$Data.Type){
+                if(!"geneAnnot"%in%attributes(MetaData)$Data.Type){
                 message(paste(project, "Single cell GenesInfo exported file exist. Versionning data."))
 
-                file.rename(from =  paste0(list.files.path$Propject.VerifiedDataset,"/",project,".",names(MetaData)[j],".GenesInfo.csv"),
-                            to = paste0(list.files.path$Propject.VerifiedDataset,"/",project,".",names(MetaData)[j],".GenesInfo",".V", Vnumber2, ".csv") )}
+                file.rename(from =  paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(MetaData)[j],".GenesInfo.csv"),
+                            to = paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(MetaData)[j],".GenesInfo",".V", Vnumber2, ".csv") )}
 
 
               }
@@ -331,15 +331,15 @@ ExportCSV <- function (MetaData, list.files.path, project){
 
             message(paste0("Exporting ", count, " / ", object," object: ",names(MetaData)[j]))
             filename3 <- unlist(lapply(str_split(filename2,".V"),"[[",1))
-                   filepath2 <- paste0(list.files.path$Propject.VerifiedDataset,"/",filename3,".V",Vnumber2,".csv")
+                   filepath2 <- paste0(list.files.path$Project.VerifiedDataset,"/",filename3,".V",Vnumber2,".csv")
                    z <- try(cbind("GeneSymbol" = rownames(MetaData[[j]]), MetaData[[j]]),silent = T)
 
 
             if(attributes(MetaData)$Omics.type=="Single.Cell"){
               z=  MetaData[[j]]
-              filepath2 <- paste0(list.files.path$Propject.VerifiedDataset,"/",project,".",names(MetaData)[j],".V", Vnumber2, ".mtx")
-              if(!"geneAnnotation.file"%in%attributes(MetaData)$Data.Type){
-              filename.genes <- paste0(list.files.path$Propject.VerifiedDataset,"/",project,".",names(MetaData)[j],".GenesInfo",".V", Vnumber2, ".csv")}
+              filepath2 <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(MetaData)[j],".V", Vnumber2, ".mtx")
+              if(!"geneAnnot"%in%attributes(MetaData)$Data.Type){
+              filename.genes <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(MetaData)[j],".GenesInfo",".V", Vnumber2, ".csv")}
             }
 
 
@@ -352,7 +352,7 @@ ExportCSV <- function (MetaData, list.files.path, project){
             if(attributes(MetaData)$Omics.type=="Single.Cell") {
             count <- count+1
             message("-------------------------------------------------")
-            if(!"geneAnnotation.file"%in%attributes(MetaData)$Data.Type){
+            if(!"geneAnnot"%in%attributes(MetaData)$Data.Type){
             message(paste("Exporting", count, "/", object,"object: ","GeneInfo", "file"))
             write.table(rownames(MetaData[[j]]),row.names = F ,col.names = F,file = filename.genes, sep = "\t")
             message("-------------------------------------------------")}
@@ -372,23 +372,23 @@ ExportCSV <- function (MetaData, list.files.path, project){
         }
 
           }
-      } # if(length(NB.Expression.Matrix)!=0)
+      } # if(length(NB.Count)!=0)
 
 
-     NB.geneAnnot<-  which(attributes(MetaData)$Data.Type=="geneAnnotation.file")
+     NB.geneAnnot<-  which(attributes(MetaData)$Data.Type=="geneAnnot")
 
-         if(length(NB.Expression.Matrix)!=0) {
+         if(length(NB.Count)!=0) {
 
             for (j in NB.geneAnnot) {
 
-      LF <- list.files(list.files.path$Propject.VerifiedDataset)
+      LF <- list.files(list.files.path$Project.VerifiedDataset)
       lengthSTR <- length(LF[str_detect(LF,names(MetaData)[j])])
 
       if(lengthSTR==0){
         count <- count+1
         message("-------------------------------------------------")
         message(paste("Exporting", count, "/", object,"object: ",names(MetaData)[j], "file"))
-        filename <- paste0(list.files.path$Propject.VerifiedDataset,"/",project,".",names(MetaData)[j],".csv")
+        filename <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(MetaData)[j],".csv")
         z <- cbind(MetaData[[j]])
 
         if(is.na(Vnumber)| is.null(Vnumber)){
@@ -400,7 +400,7 @@ ExportCSV <- function (MetaData, list.files.path, project){
           if(Vnumber2==1){ Vnumber2 = 2}
           if(!is.null(Vnumber) & !is.na(Vnumber)){Vnumber2 = Vnumber }
 
-          filename <- paste0(list.files.path$Propject.VerifiedDataset,"/",project,".",names(MetaData)[j],".V", Vnumber2,".csv")
+          filename <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(MetaData)[j],".V", Vnumber2,".csv")
           write.table(z,row.names = F ,file = filename, sep = "\t")
           message(paste("Compressing"))
           R.utils::gzip(filename, destname=sprintf("%s.gz", filename), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)
@@ -417,7 +417,7 @@ ExportCSV <- function (MetaData, list.files.path, project){
 
         message(paste(attributes(MetaData)$Data.Type[j],"exported file exist. Versionning data."))
 
-        df <- file.info(list.files(list.files.path$Propject.VerifiedDataset, full.names = T))
+        df <- file.info(list.files(list.files.path$Project.VerifiedDataset, full.names = T))
         df$Filenames <- unlist(lapply(str_split(rownames(df),paste0(project,"/")),"[[",2))
         df <- df[str_detect(df$Filenames, names(MetaData)[j]),]
         filepath <- rownames(df)[which.max(df$mtime)]
@@ -433,7 +433,7 @@ ExportCSV <- function (MetaData, list.files.path, project){
           if(is.na(Vnumber)) {
             Vnumber2 = 1
 
-            filepath2 <- paste0(list.files.path$Propject.VerifiedDataset,"/",filename2,".V",Vnumber2,".csv",extension)
+            filepath2 <- paste0(list.files.path$Project.VerifiedDataset,"/",filename2,".V",Vnumber2,".csv",extension)
             file.rename(from = filepath, to = filepath2)
           }
 
@@ -441,9 +441,9 @@ ExportCSV <- function (MetaData, list.files.path, project){
           if(!is.null(Vnumber) & !is.na(Vnumber)){Vnumber2 = Vnumber }
           if(Vnumber2==1){ Vnumber2 = 2}
 
-          message(paste0("Exporting ", count, " / ", object,"object: ",names(MetaData)[j]))
+          message(paste0("Exporting ", count, " / ", object," object: ",names(MetaData)[j]))
           filename3 <- unlist(lapply(str_split(filename2,".V"),"[[",1))
-          filepath2 <- paste0(list.files.path$Propject.VerifiedDataset,"/",filename3,".V",Vnumber2,".csv")
+          filepath2 <- paste0(list.files.path$Project.VerifiedDataset,"/",filename3,".V",Vnumber2,".csv")
           z <-  MetaData[[j]]
           write.table(z,row.names = F ,file = filepath2, sep = "\t")
           message(paste("Compressing"))
@@ -454,15 +454,18 @@ ExportCSV <- function (MetaData, list.files.path, project){
       }}
            }# if length(NB.geneAnnot)
 
-     objs =  mget(ls(envir=.GlobalEnv), envir=.GlobalEnv)
-     NO <- names(Filter(function(i) inherits(i, "list"), objs))[str_detect(toupper(names(Filter(function(i) inherits(i, "list"), objs))),"META")]
+     # objs =  mget(ls(envir=.GlobalEnv), envir=.GlobalEnv)
+     # NO <- names(Filter(function(i) inherits(i, "list"), objs))[str_detect(toupper(names(Filter(function(i) inherits(i, "list"), objs))),"META")]
+     #
+     # pos <- 1
+     # envir = as.environment(pos)
+     #
+     # assign(NO, MetaData, envir = envir)
 
-     pos <- 1
-     envir = as.environment(pos)
 
-     assign(NO, MetaData, envir = envir)
+     attributes(MetaData)$Version <- paste0("V", Vnumber2)
 
-
+return(MetaData)
 
 
   }#function

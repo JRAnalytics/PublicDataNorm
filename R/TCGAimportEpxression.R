@@ -126,12 +126,21 @@ if(!all(file.exists(Files.brut.exist)==T)){
   else { message( "Part of Data already existing, downloading missing cases and building Meta.")}}
 
 
+if(!all(file.exists(Files.Rename.exist)==T)){
+
+  files.rename.name.missing= Files.Rename.exist[!file.exists(Files.Rename.exist)]
+  missing.rename = which(!file.exists(Files.Rename.exist))
+
+  if(length(files.rename.name.missing)==0){ message("Data already existing, building Meta.")}
+  else { message( "Part of Data already existing, downloading missing cases and building Meta.")}}
+
+
 
   ses=sessionInfo()
 
   if(str_detect(ses$running, "Windows")) {
 
-    if(str_detect(ses$running, "Windows")& nchar(files[1]>150) & is.null(alt.dir)){ stop("File path too long. Try  using an alternative directory to put downloaded data.\n(set 'alt.dir')")}
+    if(str_detect(ses$running, "Windows")& nchar(files[1]>1000) & is.null(alt.dir)){ stop("File path too long. Try  using an alternative directory to put downloaded data.\n(set 'alt.dir')")}
 
     if(!is.null(alt.dir)){
       setwd(file.path(paste0(alt.dir,"/")))

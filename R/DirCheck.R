@@ -44,7 +44,7 @@ DirCheck <- function(project,path){
                            "Project.Processes" = file.path.Project.Processes,
                            "References"= file.path.References,
                            "VerifiedDataSet" = file.path.VerifiedDataSet,
-                           "Propject.VerifiedDataset" = file.path.Project.VerifiedDataset)
+                           "Project.VerifiedDataset" = file.path.Project.VerifiedDataset)
 
   message("Creating Project directories")
 
