@@ -6,7 +6,9 @@
 \usage{
 CleaningClinic(
   Metadata,
-  type = c("Sample", "Patients"),
+  ClinicToClean = NULL,
+  name = NULL,
+  type = c("Samples", "Patients"),
   list.files.path,
   project,
   ForceCleaning = F,
@@ -16,7 +18,11 @@ CleaningClinic(
 \arguments{
 \item{Metadata}{Metadata object}
 
-\item{type}{"Sample Pheno" or "Patients' clinical data" for building clean clinical data from raw clinical data.}
+\item{ClinicToClean}{a character string of name of clinical data to clean.}
+
+\item{name}{name to apply in Metadata object list}
+
+\item{type}{"c("Samples", "Patients") for building clean clinical data from raw clinical data.}
 
 \item{list.files.path}{file path to find lexique of colnames}
 

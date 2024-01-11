@@ -4,12 +4,12 @@
 \alias{LexicData}
 \title{LexicData function to prepare constant colnames to find in clinical data from lexiue .txt}
 \usage{
-LexicData(list.files.path, MetaData = NULL, replaceLexic = F)
+LexicData(list.files.path, SC.Lexic = F, replaceLexic = F)
 }
 \arguments{
 \item{list.files.path}{file path to find lexique of colnames}
 
-\item{MetaData}{a MetaData list. Default NULL. Not mandatory. If Single.cell data, please specify your MetaData object to load specific lexic.}
+\item{SC.Lexic}{default F. If MetaObject is made of Single.Cell sequencing data, set to T.}
 
 \item{replaceLexic}{replace Samples and Patient Lexis if already loaded}
 }

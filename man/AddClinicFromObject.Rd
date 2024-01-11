@@ -9,8 +9,9 @@ AddClinicFromObject(
   object,
   name,
   SamplesFilter = F,
-  Data.type = c("Clinic", "SamplesAnnot", "CellAnnot"),
-  Export = c("Yes", "No")
+  type = c("Samples", "Patients", "Cells"),
+  Export = c("Yes", "No"),
+  force.replace = F
 )
 }
 \arguments{
@@ -18,13 +19,15 @@ AddClinicFromObject(
 
 \item{object}{an object to add}
 
-\item{name}{name to apply in Metadata objet list}
+\item{name}{name to apply in Metadata object list}
 
 \item{SamplesFilter}{Default F, select only samples found in both the clinical data and the Expression Matrix.}
 
-\item{Data.type}{attribute  c("Clinic", "SamplesAnnot","CellAnnot" )}
+\item{type}{can be Samples", "Patients" or "Cells", to defiens Data.type attributes}
 
 \item{Export}{data to export after cleaning c("Yes", "No")}
+
+\item{force.replace}{set as F. T : replace an already object with the same name}
 }
 \value{
 a Metadata Object

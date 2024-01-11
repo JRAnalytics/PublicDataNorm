@@ -1,7 +1,9 @@
 #' CleaningClinic function : Cleaning clinical data to map samples and patients in Sequençing data
 #'
 #' @param Metadata Metadata object
-#' @param type "Sample Pheno" or "Patients' clinical data" for building clean clinical data from raw clinical data.
+#' @param ClinicToClean a character string of name of clinical data to clean.
+#' @param name name to apply in Metadata object list
+#' @param type "c("Samples", "Patients") for building clean clinical data from raw clinical data.
 #' @param list.files.path file path to find lexique of colnames
 #' @param project project
 #' @param ForceCleaning If TRUE, Force a cleaning method from Samples.clinical data into Patient.clinical data and vice versa.
@@ -12,57 +14,37 @@
 #' @export
 #'
 #' @examples "none"
-CleaningClinic <- function(Metadata, type = c("Sample", "Patients"), list.files.path, project, ForceCleaning = F, all.col = F){
+CleaningClinic <- function(Metadata,
+                           ClinicToClean = NULL,
+                           name = NULL,
+                           type = c("Samples", "Patients"),
+                           list.files.path,
+                           project,
+                           ForceCleaning = F,
+                           all.col = F){
 
 
+  #Force.Replace et détecte si name déjà existant à faire.
 
-  if(attributes(Metadata)$Omics.type!="Single.Cell"){
-    NB <- which(str_detect(attributes(Metadata)$Data.Type ,"Clinical.data") & attributes(Metadata)$Export=="No")
-  }
-
-  if(attributes(Metadata)$Omics.type=="Single.Cell" & type == "Sample"){
-    NB <- which(str_detect(attributes(Metadata)$Data.Type ,"SamplesAnnot") & attributes(Metadata)$Export=="No")
-  }
-
-  if(attributes(Metadata)$Omics.type=="Single.Cell" & type == "Patients"){
-    NB <- which(str_detect(attributes(Metadata)$Data.Type ,"Clinic") & attributes(Metadata)$Export=="NO")
-  }
-
-
-
-  if(length(NB)==0){
-
-
-    if(attributes(Metadata)$Omics.type!="Single.Cell"){ stop("No clinical data in meta object") }
-
-    if(attributes(Metadata)$Omics.type=="Single.Cell" & length(which(str_detect(attributes(Metadata)$Data.Type ,"SamplesAnnot")))==0){
-
-      NBM <- which(str_detect(attributes(Metadata)$Data.Type ,"Count"))
-
-      Metadata$Cells.annot = data.frame("SamplesID"= colnames(Metadata[[NBM[1]]]))
-
-      attributes(Metadata)$Data.Type =  c(attributes(Metadata)$Data.Type,"SamplesAnnot")
-      attributes(Metadata)$Export = c(attributes(Metadata)$Export,"No")
-      NB <- which(str_detect(attributes(Metadata)$Data.Type ,"SamplesAnnot") & attributes(Metadata)$Export=="No")
-
-
-    }
-
-  }#length de NB ==0
+  if(is.null(ClinicToClean)){stop("ClinicToClean must be a character")}
+  if(!inherits(ClinicToClean,what ="character" )){ stop("ClinicToClean must be a character")}
+  if(is.null(name)){stop("Name must be a character")}
+  if(!inherits(name,what ="character" )){ stop("Name must be a character")}
+  if(!ClinicToClean%in%names(Metadata)) {stop(paste0(ClinicToClean,"is not in Metaobject")) }
 
 
 
 
-
-  if(type=="Sample"){
+    if(type=="Samples"){
 
     NBS <- which(attributes(Metadata)$Data.Type=="SamplesAnnot" & attributes(Metadata)$Export=="No")
+
 
     if(ForceCleaning==F){
       if(length(NBS)==0){stop("No SamplesAnnot found in Metadata object. Set ForceCleaning=T to force cleaning from Clinic")}
     } else {  if(length(NBS)==0){NBS <- which(str_detect(attributes(Metadata)$Data.Type ,"Clinical.data") & attributes(Metadata)$Export=="No")    }}
 
-
+      if(NBS==which(names(Metadata)%in%ClinicToClean)){
 
     clinic <- as.data.frame(Metadata[[NBS]])
 
@@ -176,7 +158,7 @@ CleaningClinic <- function(Metadata, type = c("Sample", "Patients"), list.files.
 
     file.show(paste0(list.files.path$Project.Processes,"/Samples.CleanedProcess.txt"))
 
-  } else if(type=="Patients")
+  }} else if(type=="Patients")
   {
 
     NBP <- which(attributes(Metadata)$Data.Type=="Clinic" & attributes(Metadata)$Export=="No")
@@ -185,9 +167,9 @@ CleaningClinic <- function(Metadata, type = c("Sample", "Patients"), list.files.
 
     if(ForceCleaning==F){
       if(length(NBP)==0){stop("No Clinic found in Metadata object. Set ForceCleaning=T to force cleaning from SamplesAnnot")}
-    } else { if(length(NBP)==0){ NBP <- which(str_detect(attributes(Metadata)$Data.Type ,"Clinical.data") & attributes(Metadata)$Raw=="Yes")    }}
+    } else { if(length(NBP)==0){ NBP <- which(str_detect(attributes(Metadata)$Data.Type ,"SamplesAnnot") & attributes(Metadata)$Export=="No")    }}
 
-
+    if(NBP==which(names(Metadata)%in%ClinicToClean)){
 
     clinic <- as.data.frame(Metadata[[NBP]])
 
@@ -314,8 +296,8 @@ CleaningClinic <- function(Metadata, type = c("Sample", "Patients"), list.files.
     file.show(paste0(list.files.path$Project.Processes,"/Patients.CleanedProcess.txt"))
 
 
-  } else {
-    stop("Choose type = 'Sample Pheno' or 'Patients' clinical data' ")}
+  }} else {
+    stop("Choose type = c('Samples', 'Patients')")}
 
 
 
