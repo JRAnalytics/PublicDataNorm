@@ -5,7 +5,7 @@
 \title{AddLocalDatabase}
 \usage{
 AddLocalDatabase(
-  Meta,
+  Metadata,
   list.files.path,
   Normalization.Method = NA,
   Technology = NA,
@@ -19,7 +19,7 @@ AddLocalDatabase(
 )
 }
 \arguments{
-\item{Meta}{Meta object}
+\item{Metadata}{Metadata object}
 
 \item{list.files.path}{dirpath}
 
@@ -39,7 +39,7 @@ AddLocalDatabase(
 
 \item{Comment}{specify a comment for this export}
 
-\item{User}{User who export the cleaned Meta object}
+\item{User}{User who export the cleaned Metadata object}
 }
 \value{
 a .text tab delimited database summary

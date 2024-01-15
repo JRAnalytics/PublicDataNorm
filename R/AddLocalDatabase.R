@@ -1,6 +1,6 @@
 #' AddLocalDatabase
 #'
-#' @param Meta Meta object
+#' @param Metadata Metadata object
 #' @param list.files.path dirpath
 #' @param Normalization.Method Defaul = NA
 #' @param Technology Microarray, RNAseq, Single cell etc
@@ -10,13 +10,13 @@
 #' @param DOI doi of article if exist. Defaul = NA
 #' @param project project name
 #' @param Comment specify a comment for this export
-#' @param User User who export the cleaned Meta object
+#' @param User User who export the cleaned Metadata object
 #' @return a .text tab delimited database summary
 #' @import data.table
 #' @export
 #'
 #' @examples "non"
-AddLocalDatabase <- function(Meta,
+AddLocalDatabase <- function(Metadata,
                                list.files.path,
                                Normalization.Method = NA,
                                Technology = NA,
@@ -33,67 +33,55 @@ AddLocalDatabase <- function(Meta,
   Local.Data.base.Path <- list.files.path$Parent
   lf <- list.files(Local.Data.base.Path)
 
-  if(is.null(attributes(Meta)$Version)){ Version = "V1"} else {   Version <- attributes(Meta)$Version }
+  if(is.null(attributes(Metadata)$Version)){ Version = "V1"} else {   Version <- attributes(Metadata)$Version }
 
-  NBS <- which(attributes(Meta)$Data.Type=="SamplesAnnot" & attributes(Meta)$Export=="Yes")
-  cc <- as.character()
-  for (i in NBS){
-    nn <- names(cc)
-    cc <- c(cc,nrow(Meta[[i]]))
-    names(cc) <- c(nn,i)
-  }
-  NBS <- as.numeric(names(cc)[which(cc%in%min(cc))[1]])
+  NBS <- which(attributes(Metadata)$Data.Type=="SamplesAnnot" & attributes(Metadata)$Export=="Yes")
+  NBS = NBS[1]
 
-  NBP <- which(attributes(Meta)$Data.Type=="Clinic" & attributes(Meta)$Export=="Yes")
-  cc <- as.character()
-  for (i in NBP){
-    nn <- names(cc)
-    cc <- c(cc,nrow(Meta[[i]]))
-    names(cc) <- c(nn,i)
-  }
-  NBP <- as.numeric(names(cc)[which(cc%in%min(cc))[1]])
+  NBP <- which(attributes(Metadata)$Data.Type=="Clinic" & attributes(Metadata)$Export=="Yes")
+  NBP = NBP[1]
 
 
 
 
   if(length(NBS)==0){ Nsamples=0 } else{
-    Nsamples <- nrow(Meta[[NBS]])}
+    Nsamples <- nrow(Metadata[[NBS[1]]])}
 
   if(length(NBP)==0){ Npatient = Nsamples}else{
-    Npatient <- nrow(Meta[[NBP]])}
+    Npatient <- nrow(Metadata[[NBP[1]]])}
 
-  if(length(which(attributes(Meta)$Data.Type=="Count" & attributes(Meta)$Export=="Yes" ))==0){ RawGenes = 0} else {
+  if(length(which(attributes(Metadata)$Data.Type=="Count" & attributes(Metadata)$Export=="Yes" ))==0){ RawGenes = 0} else {
 
-    NB.raw.mat<- which(attributes(Meta)$Data.Type=="Count" & attributes(Meta)$Export=="Yes" )
-    RawGenes <- nrow(Meta[[NB.raw.mat[1]]])}
+    NB.raw.mat<- which(attributes(Metadata)$Data.Type=="Count" & attributes(Metadata)$Export=="Yes" )
+    RawGenes <- nrow(Metadata[[NB.raw.mat[1]]])}
 
-  if(length(which(attributes(Meta)$Data.Type=="Count" & attributes(Meta)$Export=="No" ))==0){NormGenes=0}else{
-    NB.norm.mat <- which(attributes(Meta)$Data.Type=="Count" & attributes(Meta)$Export=="No")
-    NormGenes <- nrow(Meta[[NB.norm.mat[1]]])}
+  if(length(which(attributes(Metadata)$Data.Type=="Count" & attributes(Metadata)$Export=="No" ))==0){NormGenes=0}else{
+    NB.norm.mat <- which(attributes(Metadata)$Data.Type=="Count" & attributes(Metadata)$Export=="No")
+    NormGenes <- nrow(Metadata[[NB.norm.mat[1]]])}
 
 
 
-  if(all(is.na(Meta[[NBS]]$SamplePathologicalState))){tumor <- nrow(Meta[[NBS]]) } else {
-    tumor <- length(which(str_detect(toupper(Meta[[NBS]]$SamplePathologicalState),"TUM|PRIMARY")))
-    if(tumor==0 & !all(is.na(Meta[[NBS]]$SamplePathologicalState))) {
+  if(all(is.na(Metadata[[NBS[1]]]$SamplePathologicalState))){tumor <- nrow(Metadata[[NBS[1]]]) } else {
+    tumor <- length(which(str_detect(toupper(Metadata[[NBS[1]]]$SamplePathologicalState),"TUM|PRIMARY|CARCINO")))
+    if(tumor==0 & !all(is.na(Metadata[[NBS[1]]]$SamplePathologicalState))) {
 
-      normal <- length(which(str_detect(toupper(Meta[[NBS]]$SamplePathologicalState),"NORM|HEAL")))
-      met <- length(which(str_detect(toupper(Meta[[NBS]]$SamplePathologicalState),"MET")))
-      na <- length(which(is.na(Meta[[NBS]]$SamplePathologicalState)))
-      tumor = nrow(Meta[[NBS]])-normal-met-na
+      normal <- length(which(str_detect(toupper(Metadata[[NBS[1]]]$SamplePathologicalState),"NORM|HEAL")))
+      met <- length(which(str_detect(toupper(Metadata[[NBS[1]]]$SamplePathologicalState),"MET")))
+      na <- length(which(is.na(Metadata[[NBS[1]]]$SamplePathologicalState)))
+      tumor = nrow(Metadata[[NBS[1]]])-normal-met-na
     }
 
   }
 
-  if(all(is.na(Meta[[NBS]]$SamplePathologicalState))){normal <- 0 } else {
-    normal<- length(which(str_detect(toupper(Meta[[NBS]]$SamplePathologicalState),"NORM|HEAL")))
+  if(all(is.na(Metadata[[NBS[1]]]$SamplePathologicalState))){normal <- 0 } else {
+    normal<- length(which(str_detect(toupper(Metadata[[NBS[1]]]$SamplePathologicalState),"NORM|HEAL")))
 
-    if(normal==0 & !all(is.na(Meta[[NBS]]$SamplePathologicalState))) {
+    if(normal==0 & !all(is.na(Metadata[[NBS[1]]]$SamplePathologicalState))) {
 
 
-      met <- length(which(str_detect(toupper(Meta[[NBS]]$SamplePathologicalState),"MET")))
-      na <- length(which(is.na(Meta[[NBS]]$SamplePathologicalState)))
-      normal = nrow(Meta[[NBS]])-tumor-met-na
+      met <- length(which(str_detect(toupper(Metadata[[NBS[1]]]$SamplePathologicalState),"MET")))
+      na <- length(which(is.na(Metadata[[NBS[1]]]$SamplePathologicalState)))
+      normal = nrow(Metadata[[NBS[1]]])-tumor-met-na
     }
   }
 
@@ -104,9 +92,9 @@ AddLocalDatabase <- function(Meta,
 
   if(length(NBS)>0){
 
-    if(!is.null(Meta[[NBS]][,"HadTreatment"])) {
+    if(!is.null(Metadata[[NBS[1]]][,"HadTreatment"])) {
 
-      TTT <- length(which(str_detect(toupper(Meta[[NBS]][,"HadTreatment"]),"YES|OUI|TRUE|1")))
+      TTT <- length(which(str_detect(toupper(Metadata[[NBS[1]]][,"HadTreatment"]),"YES|OUI|TRUE|1")))
 
     } else { TTT <- 0   }
 
@@ -121,14 +109,12 @@ AddLocalDatabase <- function(Meta,
   }
 
   if(length(NBP)>0){
-    if(all(is.na(Meta[[NBP]]$OSdelay))){ OSinfo <- "No" } else { OSinfo <- "Yes" }
-    if(all(is.na(Meta[[NBP]]$PFSdelay ))){ PFSinfo <- "No" } else { PFSinfo <- "Yes" } }
-
-  else {
+    if(all(is.na(Metadata[[NBP[1]]]$OSdelay))){ OSinfo <- "No" } else { OSinfo <- "Yes" }
+    if(all(is.na(Metadata[[NBP[1]]]$PFSdelay ))){ PFSinfo <- "No" } else { PFSinfo <- "Yes" } } else {
     OSinfo <- "No"
     PFSinfo <- "No" }
 
-  met <- length(which(str_detect(toupper(Meta[[NBS]]$SamplePathologicalState),"MET")))
+  met <- length(which(str_detect(toupper(Metadata[[NBS[1]]]$SamplePathologicalState),"MET")))
 
   dt <- data.frame("Project" = project,
                    "Version" = Version,
@@ -137,7 +123,7 @@ AddLocalDatabase <- function(Meta,
                    "N.Samples" = Nsamples,
                    "N.TumoralSamples" = tumor,
                    "N.NormalSamples" = normal,
-                   "N.Metastasis" = met,
+                   "N.Metadatastasis" = met,
                    "Overall.Survival" = OSinfo ,
                    "Progression.Free.Survival" = PFSinfo,
                    "Treatment.Information" = TTTinfo,
@@ -172,16 +158,17 @@ AddLocalDatabase <- function(Meta,
 
 
 
-      if(!all((x$Project[x$Project==project]==project & x$Version[x$Project==project]==attributes(Meta)$Version)==F)){
+      if(!all((x$Project[x$Project==project]==project & x$Version[x$Project==project]==Version)==F)){
 
         message(paste(project,"already existing in database. Reactualising database"))
 
         proj <- which(x$Project==project)
-        row <- which(x$Version[proj]==attributes(Meta)$Version)
+        row <- which(x$Version[proj]==Version)
 
 
         x[proj[row],] <- dt
 
+        print(dt)
 
       } else { x <- rbind(x,dt)
       print(dt)
@@ -193,9 +180,9 @@ AddLocalDatabase <- function(Meta,
 
     }
 
-    LF <- list.files(list.files.path$Propject.VerifiedDataset)
+    LF <- list.files(list.files.path$Project.VerifiedDataset)
     if(length(LF)!=0){
-      df <- file.info(list.files(list.files.path$Propject.VerifiedDataset, full.names = T))
+      df <- file.info(list.files(list.files.path$Project.VerifiedDataset, full.names = T))
       df$Filenames <- unlist(lapply(str_split(rownames(df),paste0(project,"/")),"[[",2))
       filename2 <- unlist(lapply(str_split( df$Filenames ,".csv"),"[[",1))
       version <- unique(str_extract(filename2,"V[0-9]*"))

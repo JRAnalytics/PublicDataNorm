@@ -2,22 +2,22 @@
 % Please edit documentation in R/AddgeneAnnotFromObject.R
 \name{AddgeneAnnotFromObject}
 \alias{AddgeneAnnotFromObject}
-\title{AddgeneAnnotFromObject to Meta}
+\title{AddgeneAnnotFromObject to Metadata}
 \usage{
-AddgeneAnnotFromObject(Meta, object, force.replace = F)
+AddgeneAnnotFromObject(Metadata, object, force.replace = F)
 }
 \arguments{
-\item{Meta}{Meta object to add geneAnnotation}
+\item{Metadata}{Metadata object to add geneAnnotation}
 
 \item{object}{object to add}
 
 \item{force.replace}{set as F. T : replace an already object with the same name}
 }
 \value{
-return a Meta list of dataframe with geneAnntotation
+return a Metadata list of dataframe with geneAnntotation
 }
 \description{
-AddgeneAnnotFromObject to Meta
+AddgeneAnnotFromObject to Metadata
 }
 \examples{
 "none"

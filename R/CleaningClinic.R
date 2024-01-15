@@ -194,7 +194,7 @@ CleaningClinic <- function(Metadata,
     clinic <- as.data.frame(Metadata[[NBP]])
 
 
-    if(all.col==T){
+    if(all.column==T){
 
       for (i in colnames(clinic)){
 

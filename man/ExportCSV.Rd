@@ -2,12 +2,12 @@
 % Please edit documentation in R/ExportCSV.R
 \name{ExportCSV}
 \alias{ExportCSV}
-\title{ExportCSV Export MetaData inside object into ".csv" files}
+\title{ExportCSV Export Metadata inside object into ".csv" files}
 \usage{
-ExportCSV(MetaData, list.files.path, project)
+ExportCSV(Metadata, list.files.path, project)
 }
 \arguments{
-\item{MetaData}{a MetaData  data files}
+\item{Metadata}{a Metadata  data files}
 
 \item{list.files.path}{dirpath}
 
@@ -17,7 +17,7 @@ ExportCSV(MetaData, list.files.path, project)
 ".csv" files into working directory
 }
 \description{
-ExportCSV Export MetaData inside object into ".csv" files
+ExportCSV Export Metadata inside object into ".csv" files
 }
 \examples{
 "non"

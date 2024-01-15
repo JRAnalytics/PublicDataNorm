@@ -2,12 +2,12 @@
 % Please edit documentation in R/AddgeneAnnotGtf.R
 \name{AddgeneAnnotGtf}
 \alias{AddgeneAnnotGtf}
-\title{AddgeneAnnotGtf to Meta}
+\title{AddgeneAnnotGtf to Metadata}
 \usage{
-AddgeneAnnotGtf(Meta, gtf.file.dir, gtf.files, force.replace = F)
+AddgeneAnnotGtf(Metadata, gtf.file.dir, gtf.files, force.replace = F)
 }
 \arguments{
-\item{Meta}{Meta object to add geneAnnotation}
+\item{Metadata}{Metadata object to add geneAnnotation}
 
 \item{gtf.file.dir}{set xorking directory to path to gtf.file}
 
@@ -16,10 +16,10 @@ AddgeneAnnotGtf(Meta, gtf.file.dir, gtf.files, force.replace = F)
 \item{force.replace}{set as F. T : replace an already object with the same name}
 }
 \value{
-return a Meta list of dataframe with geneAnntotation
+return a Metadata list of dataframe with geneAnntotation
 }
 \description{
-AddgeneAnnotGtf to Meta
+AddgeneAnnotGtf to Metadata
 }
 \examples{
 "none"
