@@ -12,6 +12,7 @@ CleaningClinic(
   list.files.path,
   project,
   ForceCleaning = F,
+  force.replace = F,
   all.col = F
 )
 }
@@ -29,6 +30,8 @@ CleaningClinic(
 \item{project}{project}
 
 \item{ForceCleaning}{If TRUE, Force a cleaning method from Samples.clinical data into Patient.clinical data and vice versa.}
+
+\item{force.replace}{set as F. T : replace an already object with the same name}
 
 \item{all.col}{default F, if T, copy all column from clinic.}
 }

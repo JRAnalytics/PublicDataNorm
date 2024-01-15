@@ -7,7 +7,8 @@
 #' @param list.files.path file path to find lexique of colnames
 #' @param project project
 #' @param ForceCleaning If TRUE, Force a cleaning method from Samples.clinical data into Patient.clinical data and vice versa.
-#' @param all.col default F, if T, copy all column from clinic.
+#' @param force.replace set as F. T : replace an already object with the same name
+#' @param all.column default F, if T, copy all column from clinic.
 #' @importFrom utils menu
 #' @import dplyr
 #' @return a data frame of Samples pheno or patients clinical data. If Sample ID and Patients ID are the sames, so Samples.pheno and Patient_clinic are the same data frame
@@ -21,10 +22,11 @@ CleaningClinic <- function(Metadata,
                            list.files.path,
                            project,
                            ForceCleaning = F,
-                           all.col = F){
+                           force.replace = F,
+                           all.column = F){
 
 
-  #Force.Replace et détecte si name déjà existant à faire.
+
 
   if(is.null(ClinicToClean)){stop("ClinicToClean must be a character")}
   if(!inherits(ClinicToClean,what ="character" )){ stop("ClinicToClean must be a character")}
@@ -32,6 +34,9 @@ CleaningClinic <- function(Metadata,
   if(!inherits(name,what ="character" )){ stop("Name must be a character")}
   if(!ClinicToClean%in%names(Metadata)) {stop(paste0(ClinicToClean,"is not in Metaobject")) }
 
+  if(!all(str_detect(names(Metadata),name)==F)){
+    message("An Object with the same name already exist in MetaObject")
+    if(force.replace==F){stop("set force.replace==T to subset object.")}}
 
 
 
@@ -42,20 +47,21 @@ CleaningClinic <- function(Metadata,
 
     if(ForceCleaning==F){
       if(length(NBS)==0){stop("No SamplesAnnot found in Metadata object. Set ForceCleaning=T to force cleaning from Clinic")}
-    } else {  if(length(NBS)==0){NBS <- which(str_detect(attributes(Metadata)$Data.Type ,"Clinical.data") & attributes(Metadata)$Export=="No")    }}
+    } else {  if(length(NBS)==0){NBS <- which(str_detect(attributes(Metadata)$Data.Type ,"Clinic") & attributes(Metadata)$Export=="No")    } else { stop("A SamplesAnnot attribute was found. ForceCleaning not advised.") }}
 
       if(NBS==which(names(Metadata)%in%ClinicToClean)){
 
     clinic <- as.data.frame(Metadata[[NBS]])
 
-    if(all.col==T){
+    if(all.column==T){
 
-      for (i in colnames(Metadata$Clinic)){
+      for (i in colnames(clinic)){
 
         if (!i %in% names(SamplesLexic)){SamplesLexic <- AddKeyLexic(lexic = SamplesLexic, Param = c(i) ) }
 
       }
-      LexicClinic=SamplesLexic
+
+    LexicClinic=SamplesLexic
 
     }else {  LexicClinic <- SamplesLexic }
 
@@ -103,19 +109,30 @@ CleaningClinic <- function(Metadata,
       clinic2[clinic2==""] <- NA
       clinic2[clinic2=="NA"] <- NA
 
-      l <- length(Metadata)
 
-      if(paste0(project,".Samples.",names(Metadata)[NBS])%in%names(Metadata)){
 
-        Metadata[[paste0(project,".Samples.",names(Metadata)[NBS])]] <- clinic2
 
-      } else {
+      if(!all(str_detect(names(Metadata),name)==F)){
+        if(force.replace==F){stop("set force.replace==T to subset object.")}
+        message("Subsetting object.")
 
+        Metadata[[name]] <- clinic2
+
+        t= which(str_detect(names(Metadata),name))
+
+        attributes(Metadata)$Data.Type[t] <-  c("SamplesAnnot")
+        attributes(Metadata)$Export[t] <- c("Yes")
+
+
+
+
+      }else {
+
+        l <- length(Metadata)
         Metadata[[l+1]] <- clinic2
-        names(Metadata)[l+1] <- paste0(project,".Samples.",names(Metadata)[NBS])
-        if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
-          attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"SamplesAnnot")
-          attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes")}}
+        names(Metadata)[l+1] <- name
+        attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"SamplesAnnot")
+        attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes")}
 
 
 
@@ -137,21 +154,24 @@ CleaningClinic <- function(Metadata,
       cl_rolled[cl_rolled==""] <- NA
       cl_rolled[cl_rolled=="NA"] <- NA
 
-      l <- length(Metadata)
 
-      if(paste0(project,".Samples.",names(Metadata)[NBS])%in%names(Metadata)){
+      if(!all(str_detect(names(Metadata),name)==F)){
+        if(force.replace==F){stop("set force.replace==T to subset object.")}
+        message("Subsetting object.")
 
-        Metadata[[paste0(project,".Samples.",names(Metadata)[NBS])]] <- cl_rolled
+        Metadata[[name]] <- cl_rolled
 
-      } else {
+        t= which(str_detect(names(Metadata),name))
 
+        attributes(Metadata)$Data.Type[t] <-  c("SamplesAnnot")
+        attributes(Metadata)$Export[t] <- c("Yes")
+
+
+      }else {
+
+        l <- length(Metadata)
         Metadata[[l+1]] <- cl_rolled
-        names(Metadata)[l+1] <- paste0(project,".Samples.",names(Metadata)[NBS])
-        if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
-          attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"SamplesAnnot")
-          attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes")}}
-
-      if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
+        names(Metadata)[l+1] <- name
         attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"SamplesAnnot")
         attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes")}
     }
@@ -167,7 +187,7 @@ CleaningClinic <- function(Metadata,
 
     if(ForceCleaning==F){
       if(length(NBP)==0){stop("No Clinic found in Metadata object. Set ForceCleaning=T to force cleaning from SamplesAnnot")}
-    } else { if(length(NBP)==0){ NBP <- which(str_detect(attributes(Metadata)$Data.Type ,"SamplesAnnot") & attributes(Metadata)$Export=="No")    }}
+    } else { if(length(NBP)==0){ NBP <- which(str_detect(attributes(Metadata)$Data.Type ,"SamplesAnnot") & attributes(Metadata)$Export=="No")    } else { stop("A 'Clinic' attribute was found. ForceCleaning not advised.") }}
 
     if(NBP==which(names(Metadata)%in%ClinicToClean)){
 
@@ -176,7 +196,7 @@ CleaningClinic <- function(Metadata,
 
     if(all.col==T){
 
-      for (i in colnames(Metadata$Clinic)){
+      for (i in colnames(clinic)){
 
         if (!i %in% names(PatientLexic)){PatientLexic <- AddKeyLexic(lexic = PatientLexic, Param = c(i) ) }
 
@@ -230,18 +250,25 @@ CleaningClinic <- function(Metadata,
 
 
 
-      l <- length(Metadata)
-      if(paste0(project,".Patients.",names(Metadata)[NBP])%in%names(Metadata)){
+      if(!all(str_detect(names(Metadata),name)==F)){
+        if(force.replace==F){stop("set force.replace==T to subset object.")}
+        message("Subsetting object.")
 
-        Metadata[[paste0(project,".Patients.",names(Metadata)[NBP])]] <- clinic2
+        Metadata[[name]] <- clinic2
 
-      } else {
+        t= which(str_detect(names(Metadata),name))
 
+        attributes(Metadata)$Data.Type[t] <-  c("Clinic")
+        attributes(Metadata)$Export[t] <- c("Yes")
+
+
+      }else {
+
+        l <- length(Metadata)
         Metadata[[l+1]] <- clinic2
-        names(Metadata)[l+1] <- paste0(project,".Patients.",names(Metadata)[NBP])
-        if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
-          attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Clinic")
-          attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes")}}
+        names(Metadata)[l+1] <- name
+        attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Clinic")
+        attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes")}
 
 
 
@@ -268,24 +295,26 @@ CleaningClinic <- function(Metadata,
       cl_rolled <-  cl_rolled[,c("PatientsID", cc)]
       cl_rolled[cl_rolled==""] <- NA
       cl_rolled[cl_rolled=="NA"] <- NA
-      l <- length(Metadata)
 
-      if(paste0(project,".Patients.",names(Metadata)[NBP])%in%names(Metadata)){
+      if(!all(str_detect(names(Metadata),name)==F)){
+        if(force.replace==F){stop("set force.replace==T to subset object.")}
+        message("Subsetting object.")
 
-        Metadata[[paste0(project,".Patients.",names(Metadata)[NBP])]] <- cl_rolled
+        Metadata[[name]] <- cl_rolled
 
-      } else {
+        t= which(str_detect(names(Metadata),name))
 
+        attributes(Metadata)$Data.Type[t] <-  c("Clinic")
+        attributes(Metadata)$Export[t] <- c("Yes")
+
+
+      }else {
+
+        l <- length(Metadata)
         Metadata[[l+1]] <- cl_rolled
-        names(Metadata)[l+1] <-paste0(project,".Patients.",names(Metadata)[NBP])
-        if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
-          attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Clinic")
-          attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes")}}
-
-      if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
+        names(Metadata)[l+1] <- name
         attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Clinic")
         attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes")}
-
 
 
 
