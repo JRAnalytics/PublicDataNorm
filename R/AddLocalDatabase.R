@@ -123,7 +123,7 @@ AddLocalDatabase <- function(Metadata,
                    "N.Samples" = Nsamples,
                    "N.TumoralSamples" = tumor,
                    "N.NormalSamples" = normal,
-                   "N.Metadatastasis" = met,
+                   "N.Metastasis" = met,
                    "Overall.Survival" = OSinfo ,
                    "Progression.Free.Survival" = PFSinfo,
                    "Treatment.Information" = TTTinfo,
@@ -170,9 +170,9 @@ AddLocalDatabase <- function(Metadata,
 
         print(dt)
 
-      } else { x <- rbind(x,dt)
-      print(dt)
-
+      } else {
+           x <- rbind(x,dt)
+        print(dt)
       }}
 
     if(length(x$Project[x$Project==project])==0){ x <- rbind(x,dt)

@@ -49,9 +49,9 @@ CleaningClinic <- function(Metadata,
       if(length(NBS)==0){stop("No SamplesAnnot found in Metadata object. Set ForceCleaning=T to force cleaning from Clinic")}
     } else {  if(length(NBS)==0){NBS <- which(str_detect(attributes(Metadata)$Data.Type ,"Clinic") & attributes(Metadata)$Export=="No")    } else { stop("A SamplesAnnot attribute was found. ForceCleaning not advised.") }}
 
-      if(NBS==which(names(Metadata)%in%ClinicToClean)){
+    #  if(NBS==which(names(Metadata)%in%ClinicToClean)){
 
-    clinic <- as.data.frame(Metadata[[NBS]])
+    clinic <- as.data.frame(Metadata[[ClinicToClean]])
 
     if(all.column==T){
 
@@ -178,7 +178,7 @@ CleaningClinic <- function(Metadata,
 
     file.show(paste0(list.files.path$Project.Processes,"/Samples.CleanedProcess.txt"))
 
-  }} else if(type=="Patients")
+  } else if(type=="Patients")
   {
 
     NBP <- which(attributes(Metadata)$Data.Type=="Clinic" & attributes(Metadata)$Export=="No")
@@ -191,7 +191,7 @@ CleaningClinic <- function(Metadata,
 
     if(NBP==which(names(Metadata)%in%ClinicToClean)){
 
-    clinic <- as.data.frame(Metadata[[NBP]])
+    clinic <- as.data.frame(Metadata[[ClinicToClean]])
 
 
     if(all.column==T){

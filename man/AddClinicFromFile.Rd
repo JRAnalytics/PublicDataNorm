@@ -9,7 +9,7 @@ AddClinicFromFile(
   Raw.file.path,
   name.local.file = NULL,
   name,
-  type = c("Samples", "Patients"),
+  type = c("Samples", "Patients", "Cells"),
   force.replace = F,
   Export = F,
   mergeToClinic = F,

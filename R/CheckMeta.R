@@ -26,7 +26,7 @@ CheckMeta <- function(Metadata) {
   c <- which(attributes(Metadata)$Data.Type=="Clinic" | attributes(Metadata)$Data.Type=="SamplesAnnot")}
 
   if(attributes(Metadata)$Omics.type=="Single.Cell"){
-    c <- which(attributes(Metadata)$Data.Type=="Clinic" & attributes(Metadata)$Export=="No")}
+    c <- which(attributes(Metadata)$Data.Type=="Clinic"  & attributes(Metadata)$Export=="No")}
 
   ColN <- colnames(Metadata[[m[1]]])
 
@@ -137,7 +137,7 @@ if(length(c>0)){
 
       message(paste("Patients from Single.Cell data:", names(Metadata)[i]))
       tot=0
-      for (z in gene) {
+      for (z in rownames(Metadata[[i]])) {
         t = summary(str_detect(pattern = z, ColN))["TRUE"][1]
 
         if(is.na(as.numeric(t))){ t = 0}
@@ -155,12 +155,22 @@ if(length(c>0)){
 
      p =  which(attributes(Metadata)$Data.Type=="SamplesAnnot" & attributes(Metadata)$Export=="No")
 
-     if(!is.null(p)){
+     if(length(p)>0){
 
       message(paste("Samples from Single.Cell data:", names(Metadata)[p]))
 
-       tot = as.numeric(summary(rownames(Metadata[[p]])%in%ColN)["TRUE"][1])
+       tot=0
+       for (z in rownames(Metadata[[p]])) {
+         t = summary(str_detect(pattern = z, ColN))["TRUE"][1]
 
+         if(is.na(as.numeric(t))){ t = 0}
+
+         tot=tot+as.numeric(t)
+
+
+         message(c(z," N= ",as.numeric(t)))
+
+       }
        message("Total = " , tot, "\nAre all Patients found in Expression matrix ? ", tot/length(ColN)==1)
        message("-------------------------")
    }

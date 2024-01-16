@@ -76,7 +76,7 @@ if(c(exists("PatientLexic", mode = "any") | exists("SamplesLexic", mode = "any")
     } else {
 
       if(file.exists(paste0(list.files.path$Project.Processes, "/",project,".SamplesLexic.txt"))){
-        SL <- scan(paste(list.files.path$Processes,"SamplesLexic.txt",sep = "/"), what="", sep="\n")%>%strsplit("[[:space:]]+")
+        SL <- scan(paste0(list.files.path$Project.Processes,"/",project,".SamplesLexic.txt"), what="", sep="\n")%>%strsplit("[[:space:]]+")
         names(SL) <- sapply(SL, `[[`, 1)
         SL<- lapply(SL, `[`, -1)
 

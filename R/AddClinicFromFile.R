@@ -21,7 +21,7 @@ AddClinicFromFile <- function(Metadata,
                               Raw.file.path,
                               name.local.file = NULL,
                               name,
-                              type = c("Samples", "Patients"),
+                              type = c("Samples", "Patients", "Cells"),
                               force.replace=F,
                               Export = F,
                               mergeToClinic = F,
@@ -120,6 +120,15 @@ AddClinicFromFile <- function(Metadata,
         message("Subsetting object.")
         Metadata[[name]] <- dt
 
+        tt = which(str_detect(names(Metadata), name))
+
+        if(!type%in%c("Samples","Patients")){stop("type must be set to Samples or Patients")}
+
+         if(type == "Samples") {attributes(Metadata)$Data.Type[tt] <-  "SamplesAnnot"}
+          if(type == "Patients") {attributes(Metadata)$Data.Type[tt] <- "Clinic"}
+          if(Export==T){attributes(Metadata)$Export[tt] <- "Yes" } else {
+            attributes(Metadata)$Export[tt] <- "No" }
+
 
       } else { Metadata[[l+1]] <- dt
       names(Metadata)[l+1] <- name
@@ -130,11 +139,13 @@ AddClinicFromFile <- function(Metadata,
 
       if(l==0) {   if(type == "Samples") {attributes(Metadata)$Data.Type <-  c("SamplesAnnot")}
         if(type == "Patients") {attributes(Metadata)$Data.Type <-  c("Clinic")}
+        if(type == "Cells") {attributes(Metadata)$Data.Type <-  "CellsAnnot"}
         if(Export==T){attributes(Metadata)$Export <- c("Yes") } else {attributes(Metadata)$Export <- c("No") }
 
 
       } else {  if(type == "Samples") {attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"SamplesAnnot")}
         if(type == "Patients") {attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Clinic")}
+        if(type == "Cells") {attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"CellsAnnot")}
         if(Export==T){attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes") } else {attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"No") }
 
       }}

@@ -47,7 +47,7 @@ library(PublicDataNorm)
 ### Create dataBase directory and project directories
 
 ```{r DataBaseCreation}
-  project <- "Maurer"
+project <- "PANC.RNAseq"
 
   Parent.Dir.path <- "./Parent" # Change parent path matching your own Dir
   
@@ -84,35 +84,84 @@ Filepaths are stock in list.files.path object. It will be usefull to keep path f
 
 The first step is to create a meta object with en expression matrix saved in the project directory '~/parent/01RawData/Project'
 ```{r RNAseq, eval=FALSE}
-Metadata <- AddExpressionMatrixRNAseq(
-                            Raw = T, # T for Raw data. F if  normalised data.
-                            Raw.file.path = list.files.path$Project.RawData, 
-                            name.local.file ="MaurerRaw.matrix.csv.gz",
-                            name = "count")
+Metadata <- AddExpressionMatrixRNAseq(Metadata = NULL,
+                            Export = T,
+                            Raw.file.path = list.files.path$Project.RawData,
+                            name.local.file ="PANC.rawcount.csv",
+                            name = "Raw.count")
+
 ```
 
 If a Metadata object already exist, you can add another expression matrix to the meta object.
 ```{r RNAseq2, eval=FALSE}
-Metadata <- AddExpressionMatrixRNAseq(
-                            Metadata = Metadata,
-                            Raw = F, # T for Raw data. F if  normalised data.
-                            Raw.file.path = list.files.path$Project.RawData, 
-                            name.local.file ="MaurerRaw.matrixNorm.csv.gz",
-                            name = "Norm.count")
+Metadata <-AddExpressionMatrixRNAseq(Metadata = Metadata,
+                                 Export = T,# True pour Export
+                                 Raw.file.path = list.files.path$Project.RawData,
+                                 name.local.file ="PANC.NormCount.csv",
+                                 name = "Normalized.count")
 ```
 
 Also, if a sub-object in Metadata has to be replaced, you can set 'force.replace' parameter to T.
 ```{r RNAseq3, eval=FALSE}
 Metadata <- AddExpressionMatrixRNAseq(Metadata = Metadata,
-                            Raw = F, # T for Raw data. F if  normalised data.
-                            Raw.file.path = list.files.path$Project.RawData, 
-                            name.local.file ="MaurerRaw.matrixNorm.csv.gz",
-                            name = "Norm.count",
-                            force.replace = T
-                              )
+                                 Export = T,
+                                 Raw.file.path = list.files.path$Project.RawData,
+                                 name.local.file ="PANC.rawcount2.csv",
+                                 name = "Raw.count",
+                                 force.replace = T # replace Metadata$PANC.rawcount.csv with the same name 
+                                 )
+```
+
+
+#### 2- Adding clinical data
+
+Patients clinical data or Samples characteristics can be added to the Meta object through AddClinicFromFile() function from a text file (.txt or .csv) in the project's raw.data file.
+
+In this case, the loaded file is a Samples annotation file, so we set type by "Samples". If it was a Patients clincal file, it has to be set to "Patients". It is mandatory for cleaning this file in the next steps. 
+
+```{r RNAseq.Clin1, eval=FALSE}
+Metadata = AddClinicFromFile(Metadata = Metadata,
+                         Raw.file.path = list.files.path$Project.RawData,
+                         name.local.file ="PANC.samplesAnnotation.csv",
+                         name = "Pheno",
+                         type = "Samples")
+```
+
+Of course you can replace the Metadata sub-object "Pheno" by setting   force.replace = T. default is FALSE.
+
+```{r RNAseq.Clin1b, eval=FALSE}
+Metadata = AddClinicFromFile(Metadata = Metadata,
+                         Raw.file.path = list.files.path$Project.RawData,
+                         name.local.file ="PANC.samplesAnnotation2.csv",
+                         name = "Pheno",
+                         type = "Samples",
+                         force.replace = T)
+```
+
+By default, this file are considered as raw Patients clinical/Samples annotation files and will not be exported at the final steps of cleaning. if you want to save the raw files in the project directory in 04VerifiedDataSet dir, you can set "Export = T" (default F).
+
+```{r RNAseq.Clin2, eval=FALSE}
+Metadata = AddClinicFromFile(Metadata = Metadata,
+                         Raw.file.path = list.files.path$Project.RawData,
+                         name.local.file ="PANC.samplesAnnotation.csv",
+                         name = "Pheno",
+                         type = "Samples",
+                         Export =  T) #Default is F
+
 ```
 
 
 
+```{r RNAseq.Clin3, eval=FALSE}
+Metadata = AddClinicFromFile(Metadata = Metadata,
+                         Raw.file.path = list.files.path$Project.RawData,
+                         name.local.file = c( "PANC.samplesAnnotation.csv", "PANC.Clinic.all.csv"),
+                         mergeBy = "id_cit", #mandatory if name.local.file >1 string
+                         join = "full_join", #mandatory if name.local.file >1 string
+                         name = "Pheno",
+                         type = "Samples")
+
+
+```
 
 
