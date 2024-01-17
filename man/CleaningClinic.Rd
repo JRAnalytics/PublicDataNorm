@@ -11,7 +11,9 @@ CleaningClinic(
   type = c("Samples", "Patients"),
   list.files.path,
   project,
-  ForceCleaning = F,
+  FilterSamples = F,
+  FilterPatients = F,
+  CleanFromOtherType = F,
   force.replace = F,
   all.column = F
 )
@@ -29,7 +31,11 @@ CleaningClinic(
 
 \item{project}{project}
 
-\item{ForceCleaning}{If TRUE, Force a cleaning method from Samples.clinical data into Patient.clinical data and vice versa.}
+\item{FilterSamples}{default F, if T, keep only retrieved samples in Count matrix}
+
+\item{FilterPatients}{default F, if T, keep only retrieved patients in Count matrix}
+
+\item{CleanFromOtherType}{If TRUE, Force a cleaning method from Samples.clinical data into Patient.clinical data and vice versa.}
 
 \item{force.replace}{set as F. T : replace an already object with the same name}
 

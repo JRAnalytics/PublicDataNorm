@@ -4,12 +4,14 @@
 \alias{AddgeneAnnotFromObject}
 \title{AddgeneAnnotFromObject to Metadata}
 \usage{
-AddgeneAnnotFromObject(Metadata, object, force.replace = F)
+AddgeneAnnotFromObject(Metadata, object, Filter.Genes = F, force.replace = F)
 }
 \arguments{
 \item{Metadata}{Metadata object to add geneAnnotation}
 
 \item{object}{object to add}
+
+\item{Filter.Genes}{default F, if T, keep only retrieved genes in Count matrix}
 
 \item{force.replace}{set as F. T : replace an already object with the same name}
 }

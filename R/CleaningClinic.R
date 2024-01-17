@@ -6,7 +6,9 @@
 #' @param type "c("Samples", "Patients") for building clean clinical data from raw clinical data.
 #' @param list.files.path file path to find lexique of colnames
 #' @param project project
-#' @param ForceCleaning If TRUE, Force a cleaning method from Samples.clinical data into Patient.clinical data and vice versa.
+#' @param FilterSamples default F, if T, keep only retrieved samples in Count matrix
+#' @param FilterPatients default F, if T, keep only retrieved patients in Count matrix
+#' @param CleanFromOtherType If TRUE, Force a cleaning method from Samples.clinical data into Patient.clinical data and vice versa.
 #' @param force.replace set as F. T : replace an already object with the same name
 #' @param all.column default F, if T, copy all column from clinic.
 #' @importFrom utils menu
@@ -21,7 +23,9 @@ CleaningClinic <- function(Metadata,
                            type = c("Samples", "Patients"),
                            list.files.path,
                            project,
-                           ForceCleaning = F,
+                           FilterSamples= F,
+                           FilterPatients = F,
+                           CleanFromOtherType = F,
                            force.replace = F,
                            all.column = F){
 
@@ -45,9 +49,9 @@ CleaningClinic <- function(Metadata,
     NBS <- which(attributes(Metadata)$Data.Type=="SamplesAnnot" & attributes(Metadata)$Export=="No")
 
 
-    if(ForceCleaning==F){
-      if(length(NBS)==0){stop("No SamplesAnnot found in Metadata object. Set ForceCleaning=T to force cleaning from Clinic")}
-    } else {  if(length(NBS)==0){NBS <- which(str_detect(attributes(Metadata)$Data.Type ,"Clinic") & attributes(Metadata)$Export=="No")    } else { stop("A SamplesAnnot attribute was found. ForceCleaning not advised.") }}
+    if(CleanFromOtherType==F){
+      if(length(NBS)==0){stop("No SamplesAnnot found in Metadata object. Set CleanFromOtherType=T to force cleaning from Clinic")}
+    } else {  if(length(NBS)==0){NBS <- which(str_detect(attributes(Metadata)$Data.Type ,"Clinic") & attributes(Metadata)$Export=="No")    } else { stop("A SamplesAnnot attribute was found. CleanFromOtherType not advised.") }}
 
     #  if(NBS==which(names(Metadata)%in%ClinicToClean)){
 
@@ -110,6 +114,25 @@ CleaningClinic <- function(Metadata,
       clinic2[clinic2=="NA"] <- NA
 
 
+      if(FilterSamples==T){
+        message("Selecting only Samples present in both Count and SamplesAnnot.")
+
+
+        zz = which(attributes(Metadata)$Data.Type=="Count")[1]
+
+        # Diviser chaque élément de la colonne en un vecteur de sous-chaînes
+        substrings <- clinic2$SamplesID
+        # Vérifier si chaque valeur du vecteur est présente dans chaque vecteur de sous-chaînes
+        est_present <- sapply(substrings, function(x) any(colnames(Metadata[[zz]]) %in% x))
+
+        if(all(est_present==F)){
+          substrings <- clinic2$PatientsID
+          est_present <- sapply(substrings, function(x) any(colnames(Metadata[[zz]]) %in% x))}
+
+        # Récupérer les index de position correspondants
+        indices <- which(est_present)
+        clinic2 <- clinic2[indices,]
+      }
 
 
       if(!all(str_detect(names(Metadata),name)==F)){
@@ -159,6 +182,28 @@ CleaningClinic <- function(Metadata,
         if(force.replace==F){stop("set force.replace==T to subset object.")}
         message("Subsetting object.")
 
+
+        if(FilterSamples==T){
+          message("Selecting only Samples present in both Count and SamplesAnnot.")
+
+
+          zz = which(attributes(Metadata)$Data.Type=="Count")[1]
+
+          # Diviser chaque élément de la colonne en un vecteur de sous-chaînes
+          substrings <- cl_rolled$SamplesID
+          # Vérifier si chaque valeur du vecteur est présente dans chaque vecteur de sous-chaînes
+          est_present <- sapply(substrings, function(x) any(colnames(Metadata[[zz]]) %in% x))
+
+          if(all(est_present==F)){
+            substrings <- cl_rolled$PatientsID
+            est_present <- sapply(substrings, function(x) any(colnames(Metadata[[zz]]) %in% x))}
+
+          # Récupérer les index de position correspondants
+          indices <- which(est_present)
+          cl_rolled <- cl_rolled[indices,]
+        }
+
+
         Metadata[[name]] <- cl_rolled
 
         t= which(str_detect(names(Metadata),name))
@@ -176,7 +221,7 @@ CleaningClinic <- function(Metadata,
         attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes")}
     }
 
-    file.show(paste0(list.files.path$Project.Processes,"/Samples.CleanedProcess.txt"))
+  #  file.show(paste0(list.files.path$Project.Processes,"/Samples.CleanedProcess.txt"))
 
   } else if(type=="Patients")
   {
@@ -185,9 +230,9 @@ CleaningClinic <- function(Metadata,
 
 
 
-    if(ForceCleaning==F){
-      if(length(NBP)==0){stop("No Clinic found in Metadata object. Set ForceCleaning=T to force cleaning from SamplesAnnot")}
-    } else { if(length(NBP)==0){ NBP <- which(str_detect(attributes(Metadata)$Data.Type ,"SamplesAnnot") & attributes(Metadata)$Export=="No")    } else { stop("A 'Clinic' attribute was found. ForceCleaning not advised.") }}
+    if(CleanFromOtherType==F){
+      if(length(NBP)==0){stop("No Clinic found in Metadata object. Set CleanFromOtherType=T to force cleaning from SamplesAnnot")}
+    } else { if(length(NBP)==0){ NBP <- which(str_detect(attributes(Metadata)$Data.Type ,"SamplesAnnot") & attributes(Metadata)$Export=="No")    } else { stop("A 'Clinic' attribute was found. CleanFromOtherType not advised.") }}
 
     if(NBP==which(names(Metadata)%in%ClinicToClean)){
 
@@ -248,6 +293,27 @@ CleaningClinic <- function(Metadata,
       clinic2[clinic2==""] <- NA
       clinic2[clinic2=="NA"] <- NA
 
+      if(FilterPatients==T){
+        message("Selecting only Patient present in both Count and clinical data.")
+
+        zz = which(attributes(Metadata)$Data.Type=="Count")[1]
+
+        # Diviser chaque élément de la colonne en un vecteur de sous-chaînes
+        substrings <- clinic2$PatientsID
+        # Vérifier si chaque valeur du vecteur est présente dans chaque vecteur de sous-chaînes
+        est_present <- sapply(substrings, function(x) any(colnames(Metadata[[zz]]) %in% x))
+
+        if(all(est_present==F)){
+        substrings <- clinic2$SamplesID
+        est_present <- sapply(substrings, function(x) any(colnames(Metadata[[zz]]) %in% x))}
+
+        # Récupérer les index de position correspondants
+        indices <- which(est_present)
+        clinic2 <- clinic2[indices,]
+      }
+
+
+
 
 
       if(!all(str_detect(names(Metadata),name)==F)){
@@ -296,6 +362,29 @@ CleaningClinic <- function(Metadata,
       cl_rolled[cl_rolled==""] <- NA
       cl_rolled[cl_rolled=="NA"] <- NA
 
+
+      if(FilterPatients==T){
+        message("Selecting only Patient present in both Count and clinical data.")
+
+        zz = which(attributes(Metadata)$Data.Type=="Count")[1]
+
+        # Diviser chaque élément de la colonne en un vecteur de sous-chaînes
+        substrings <- cl_rolled$PatientsID
+        # Vérifier si chaque valeur du vecteur est présente dans chaque vecteur de sous-chaînes
+        est_present <- sapply(substrings, function(x) any(colnames(Metadata[[zz]]) %in% x))
+
+        if(all(est_present==F)){
+          substrings <- cl_rolled$SamplesID
+          est_present <- sapply(substrings, function(x) any(colnames(Metadata[[zz]]) %in% x))}
+
+        # Récupérer les index de position correspondants
+        indices <- which(est_present)
+        cl_rolled <- cl_rolled[indices,]
+      }
+
+
+
+
       if(!all(str_detect(names(Metadata),name)==F)){
         if(force.replace==F){stop("set force.replace==T to subset object.")}
         message("Subsetting object.")
@@ -322,7 +411,7 @@ CleaningClinic <- function(Metadata,
 
     }
 
-    file.show(paste0(list.files.path$Project.Processes,"/Patients.CleanedProcess.txt"))
+    #file.show(paste0(list.files.path$Project.Processes,"/Patients.CleanedProcess.txt"))
 
 
   }} else {

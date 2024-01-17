@@ -89,11 +89,13 @@ AddgeneAnnotGtf <- function(Metadata ,gtf.file.dir, gtf.files, force.replace=F){
     if(is.null(Metadata$geneAnnotation)){ attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type, "geneAnnot")
     attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes") }
 
+
     Metadata$geneAnnotation <- geneAnnot
 
 
 
   }
+
 
 
 

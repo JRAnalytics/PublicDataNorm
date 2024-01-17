@@ -3,6 +3,7 @@
 #' @param Metadata  Metadata object to add geneAnnotation
 #' @param object object to add
 #' @param force.replace set as F. T : replace an already object with the same name
+#' @param Filter.Genes default F, if T, keep only retrieved genes in Count matrix
 #' @import stringr
 #' @import AnnotationDbi
 #' @import data.table
@@ -11,9 +12,9 @@
 #'
 #' @examples "none"
 #'
-AddgeneAnnotFromObject <- function(Metadata ,object, force.replace=F){
+AddgeneAnnotFromObject <- function(Metadata ,object, Filter.Genes= F, force.replace=F){
 
-  Metadata <- Metadata
+
 
   if(!is.null(Metadata$geneAnnotation)){
 
@@ -27,61 +28,54 @@ AddgeneAnnotFromObject <- function(Metadata ,object, force.replace=F){
   if(!all(class(object)%in%c("data.frame","matrix","array"))){stop("Object is not of a data.frame or a matrix class object.")}
 
 
+
+
   zz <- which(attributes(Metadata)$Data.Type=="Count")[1]
+  if(length(zz)==0){stop("No Count found in Metadata object")}
+  gene <-  rownames(Metadata[[zz]])
+  if(length(gene)==length(unique(gene))){ message("No rownames of Count matrix are duplicated")}
+  val <- gene[which(gene%in%as.matrix(object))[1]]
+  colT <- which(matrixStats::colAnys(as.matrix(object),value = val))
 
-  if(length(zz)!=1){ stop("attributes(Metadata)$Data.Type=='Count' & attributes(Metadata)$Export=='Yes',line 32, more than 1 object are detected.")}
-
-
-  gene <- rownames(Metadata[[zz]])
-  geneAnnot = as.matrix(object)
-
-  if(!summary(gene%in%geneAnnot)["TRUE"]>0){
-    stop("No genes ('rownames(Metadata[[1]])') found in object.")} else {
-      sel = which(geneAnnot %in% gene)
-      col = which(apply(geneAnnot, 2, function(x) which(x %in% geneAnnot[sel[1]]))>0)[1]}
+  if(length(colT)>1){ colT <- colT[1]}
 
 
-  if(all(str_detect(gene, "ENSG000"))){
 
-    message("Data matrice row names are ENSEMBL gene names.")
+  if(all(str_detect(gene, "ENSG")==T)) { message("Data matrice row names are as ENSEMBL.")
+    if(length(colT)==0){stop("No genes as ENSEMBL found in geneAnnot.")}}
 
-    if(length(gene)!=length(unique(gene))) { Metadata[[zz]] <- Metadata[[zz]][-which(duplicated(gene)),] }
-    if(length(gene)==length(unique(gene))){ message("No rownames of raw matrix are duplicated")}
+  if(all(str_detect(gene, "ILMN_")==T)) { message("Data matrice row names are as Illumina Bead Array Probes")
+    if(length(colT)==0){stop("No genes as Illumina Bead Array Probes 'ILMN_' found in geneAnnot.")}}
 
-    gene <- unlist(lapply(str_split(rownames(Metadata[[zz]]),"[.]"),"[[",1))
-    rownames(Metadata[[zz]]) <- gene
+  if(is.numeric(na.omit(as.numeric(gene))) & length(na.omit(as.numeric(gene)))!=0)  { message("Data matrice row names are as ENTREZ gene id")
+    if(length(colT)==0){stop("No genes as ENTREZ.ID found in geneAnnot.")}}
 
-    geneAnnot =as.data.frame(geneAnnot)
+  if(all(str_detect(gene, "_at")==T)) { message("Data matrice row names are as Illumina Microarray Probes")
+    if(length(colT)==0){stop("No genes as ILLUMINA '_at' found in geneAnnot.")}}
 
-    geneAnnot <- geneAnnot[geneAnnot[,col]%in%gene,]
-
-    if(nrow(geneAnnot)==0){ stop("if(nrow(geneAnnot)==0), line 43, N rows of geneAnnotation is 0")}
-
-    geneAnnot <- geneAnnot[order(geneAnnot[,col],decreasing = F),]
-
-    if(is.null(Metadata$geneAnnotation)){ attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type, "geneAnnot")
-    attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes") }
-
-    Metadata$geneAnnotation <- geneAnnot
+  if("ACTB"%in%gene){ message("Data matrice row names are in GeneSymbols.")
+    if(length(colT)==0){stop("No genes as GeneSymbols found in geneAnnot.")}}
 
 
-  } else {
+  message("Found genes :")
+  print(summary(gene%in%as.matrix(object)))
 
-    gene <- unlist(lapply(str_split(rownames(Metadata[[zz]]),"[|]"),"[[",1))
-    print(message("Data matrice row names are already in gene names."))
+  message("Selecting retrieved genes from Count matrix")
 
-    geneAnnot =as.data.frame(geneAnnot)
+  if(Filter.Genes==T){
 
-    geneAnnot <- geneAnnot[order(geneAnnot[,col],decreasing = F),]
+    object <- object[object[,colT]%in%gene,]
+
+    if(length(object[,colT])!=length(unique(object[,colT]))){object <- object[!duplicated(object[,colT]),]} }
 
     if(is.null(Metadata$geneAnnotation)){ attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type, "geneAnnot")
-    attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes") }
+    attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes") } else {
 
-    Metadata$geneAnnotation <- geneAnnot
+      }
+
+  Metadata$geneAnnotation = object
 
 
-
-  }
 
 
   return(Metadata)

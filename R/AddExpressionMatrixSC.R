@@ -1,9 +1,9 @@
-#' AddExpressionMatrix to Meta object
+#' AddExpressionMatrixSC from .mtx to Meta object
 #'
 #' @param Metadata Metaobject
 #' @param Raw.file.path dir path in which the raw single cell exrpession is saved
 #' @param name if loca=True, names to apply in Metadata object slot
-#' @param name.local.file name file of interest in path directory
+#' @param name.local.file name file of interest in path directory from .mtx exclusive
 #' @param Cell.file name of single cell cell annotation file specific to expression matrix. Not mandatory.
 #' @param Genes.file name of single cell gene annotation file specific to expression matrix. Not mandatory.
 #' @param force.replace set as F. T : replace an already object with the same name

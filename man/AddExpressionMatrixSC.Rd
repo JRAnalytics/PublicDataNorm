@@ -2,7 +2,7 @@
 % Please edit documentation in R/AddExpressionMatrixSC.R
 \name{AddExpressionMatrixSC}
 \alias{AddExpressionMatrixSC}
-\title{AddExpressionMatrix to Meta object}
+\title{AddExpressionMatrixSC from .mtx to Meta object}
 \usage{
 AddExpressionMatrixSC(
   Metadata = NULL,
@@ -28,7 +28,7 @@ AddExpressionMatrixSC(
 
 \item{Export}{TRUE or FALSE. If data to be Exported, set T.}
 
-\item{name.local.file}{name file of interest in path directory}
+\item{name.local.file}{name file of interest in path directory from .mtx exclusive}
 
 \item{force.replace}{set as F. T : replace an already object with the same name}
 }
@@ -36,7 +36,7 @@ AddExpressionMatrixSC(
 a data.frame in the Meta Object
 }
 \description{
-AddExpressionMatrix to Meta object
+AddExpressionMatrixSC from .mtx to Meta object
 }
 \examples{
 "none"
