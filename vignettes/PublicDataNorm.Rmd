@@ -444,7 +444,6 @@ Some times, you only have a Samples annotation, or a clinic data, and you want t
 
 
 ```{r cl1, eval=FALSE}
-
 #Example 1
 Metadata = CleaningClinic(Metadata = Metadata,
                       ClinicToClean ="Sampleannot" ,
@@ -495,7 +494,7 @@ All `Export=Yes` sub-object will be exported. You can check this information usi
 
 Count matrices will be .gz compressed after export.
 
-If it exist exported files in the project 04VerifiedDataset dir, a versionning of the newly exported file will be automatcaly added. (i.e *.VX.csv*)
+If it exist exported files in the project 04VerifiedDataset dir, a versioning of the newly exported file will be automaticaly added. (i.e *.VX.csv*)
 
 ```{r export, eval=FALSE}
 attributes(Metadata)
@@ -512,12 +511,11 @@ Metadata = ExportTSV(Metadata = Metadata,
 
 ## Adding export to a Database summary file.
 
-because you will have a lot of cleand data, keeping a light text file to looked for items of interest, `AddLocalDatabase()` may be useful.
+Because you will have a lot of cleand data, keeping a light text file to looked for items of interest, `AddLocalDatabase()` may be useful.
 It will create, the first time, a *DataBaseSummary.txt* (tab separated), in the parent directory of your data base. Many informations can be added to (ie . methodology; anything, data acquisition First author, Paper DOI, User who did the cleaning, and a 'comment' cell to add anything.)   
 
 ```{r DB, eval=FALSE}
-
-AddLocalDatabase(Metadata = Meta,
+AddLocalDatabase(Metadata = Metadata,
                    list.files.path = list.files.path,
                    Normalization.Method = NA,
                    Technology = "RNAseq",
@@ -526,8 +524,10 @@ AddLocalDatabase(Metadata = Meta,
                    First.Author = "Puleo F.",
                    DOI = "10.1053/j.gastro.2018.08.033",
                    project = project,
-                   Comment = "Pour methodo et plateforme RNAseq, demander à Remy je pense",
+                   Comment = NA,
                    User = "JR-Analytics")
 ```
+
+# The End
 
 
