@@ -428,22 +428,32 @@ For exemple, we added "id_cit" string to "SamplesID" listed string in SamplesLex
 
 ### 3- Cleaning data.
 
-The heart of the package! The reason why you want toi use it!!
+The heart of the package! The reason why you want to use it!!
 
+`CleaningClinic()` function will create a SamplesAnnotation or a clinical data based on the Lexics customized previously, from a "raw" file. 
 
+In Example 1, we will clean Metadata[["Sampleannot"]], that is a 'SamplesAnnot' sub-object, and name it "Panc_SamplesAnnot".
+
+It will generate a *Samples.CleanedProcess.txt* file in the project's 02Processes dir that summarize which column from Metadata[["Sampleannot"]] is attributed to the Lexic in  the newly cleaned data.
+If the cleaning process was from a "Clinical data" (*type = Patients* ), it generate a *Patients.CleanedProcess.txt*. 
+Of course if the created sub-object already exist in the Meta object, you can replace it (Example 2 : `force.replace = T`).
+
+If you want to keep all the column from the "raw" samples annotation or clinical data, you can set ` all.column = T` (Example 3), it will paste the full "raw" data after a cleaned part structured by the Lexics.
+
+Some times, you only have a Samples annotation, or a clinic data, and you want to create its counter part samples yo patients, or Patients to Samples.In Examples 4 by setting `type ="Patients",CleanFromOtherType = T`, we will create a cleaned clinical data, from a SamplesAnnotation sub-object (`ClinicToClean ="Sampleannot"`), using PatientLexic, and naming it "Panc_SamplesAnnot.Full" (`all.column = T`) 
 
 
 ```{r cl1, eval=FALSE}
 
-
+#Example 1
 Metadata = CleaningClinic(Metadata = Metadata,
                       ClinicToClean ="Sampleannot" ,
                       type ="Samples",
                       name ="Panc_SamplesAnnot",
                       list.files.path =list.files.path,
-                      project =project,=)
+                      project =project)
 
-
+#Example 2
 Metadata = CleaningClinic(Metadata = Metadata,
                       ClinicToClean ="Sampleannot" ,
                       type ="Samples",
@@ -452,7 +462,7 @@ Metadata = CleaningClinic(Metadata = Metadata,
                       project =project,
                       force.replace = T)
 
-
+#Example 3
 Metadata = CleaningClinic(Metadata = Metadata,
                       ClinicToClean ="Sampleannot" ,
                       type ="Samples",
@@ -462,7 +472,7 @@ Metadata = CleaningClinic(Metadata = Metadata,
                       all.column = T)
 
 
-
+#Example 4
 Metadata = CleaningClinic(Metadata = Metadata,
                       ClinicToClean ="Sampleannot" ,
                       type ="Patients",
@@ -471,6 +481,53 @@ Metadata = CleaningClinic(Metadata = Metadata,
                       list.files.path =list.files.path,
                       project =project,,
                       all.column = T)
+```
+
+After a cleaning process, you can check the Meta Onject with `CheckMeta()` function. it will search if lost samples are found.
+
+
+
+## Exporting Meta object
+
+After all cleaning process, you can export the data into the project 04VerifiedDataset dir, using `ExportCSV()` or `ExportTSV()` function. We sugests using `ExportTSV()` for SingleCell project.
+
+All `Export=Yes` sub-object will be exported. You can check this information using `attributes()` function on the meta object.
+
+Count matrices will be .gz compressed after export.
+
+If it exist exported files in the project 04VerifiedDataset dir, a versionning of the newly exported file will be automatcaly added. (i.e *.VX.csv*)
+
+```{r export, eval=FALSE}
+attributes(Metadata)
+
+Metadata = ExportCSV(Metadata = Metadata, 
+                     list.files.path = list.files.path,
+                     project = project)
+
+Metadata = ExportTSV(Metadata = Metadata,
+                     list.files.path = list.files.path,
+                     project = project)
+```
+
+
+## Adding export to a Database summary file.
+
+because you will have a lot of cleand data, keeping a light text file to looked for items of interest, `AddLocalDatabase()` may be useful.
+It will create, the first time, a *DataBaseSummary.txt* (tab separated), in the parent directory of your data base. Many informations can be added to (ie . methodology; anything, data acquisition First author, Paper DOI, User who did the cleaning, and a 'comment' cell to add anything.)   
+
+```{r DB, eval=FALSE}
+
+AddLocalDatabase(Metadata = Meta,
+                   list.files.path = list.files.path,
+                   Normalization.Method = NA,
+                   Technology = "RNAseq",
+                   Platform = NA,
+                   Run.spec = NA,
+                   First.Author = "Puleo F.",
+                   DOI = "10.1053/j.gastro.2018.08.033",
+                   project = project,
+                   Comment = "Pour methodo et plateforme RNAseq, demander à Remy je pense",
+                   User = "JR-Analytics")
 ```
 
 
