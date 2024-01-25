@@ -101,12 +101,12 @@ ExportCSV <- function (Metadata, list.files.path, project){
 
          if(Vnumber==1){
              filename <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(Metadata)[j],".V1",".csv")
-             write.table(z,row.names = F ,file = filename, sep = "\t")
+             write.table(z,row.names = F ,file = filename, sep = ",")
 
              } else {
 
                filename <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(Metadata)[j],".V", Vnumber,".csv")
-               write.table(z,row.names = F ,file = filename, sep = "\t")
+               write.table(z,row.names = F ,file = filename, sep = ",")
                }
 
 
@@ -134,7 +134,7 @@ ExportCSV <- function (Metadata, list.files.path, project){
 
           if(attributes(Metadata)$Omics.type!="Single.Cell"){
             filename <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(Metadata)[j], ".V1.csv")
-            write.table(z,row.names = F ,file = filename, sep = "\t")
+            write.table(z,row.names = F ,file = filename, sep = ",")
             message(paste("Compressing"))
             R.utils::gzip(filename, destname=sprintf("%s.gz", filename), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)
           }
@@ -142,7 +142,7 @@ ExportCSV <- function (Metadata, list.files.path, project){
           if(attributes(Metadata)$Omics.type=="Single.Cell"){
 
             filename <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(Metadata)[j],".V1.mtx")
-            if(!class(Metadata[[j]])[1]=="dgCMatrix"){Metadata[[j]] = as.matrix(Metadata[[j]]) }
+            if(!class(Metadata[[j]])[1]=="dgTMatrix"){Metadata[[j]] = as.matrix(Metadata[[j]]) }
             writeMM(Matrix(Metadata[[j]], sparse = T),file = filename)
             message(paste("Compressing"))
             R.utils::gzip(filename, destname=sprintf("%s.gz", filename), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)
@@ -151,7 +151,7 @@ ExportCSV <- function (Metadata, list.files.path, project){
             if(!"geneAnnot"%in%attributes(Metadata)$Data.Type){
             message("No geneAnnot file found. Exporting geneAnnot from count matrix.")
             filename.genes <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(Metadata)[j],".GenesAnnot.V1.csv")
-            write.table(rownames(Metadata[[j]]),row.names = F ,col.names = F ,file = filename.genes, sep = "\t")
+            write.table(rownames(Metadata[[j]]),row.names = F ,col.names = F ,file = filename.genes, sep = ",")
             count = count+1
             message("-------------------------------------------------")
             message(paste("Exporting", count, "/", object,"object: ","geneAnnot", "file"))}
@@ -160,24 +160,25 @@ ExportCSV <- function (Metadata, list.files.path, project){
           if(!"CellsAnnot"%in%attributes(Metadata)$Data.Type){
             message("No CellsAnnot file found. Exporting CellsAnnot from count matrix.")
             filename.cells <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".CellsAnnot", "V1.csv")
-            write.table(data.frame("Cells"= colnames(Metadata[[j]])),row.names = F ,file = filename.cells, sep = "\t")
+            write.table(data.frame("Cells"= colnames(Metadata[[j]])),row.names = F ,file = filename.cells, sep = ",")
             count = count+1
             message("-------------------------------------------------")
             message(paste("Exporting", count, "/", object,"object: ","CellsAnnot", "file"))} else {
 
               kk = which(attributes(Metadata)$Data.Type%in%"CellsAnnot"& attributes(Metadata)$Export=="Yes")
+              if(length(kk)>0){
               filename.cells <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(Metadata)[kk], ".V1.csv")
-              write.table(Metadata[[kk]],row.names = F ,file = filename.cells, sep = "\t")
+              write.table(Metadata[[kk]],row.names = F ,file = filename.cells, sep = ",")
               count = count+1
               message("-------------------------------------------------")
-              message(paste("Exporting", count, "/", object,"object: ","CellsAnnot", "file"))
+              message(paste("Exporting", count, "/", object,"object: ","CellsAnnot", "file"))}
 
             }}} else { #Vnumber ==1
 
             if(attributes(Metadata)$Omics.type!="Single.Cell") {
 
               filename <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(Metadata)[j],".V",Vnumber, ".csv")
-              write.table(z,row.names = F ,file = filename, sep = "\t")
+              write.table(z,row.names = F ,file = filename, sep = ",")
               message(paste("Compressing"))
               R.utils::gzip(filename, destname=sprintf("%s.gz", filename), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)}
 
@@ -186,7 +187,7 @@ ExportCSV <- function (Metadata, list.files.path, project){
 
               filename <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(Metadata)[j],".V",Vnumber,".mtx")
 
-              if(!class(Metadata[[j]])[1]=="dgCMatrix"){Metadata[[j]] = as.matrix(Metadata[[j]]) }
+              if(!class(Metadata[[j]])[1]=="dgTMatrix"){Metadata[[j]] = as.matrix(Metadata[[j]]) }
               writeMM(Matrix(Metadata[[j]], sparse = T),file = filename)
               message(paste("Compressing"))
               R.utils::gzip(filename, destname=sprintf("%s.gz", filename), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)
@@ -199,7 +200,7 @@ ExportCSV <- function (Metadata, list.files.path, project){
               message("-------------------------------------------------")
               message(paste("Exporting", count, "/", object,"object: ","geneAnnot", "file"))
 
-              write.table(rownames(Metadata[[j]]),row.names = F ,col.names = F ,file = filename.genes, sep = "\t")
+              write.table(rownames(Metadata[[j]]),row.names = F ,col.names = F ,file = filename.genes, sep = ",")
               }
 
               if(!"CellsAnnot"%in%attributes(Metadata)$Data.Type){
@@ -209,16 +210,16 @@ ExportCSV <- function (Metadata, list.files.path, project){
                 message("-------------------------------------------------")
                 message(paste("Exporting", count, "/", object,"object: ","CellsAnnot", "file"))
 
-                write.table(data.frame("Cells"= colnames(Metadata[[j]])),row.names = F ,file = filename.cells, sep = "\t")} else {
+                write.table(data.frame("Cells"= colnames(Metadata[[j]])),row.names = F ,file = filename.cells, sep = ",")} else {
 
                   filename.cells <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".CellsAnnot",".V",Vnumber,".csv")
                   kk = which(attributes(Metadata)$Data.Type%in%"CellsAnnot"& attributes(Metadata)$Export=="Yes")
-
+                  if(length(kk)>0){
                   count = count+1
                   message("-------------------------------------------------")
                   message(paste("Exporting", count, "/", object,"object: ","CellsAnnot", "file"))
 
-                  write.table(Metadata[[kk]],row.names = F ,file = filename.cells, sep = "\t")
+                  write.table(Metadata[[kk]],row.names = F ,file = filename.cells, sep = ",")}
 
               }
 
@@ -250,7 +251,7 @@ ExportCSV <- function (Metadata, list.files.path, project){
       if(Vnumber==1){
 
         filename <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(Metadata)[j],".V1.csv")
-        write.table(z,row.names = F ,file = filename, sep = "\t")
+        write.table(z,row.names = F ,file = filename, sep = ",")
         message(paste("Compressing"))
         R.utils::gzip(filename, destname=sprintf("%s.gz", filename), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)
       } else { #Vnumber==1
@@ -258,7 +259,7 @@ ExportCSV <- function (Metadata, list.files.path, project){
 
 
         filename <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(Metadata)[j],".V",Vnumber,".csv")
-        write.table(z,row.names = F ,file = filename, sep = "\t")
+        write.table(z,row.names = F ,file = filename, sep = ",")
         message(paste("Compressing"))
         R.utils::gzip(filename, destname=sprintf("%s.gz", filename), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)
 

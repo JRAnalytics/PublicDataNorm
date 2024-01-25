@@ -44,10 +44,10 @@ AddLocalDatabase <- function(Metadata,
 
 
 
-  if(length(NBS)==0){ Nsamples=0 } else{
+  if(is.na(NBS)){ Nsamples=0 } else{
     Nsamples <- nrow(Metadata[[NBS[1]]])}
 
-  if(length(NBP)==0){ Npatient = Nsamples}else{
+  if(is.na(NBP)){ Npatient = Nsamples}else{
     Npatient <- nrow(Metadata[[NBP[1]]])}
 
   if(length(which(attributes(Metadata)$Data.Type=="Count" & attributes(Metadata)$Export=="Yes" ))==0){ RawGenes = 0} else {
@@ -60,7 +60,7 @@ AddLocalDatabase <- function(Metadata,
     NormGenes <- nrow(Metadata[[NB.norm.mat[1]]])}
 
 
-
+  if(!is.na(NBS)){
   if(all(is.na(Metadata[[NBS[1]]]$SamplePathologicalState))){tumor <- nrow(Metadata[[NBS[1]]]) } else {
     tumor <- length(which(str_detect(toupper(Metadata[[NBS[1]]]$SamplePathologicalState),"TUM|PRIMARY|CARCINO")))
     if(tumor==0 & !all(is.na(Metadata[[NBS[1]]]$SamplePathologicalState))) {
@@ -83,6 +83,12 @@ AddLocalDatabase <- function(Metadata,
       na <- length(which(is.na(Metadata[[NBS[1]]]$SamplePathologicalState)))
       normal = nrow(Metadata[[NBS[1]]])-tumor-met-na
     }
+  }}else {
+    met <- NA
+    na <- NA
+    normal = NA
+    tumor = NA
+
   }
 
 
@@ -90,7 +96,7 @@ AddLocalDatabase <- function(Metadata,
 
 
 
-  if(length(NBS)>0){
+  if(!is.na(NBS)){
 
     if(!is.null(Metadata[[NBS[1]]][,"HadTreatment"])) {
 
@@ -108,13 +114,16 @@ AddLocalDatabase <- function(Metadata,
     TTTinfo <- "Yes"
   }
 
-  if(length(NBP)>0){
+  if(!is.na(NBP)){
     if(all(is.na(Metadata[[NBP[1]]]$OSdelay))){ OSinfo <- "No" } else { OSinfo <- "Yes" }
     if(all(is.na(Metadata[[NBP[1]]]$PFSdelay ))){ PFSinfo <- "No" } else { PFSinfo <- "Yes" } } else {
     OSinfo <- "No"
     PFSinfo <- "No" }
 
-  met <- length(which(str_detect(toupper(Metadata[[NBS[1]]]$SamplePathologicalState),"MET")))
+  if(!is.na(NBS)){
+  met <- length(which(str_detect(toupper(Metadata[[NBS[1]]]$SamplePathologicalState),"MET")))}else{met = 0}
+
+  print("Ok")
 
   dt <- data.frame("Project" = project,
                    "Version" = Version,

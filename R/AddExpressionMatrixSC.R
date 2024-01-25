@@ -157,7 +157,7 @@ AddExpressionMatrixSC <- function(Metadata=NULL,
       }
 
       if(!is.null(Genes.file)){
-        Metadata$geneAnnot = Genes
+        Metadata$geneAnnotation = Genes
         attributes(Metadata)$Data.Type = c(attributes(Metadata)$Data.Type, "geneAnnot")
         attributes(Metadata)$Export = c(attributes(Metadata)$Export, "Yes")
 
@@ -183,7 +183,7 @@ AddExpressionMatrixSC <- function(Metadata=NULL,
       }
 
       if(!is.null(Genes.file)){
-        Metadata$geneAnnot = Genes
+        Metadata$geneAnnotation = Genes
         attributes(Metadata)$Data.Type = c(attributes(Metadata)$Data.Type, "geneAnnot")
         attributes(Metadata)$Export = c(attributes(Metadata)$Export, "Yes")
 

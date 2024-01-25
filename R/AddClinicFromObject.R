@@ -84,9 +84,9 @@ AddClinicFromObject  <- function(Metadata,
         if(type == "Patients") {attributes(Metadata)$Data.Type[t] <-  c("Clinic")}
         if(type == "Cells") {attributes(Metadata)$Data.Type[t] <-  c("CellsAnnot")}
 
-        if(Export==T){attributes(Metadata)$Export[t] <- c("Yes") } else {attributes(Metadata)$Export[t] <- c("No") }
+        if(Export=="Yes"){attributes(Metadata)$Export[t] <- c("Yes") } else {attributes(Metadata)$Export[t] <- c("No") }
 
-
+      return(Metadata)
 
 
     } else {
@@ -101,14 +101,14 @@ AddClinicFromObject  <- function(Metadata,
       if(type == "Patients") {attributes(Metadata)$Data.Type <-  c("Clinic")}
       if(type == "Cells") {attributes(Metadata)$Data.Type <-  c("CellsAnnot")}
 
-      if(Export==T){attributes(Metadata)$Export <- c("Yes") } else {attributes(Metadata)$Export <- c("No") }
+      if(Export=="Yes"){attributes(Metadata)$Export <- c("Yes") } else {attributes(Metadata)$Export <- c("No") }
 
 
     } else {  if(type == "Samples") {attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"SamplesAnnot")}
       if(type == "Patients") {attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Clinic")}
       if(type == "Cells") {attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"CellsAnnot")}
 
-      if(Export==T){attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes") } else {attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"No") }
+      if(Export=="Yes"){attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes") } else {attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"No") }
 
     }}
 
