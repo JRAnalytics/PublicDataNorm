@@ -3,11 +3,9 @@
 #' @param Metadata Meta object
 #' @param query query file from TCGAimportExpression function
 #' @param data.norm a character "Raw" ,"TPM", "FKPM"
-#' @param Raw.file.path dir path in which the GDC project is saved, or local files are saved
 #' @param name if loca=True, names to apply in Metadata object slot
 #' @param name.local.file name file of interest in path directory
 #' @param force.replace set as F. T : replace an already object with the same name
-#' @param Export  TRUE or FALSE. If data to be Exported, set T.
 #' @importFrom utils menu
 #' @importFrom Matrix readMM
 #' @import data.table
@@ -18,14 +16,12 @@
 AddExpressionMatrixTCGA <- function(Metadata=NULL,
                                     query,
                                     data.norm,
-                                    Raw.file.path,
                                     name,
-                                    Export=T,
                                     name.local.file = NULL,
                                     force.replace=F ) {
 
   Omics.type = "RNAseq"
-  path =Raw.file.path
+  path = attributes(Metadata)$File.path$Project.RawData
 
 
   if(is.null(Metadata)){
@@ -93,12 +89,12 @@ AddExpressionMatrixTCGA <- function(Metadata=NULL,
         names(Metadata)[l+1] <- c(paste0(data.norm,".",project,".matrix"))
         if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
           if(l==0) {   attributes(Metadata)$Data.Type <-  c("Expression.Matrix")
-          if(Export==T){attributes(Metadata)$Export <- "Yes" } else {attributes(Metadata)$Export <- "No" }
+       attributes(Metadata)$Export <- "Yes"
           }} else {
             if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
               attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Expression.Matrix")
 
-              if(Export==T){attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes") } else {attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"No") } }
+             attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes") }
           }
 
 

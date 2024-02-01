@@ -6,7 +6,6 @@
 \usage{
 AddLocalDatabase(
   Metadata,
-  list.files.path,
   Normalization.Method = NA,
   Technology = NA,
   Platform = NA,
@@ -20,8 +19,6 @@ AddLocalDatabase(
 }
 \arguments{
 \item{Metadata}{Metadata object}
-
-\item{list.files.path}{dirpath}
 
 \item{Normalization.Method}{Defaul = NA}
 

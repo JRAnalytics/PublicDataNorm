@@ -1,7 +1,6 @@
 #' AddLocalDatabase
 #'
 #' @param Metadata Metadata object
-#' @param list.files.path dirpath
 #' @param Normalization.Method Defaul = NA
 #' @param Technology Microarray, RNAseq, Single cell etc
 #' @param Platform Brand of technology
@@ -17,7 +16,6 @@
 #'
 #' @examples "non"
 AddLocalDatabase <- function(Metadata,
-                               list.files.path,
                                Normalization.Method = NA,
                                Technology = NA,
                                Platform = NA,
@@ -30,7 +28,8 @@ AddLocalDatabase <- function(Metadata,
 
   Databasename = "DataBaseSummary.txt"
 
-  Local.Data.base.Path <- list.files.path$Parent
+  Local.Data.base.Path <- attributes(Metadata)$File.path$Parent
+
   lf <- list.files(Local.Data.base.Path)
 
   if(is.null(attributes(Metadata)$Version)){ Version = "V1"} else {   Version <- attributes(Metadata)$Version }
@@ -189,9 +188,9 @@ AddLocalDatabase <- function(Metadata,
 
     }
 
-    LF <- list.files(list.files.path$Project.VerifiedDataset)
+    LF <- list.files(Local.Data.base.Path$Project.VerifiedDataset)
     if(length(LF)!=0){
-      df <- file.info(list.files(list.files.path$Project.VerifiedDataset, full.names = T))
+      df <- file.info(list.files(Local.Data.base.Path$Project.VerifiedDataset, full.names = T))
       df$Filenames <- unlist(lapply(str_split(rownames(df),paste0(project,"/")),"[[",2))
       filename2 <- unlist(lapply(str_split( df$Filenames ,".csv"),"[[",1))
       version <- unique(str_extract(filename2,"V[0-9]*"))

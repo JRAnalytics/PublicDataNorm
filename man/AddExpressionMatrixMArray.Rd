@@ -6,23 +6,17 @@
 \usage{
 AddExpressionMatrixMArray(
   Metadata = NULL,
-  Raw.file.path,
-  name,
-  Export = T,
-  name.local.file = NULL,
+  name = NULL,
+  ExpressionMatrix = NULL,
   force.replace = F
 )
 }
 \arguments{
 \item{Metadata}{Meta object}
 
-\item{Raw.file.path}{dir path in which the raw single cell exrpession is saved}
-
 \item{name}{if loca=True, names to apply in Metadata object slot}
 
-\item{Export}{TRUE or FALSE. If data to be Exported, set T.}
-
-\item{name.local.file}{name file of interest in path directory}
+\item{ExpressionMatrix}{name file of interest in path directory}
 
 \item{force.replace}{set as F. T : replace an already object with the same name}
 }

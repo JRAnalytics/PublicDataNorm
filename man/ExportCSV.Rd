@@ -4,12 +4,10 @@
 \alias{ExportCSV}
 \title{ExportCSV Export Metadata inside object into ".csv" files}
 \usage{
-ExportCSV(Metadata, list.files.path, project)
+ExportCSV(Metadata, project)
 }
 \arguments{
 \item{Metadata}{a Metadata  data files}
-
-\item{list.files.path}{dirpath}
 
 \item{project}{project}
 }

@@ -1,27 +1,27 @@
 #' AddKeyLexic
 #'
 #' @param lexic PatientLexic or SamplesLexic
-#' @param Param string of character c("A","B", etc) : "A" names of parameter, will be a colnames in cleaned clinic. "B"& etc targeted colname(s) from raw clinicil data
-#'
+#' @param key a character string: name to add into lexic
+#' @param value a character string: target column in "raw" clinical data to rename as 'key' in cleaned clinical data.
 #' @return a Lexic
 #' @export
 #'
 #' @examples "None"
-AddKeyLexic <- function(lexic, Param = c("IDname", "param target")){
+AddKeyLexic <- function(lexic=NULL, key = NULL,value= NULL){
 
 
-  if(Param[1]%in%names(lexic)){
+  if(key%in%names(lexic)){
 
-    if(!Param[-1]%in%lexic[[Param[1]]]){
-      message(paste("Adding",Param[-1], "in", Param[1], "."))
-    lexic[[Param[1]]] <-  c(lexic[[Param[1]]],Param[-1])
-    } else { message(paste(Param[-1], "in", Param[1], "already present."))}
+    if(!value%in%lexic[[key]]){
+      message(paste("Adding",value, "in", key, "."))
+    lexic[[key]] <-  c(lexic[[key]],value)
+    } else { message(paste(value, "in", key, "already present."))}
 
 
 
   } else {
 
-    lexic[[Param[1]]] <- Param
+    lexic[[key]] <- c(key,value)
 
 
     }

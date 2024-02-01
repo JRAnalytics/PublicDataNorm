@@ -8,9 +8,7 @@ AddExpressionMatrixTCGA(
   Metadata = NULL,
   query,
   data.norm,
-  Raw.file.path,
   name,
-  Export = T,
   name.local.file = NULL,
   force.replace = F
 )
@@ -22,11 +20,7 @@ AddExpressionMatrixTCGA(
 
 \item{data.norm}{a character "Raw" ,"TPM", "FKPM"}
 
-\item{Raw.file.path}{dir path in which the GDC project is saved, or local files are saved}
-
 \item{name}{if loca=True, names to apply in Metadata object slot}
-
-\item{Export}{TRUE or FALSE. If data to be Exported, set T.}
 
 \item{name.local.file}{name file of interest in path directory}
 

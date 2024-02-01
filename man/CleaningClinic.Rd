@@ -9,7 +9,6 @@ CleaningClinic(
   ClinicToClean = NULL,
   name = NULL,
   type = c("Samples", "Patients"),
-  list.files.path,
   project,
   FilterSamples = F,
   FilterPatients = F,
@@ -26,8 +25,6 @@ CleaningClinic(
 \item{name}{name to apply in Metadata object list}
 
 \item{type}{"c("Samples", "Patients") for building clean clinical data from raw clinical data.}
-
-\item{list.files.path}{file path to find lexique of colnames}
 
 \item{project}{project}
 

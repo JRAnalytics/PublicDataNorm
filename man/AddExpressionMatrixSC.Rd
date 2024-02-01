@@ -8,27 +8,21 @@ AddExpressionMatrixSC(
   Metadata = NULL,
   Cell.file = NULL,
   Genes.file = NULL,
-  Raw.file.path,
   name,
-  Export = T,
-  name.local.file = NULL,
+  ExpressionMatrix = NULL,
   force.replace = F
 )
 }
 \arguments{
 \item{Metadata}{Metaobject}
 
-\item{Cell.file}{name of single cell cell annotation file specific to expression matrix. Not mandatory.}
+\item{Cell.file}{an object or a character string name of single cell cell annotation file specific to expression matrix. Not mandatory.}
 
-\item{Genes.file}{name of single cell gene annotation file specific to expression matrix. Not mandatory.}
-
-\item{Raw.file.path}{dir path in which the raw single cell exrpession is saved}
+\item{Genes.file}{an object or a character string name of single cell gene annotation file specific to expression matrix. Not mandatory.}
 
 \item{name}{if loca=True, names to apply in Metadata object slot}
 
-\item{Export}{TRUE or FALSE. If data to be Exported, set T.}
-
-\item{name.local.file}{name file of interest in path directory from .mtx exclusive}
+\item{ExpressionMatrix}{an object or a character string name file of interest in path directory from .mtx exclusive}
 
 \item{force.replace}{set as F. T : replace an already object with the same name}
 }

@@ -1,7 +1,6 @@
 #' ExportCSV Export Metadata inside object into ".csv" files
 #'
 #' @param Metadata a Metadata  data files
-#' @param list.files.path dirpath
 #' @param project project
 #' @return ".csv" files into working directory
 #' @export
@@ -9,11 +8,14 @@
 #' @import R.utils
 #' @import Matrix
 #' @examples "non"
-ExportCSV <- function (Metadata, list.files.path, project){
+ExportCSV <- function (Metadata,
+                       project){
 
   if(is.null(Metadata)){stop("Need a Metadata List file")}
   if(!is.list(Metadata)){stop("Need a Metadata List file")}
 
+
+  list.files.path = attributes(Metadata)$File.path
   if(is.null(list.files.path)){stop("Need a list file path for saving data")}
   if(!is.list(list.files.path)){stop(paste("list.files.path must be a list of file path whith Script, Raw genomic, Raw clinic, Processed and References directories in Parent Directory." ))}
 

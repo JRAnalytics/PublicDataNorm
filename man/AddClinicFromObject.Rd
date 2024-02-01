@@ -8,9 +8,9 @@ AddClinicFromObject(
   Metadata,
   object,
   name,
-  SamplesFilter = F,
+  ExpressionMatrixIdColumn = NULL,
   type = c("Samples", "Patients", "Cells"),
-  Export = c("Yes", "No"),
+  Export = T,
   force.replace = F
 )
 }
@@ -21,11 +21,11 @@ AddClinicFromObject(
 
 \item{name}{name to apply in Metadata object list}
 
-\item{SamplesFilter}{Default F, select only samples found in both the clinical data and the Expression Matrix.}
+\item{ExpressionMatrixIdColumn}{column to fetch colnames from Count matrix.}
 
 \item{type}{can be Samples", "Patients" or "Cells", to defiens Data.type attributes}
 
-\item{Export}{data to export after cleaning c("Yes", "No")}
+\item{Export}{TRUE or FALSE. If data to be Exported, set T.}
 
 \item{force.replace}{set as F. T : replace an already object with the same name}
 }

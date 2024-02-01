@@ -6,23 +6,21 @@
 \usage{
 AddClinicFromFile(
   Metadata,
-  Raw.file.path,
-  name.local.file = NULL,
-  name,
+  ClinicFile = NULL,
+  ExpressionMatrixIdColumn = NULL,
+  name = NULL,
   type = c("Samples", "Patients", "Cells"),
   force.replace = F,
   Export = F,
-  mergeToClinic = F,
-  mergeBy,
+  mergeToClinic = NULL,
+  mergeBy = NULL,
   join = c("left_join", "full_join")
 )
 }
 \arguments{
 \item{Metadata}{Meta object}
 
-\item{Raw.file.path}{dir path in which the GDC project is saved, or local files are saved}
-
-\item{name.local.file}{name file of interest in path directory, could be multiple names. c("a.csv","b.csv")}
+\item{ClinicFile}{name file of interest in path directory, could be multiple names. c("a.csv","b.csv")}
 
 \item{name}{if loca=True, names to apply in Metadata object slot}
 
@@ -32,7 +30,7 @@ AddClinicFromFile(
 
 \item{Export}{TRUE or FALSE. If data to be Exported, set T.}
 
-\item{mergeToClinic}{merge loaded data clinic with existing clincial data : full_join by rownames. False if you load more than 1 file.}
+\item{mergeToClinic}{default NULL. name of loaded clinical data in Metadata. Merge the newly added clinical data to a already loaded data clinic with existing clincial data : full_join by rownames.}
 
 \item{mergeBy}{colname using for merging clinical data.}
 

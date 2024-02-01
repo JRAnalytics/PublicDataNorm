@@ -4,7 +4,6 @@
 #' @param ClinicToClean a character string of name of clinical data to clean.
 #' @param name name to apply in Metadata object list
 #' @param type "c("Samples", "Patients") for building clean clinical data from raw clinical data.
-#' @param list.files.path file path to find lexique of colnames
 #' @param project project
 #' @param FilterSamples default F, if T, keep only retrieved samples in Count matrix
 #' @param FilterPatients default F, if T, keep only retrieved patients in Count matrix
@@ -21,7 +20,6 @@ CleaningClinic <- function(Metadata,
                            ClinicToClean = NULL,
                            name = NULL,
                            type = c("Samples", "Patients"),
-                           list.files.path,
                            project,
                            FilterSamples= F,
                            FilterPatients = F,
@@ -30,7 +28,7 @@ CleaningClinic <- function(Metadata,
                            all.column = F){
 
 
-
+  list.files.path = attributes(Metadata)$File.path
 
   if(is.null(ClinicToClean)){stop("ClinicToClean must be a character")}
   if(!inherits(ClinicToClean,what ="character" )){ stop("ClinicToClean must be a character")}
