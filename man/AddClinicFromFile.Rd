@@ -22,6 +22,8 @@ AddClinicFromFile(
 
 \item{ClinicFile}{name file of interest in path directory, could be multiple names. c("a.csv","b.csv")}
 
+\item{ExpressionMatrixIdColumn}{column to fetch colnames from Count matrix.}
+
 \item{name}{if loca=True, names to apply in Metadata object slot}
 
 \item{type}{c("Samples", "Patients") To specify if clinical data refers to samples or patients data. Importat if mutliple samples for one patient.}

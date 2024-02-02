@@ -7,7 +7,6 @@
 #' @param Run.spec Deppenes, reads, etc etc
 #' @param First.Author Defaul = NA
 #' @param DOI doi of article if exist. Defaul = NA
-#' @param project project name
 #' @param Comment specify a comment for this export
 #' @param User User who export the cleaned Metadata object
 #' @return a .text tab delimited database summary
@@ -22,13 +21,13 @@ AddLocalDatabase <- function(Metadata,
                                Run.spec=NA ,
                                First.Author = NA,
                                DOI = NA,
-                               project = NA,
                                Comment = NA,
                                User= NA){
 
   Databasename = "DataBaseSummary.txt"
 
   Local.Data.base.Path <- attributes(Metadata)$File.path$Parent
+  project <- attributes(Metadata)$Project
 
   lf <- list.files(Local.Data.base.Path)
 
@@ -188,9 +187,9 @@ AddLocalDatabase <- function(Metadata,
 
     }
 
-    LF <- list.files(Local.Data.base.Path$Project.VerifiedDataset)
+    LF <- list.files(attributes(Metadata)$File.path$Project.VerifiedDataset)
     if(length(LF)!=0){
-      df <- file.info(list.files(Local.Data.base.Path$Project.VerifiedDataset, full.names = T))
+      df <- file.info(list.files(attributes(Metadata)$File.path$Project.VerifiedDataset, full.names = T))
       df$Filenames <- unlist(lapply(str_split(rownames(df),paste0(project,"/")),"[[",2))
       filename2 <- unlist(lapply(str_split( df$Filenames ,".csv"),"[[",1))
       version <- unique(str_extract(filename2,"V[0-9]*"))

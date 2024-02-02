@@ -1,7 +1,6 @@
 #' AddgeneAnnotGtf to Metadata
 #'
 #' @param Metadata  Metadata object to add geneAnnotation
-#' @param gtf.file.dir set xorking directory to path to gtf.file
 #' @param gtf.files  gtf file to load
 #' @param force.replace set as F. T : replace an already object with the same name
 #' @import stringr
@@ -12,11 +11,13 @@
 #'
 #' @examples "none"
 #'
-AddgeneAnnotGtf <- function(Metadata ,gtf.file.dir, gtf.files, force.replace=F){
+AddgeneAnnotGtf <- function(Metadata ,gtf.files, force.replace=F){
 
   Metadata <- Metadata
 
-  path <- file.path(gtf.file.dir)
+  path = attributes(Metadata)$File.path$References
+
+
 
   if(!is.null(Metadata$geneAnnotation)){
 

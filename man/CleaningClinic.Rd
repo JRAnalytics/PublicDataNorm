@@ -5,16 +5,16 @@
 \title{CleaningClinic function : Cleaning clinical data to map samples and patients in Sequençing data}
 \usage{
 CleaningClinic(
-  Metadata,
+  Metadata = NULL,
   ClinicToClean = NULL,
-  name = NULL,
+  Lexic = NULL,
+  exportname = NULL,
   type = c("Samples", "Patients"),
-  project,
   FilterSamples = F,
   FilterPatients = F,
   CleanFromOtherType = F,
   force.replace = F,
-  all.column = F
+  keep.all.column = F
 )
 }
 \arguments{
@@ -22,11 +22,11 @@ CleaningClinic(
 
 \item{ClinicToClean}{a character string of name of clinical data to clean.}
 
-\item{name}{name to apply in Metadata object list}
+\item{Lexic}{Lexic to use for cleaning. Created from CreateLexic function .}
+
+\item{exportname}{name to apply in Metadata object list}
 
 \item{type}{"c("Samples", "Patients") for building clean clinical data from raw clinical data.}
-
-\item{project}{project}
 
 \item{FilterSamples}{default F, if T, keep only retrieved samples in Count matrix}
 
@@ -36,7 +36,7 @@ CleaningClinic(
 
 \item{force.replace}{set as F. T : replace an already object with the same name}
 
-\item{all.column}{default F, if T, copy all column from clinic.}
+\item{keep.all.column}{default F, if T, copy all column from clinic.}
 }
 \value{
 a data frame of Samples pheno or patients clinical data. If Sample ID and Patients ID are the sames, so Samples.pheno and Patient_clinic are the same data frame

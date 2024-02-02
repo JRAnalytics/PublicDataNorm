@@ -2,6 +2,7 @@
 #'
 #' @param Metadata  Metadata object to add geneAnnotation
 #' @param object object to add
+#' @param geneAnnotIDcolumn column object to fetch geneIDs
 #' @param force.replace set as F. T : replace an already object with the same name
 #' @param Filter.Genes default F, if T, keep only retrieved genes in Count matrix
 #' @import stringr
@@ -12,10 +13,10 @@
 #'
 #' @examples "none"
 #'
-AddgeneAnnotFromObject <- function(Metadata ,object, Filter.Genes= F, force.replace=F){
+AddgeneAnnotFromObject <- function(Metadata=NULL ,object=NULL, geneAnnotIDcolumn= NULL, Filter.Genes= F, force.replace=F){
 
 
-
+  if(is.null(Metadata)){stop("A Metadata object is needed.")}
   if(!is.null(Metadata$geneAnnotation)){
 
     message("geneAnnotation already loaded.")
@@ -27,38 +28,37 @@ AddgeneAnnotFromObject <- function(Metadata ,object, Filter.Genes= F, force.repl
   if(is.null(object)){stop("Error in geneAnnotation function : no object found")}
   if(!all(class(object)%in%c("data.frame","matrix","array"))){stop("Object is not of a data.frame or a matrix class object.")}
 
-
+  if(is.null(geneAnnotIDcolumn)){stop("geneAnnotIDcolumn must be refered to a colname from object to add.")}
 
 
   zz <- which(attributes(Metadata)$Data.Type=="Count")[1]
   if(length(zz)==0){stop("No Count found in Metadata object")}
   gene <-  rownames(Metadata[[zz]])
+
   if(length(gene)==length(unique(gene))){ message("No rownames of Count matrix are duplicated")}
-  val <- gene[which(gene%in%as.matrix(object))[1]]
-  colT <- which(matrixStats::colAnys(as.matrix(object),value = val))
 
-  if(length(colT)>1){ colT <- colT[1]}
 
+  colT <- geneAnnotIDcolumn
 
 
   if(all(str_detect(gene, "ENSG")==T)) { message("Data matrice row names are as ENSEMBL.")
-    if(length(colT)==0){stop("No genes as ENSEMBL found in geneAnnot.")}}
+    }
 
   if(all(str_detect(gene, "ILMN_")==T)) { message("Data matrice row names are as Illumina Bead Array Probes")
-    if(length(colT)==0){stop("No genes as Illumina Bead Array Probes 'ILMN_' found in geneAnnot.")}}
+   }
 
   if(is.numeric(na.omit(as.numeric(gene))) & length(na.omit(as.numeric(gene)))!=0)  { message("Data matrice row names are as ENTREZ gene id")
-    if(length(colT)==0){stop("No genes as ENTREZ.ID found in geneAnnot.")}}
+  }
 
   if(all(str_detect(gene, "_at")==T)) { message("Data matrice row names are as Illumina Microarray Probes")
-    if(length(colT)==0){stop("No genes as ILLUMINA '_at' found in geneAnnot.")}}
+    }
 
   if("ACTB"%in%gene){ message("Data matrice row names are in GeneSymbols.")
-    if(length(colT)==0){stop("No genes as GeneSymbols found in geneAnnot.")}}
+   }
 
 
   message("Found genes :")
-  print(summary(gene%in%as.matrix(object)))
+  print(summary(gene%in%object[,colT]))
 
   message("Selecting retrieved genes from Count matrix")
 
@@ -74,7 +74,6 @@ AddgeneAnnotFromObject <- function(Metadata ,object, Filter.Genes= F, force.repl
       }
 
   Metadata$geneAnnotation = object
-
 
 
 

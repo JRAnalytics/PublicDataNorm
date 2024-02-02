@@ -4,12 +4,14 @@
 \alias{AddKeyLexic}
 \title{AddKeyLexic}
 \usage{
-AddKeyLexic(lexic, Param = c("IDname", "param target"))
+AddKeyLexic(lexic = NULL, key = NULL, value = NULL)
 }
 \arguments{
 \item{lexic}{PatientLexic or SamplesLexic}
 
-\item{Param}{string of character c("A","B", etc) : "A" names of parameter, will be a colnames in cleaned clinic. "B"& etc targeted colname(s) from raw clinicil data}
+\item{key}{a character string: name to add into lexic}
+
+\item{value}{a character string: target column in "raw" clinical data to rename as 'key' in cleaned clinical data.}
 }
 \value{
 a Lexic

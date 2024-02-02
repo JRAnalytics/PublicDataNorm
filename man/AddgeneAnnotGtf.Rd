@@ -4,12 +4,10 @@
 \alias{AddgeneAnnotGtf}
 \title{AddgeneAnnotGtf to Metadata}
 \usage{
-AddgeneAnnotGtf(Metadata, gtf.file.dir, gtf.files, force.replace = F)
+AddgeneAnnotGtf(Metadata, gtf.files, force.replace = F)
 }
 \arguments{
 \item{Metadata}{Metadata object to add geneAnnotation}
-
-\item{gtf.file.dir}{set xorking directory to path to gtf.file}
 
 \item{gtf.files}{gtf file to load}
 

@@ -4,12 +4,10 @@
 \alias{ExportTSV}
 \title{ExportTSV Export Metadata inside object into ".csv" files}
 \usage{
-ExportTSV(Metadata, project)
+ExportTSV(Metadata)
 }
 \arguments{
 \item{Metadata}{a Metadata  data files}
-
-\item{project}{project}
 }
 \value{
 ".tsv" files into working directory

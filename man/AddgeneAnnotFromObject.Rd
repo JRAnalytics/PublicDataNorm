@@ -4,12 +4,20 @@
 \alias{AddgeneAnnotFromObject}
 \title{AddgeneAnnotFromObject to Metadata}
 \usage{
-AddgeneAnnotFromObject(Metadata, object, Filter.Genes = F, force.replace = F)
+AddgeneAnnotFromObject(
+  Metadata = NULL,
+  object = NULL,
+  geneAnnotIDcolumn = NULL,
+  Filter.Genes = F,
+  force.replace = F
+)
 }
 \arguments{
 \item{Metadata}{Metadata object to add geneAnnotation}
 
 \item{object}{object to add}
+
+\item{geneAnnotIDcolumn}{column object to fetch geneIDs}
 
 \item{Filter.Genes}{default F, if T, keep only retrieved genes in Count matrix}
 

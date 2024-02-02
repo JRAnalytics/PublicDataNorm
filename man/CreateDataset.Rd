@@ -4,10 +4,10 @@
 \alias{CreateDataset}
 \title{CreateDataset Create project Dir in Processes,n Precessed, Raw Clinic, Raw genomic, and references if does not exist.}
 \usage{
-CreateDataset(project, path)
+CreateDataset(Project, path)
 }
 \arguments{
-\item{project}{a character string : project name}
+\item{Project}{a character string : project name}
 
 \item{path}{dir path of Parent directory}
 }

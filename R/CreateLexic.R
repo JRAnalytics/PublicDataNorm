@@ -1,7 +1,6 @@
 #' CreateLexic function to prepare constant colnames to find in clinical data from lexiue .txt
 #'
 #' @param Dataset file path to find lexique of colnames
-#' @param replaceLexic replace Samples and Patient Lexis if already loaded
 #' @param type default F. If MetaObject is made of Single.Cell sequencing data, set to T.
 #' @importFrom data.table fread
 #' @import dplyr

@@ -12,7 +12,6 @@ AddLocalDatabase(
   Run.spec = NA,
   First.Author = NA,
   DOI = NA,
-  project = NA,
   Comment = NA,
   User = NA
 )
@@ -31,8 +30,6 @@ AddLocalDatabase(
 \item{First.Author}{Defaul = NA}
 
 \item{DOI}{doi of article if exist. Defaul = NA}
-
-\item{project}{project name}
 
 \item{Comment}{specify a comment for this export}
 

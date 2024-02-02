@@ -29,8 +29,32 @@ AddKeyLexic <- function(lexic=NULL, key = NULL,value= NULL){
   return(lexic)
 
 
-
-
-
-
 }
+
+
+
+#' addSeveralKeysToLexic
+#'
+#' @param vector a list of c(key=value) for
+#' @param lexic lexic to add
+#'
+#' @return a lexic
+#' @export
+#'
+#' @examples "not"
+
+addSeveralKeysToLexic <- function(vector=NULL, lexic=NULL){
+
+  if(is.null(vector)){stop("vector is null")}
+  if(is.null(lexic)){stop("lexic is null")}
+  if(is.null(names(vector))){stop("vector has no names. vector must be c('key' = 'value') to add in lexic. see ?AddKeyLexic")}
+
+
+  for (i in 1:length(vector)) {
+    lexic = AddKeyLexic(lexic = lexic,
+                        key = names(vector)[i],
+                        value =vector[[i]])
+  }
+  return(lexic)
+}
+
