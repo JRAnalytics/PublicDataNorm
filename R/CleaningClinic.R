@@ -231,7 +231,7 @@ CleaningClinic <- function(Metadata = NULL,
   } else if(type=="Patients")
   {
 
-    NBP <- which(attributes(Metadata)$Data.Type=="Clinic" & attributes(Metadata)$Export=="No")
+    NBP <- which(attributes(Metadata)$Data.Type=="Clinic")
 
     if(CleanFromOtherType==F & length(NBP)==0){stop("No Clinic found in Metadata object. Set CleanFromOtherType=T to force cleaning from SamplesAnnot")}
 
