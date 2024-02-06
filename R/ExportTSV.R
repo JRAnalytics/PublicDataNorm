@@ -1,4 +1,4 @@
-#' ExportTSV Export Metadata inside object into ".csv" files
+#' ExportTSV Export Metadata inside object into ".tsv" files
 #'
 #' @param Metadata a Metadata  data files
 #' @return ".tsv" files into working directory
@@ -14,10 +14,13 @@ ExportTSV <- function (Metadata){
   if(is.null(Metadata)){stop("Need a Metadata List file")}
   if(!is.list(Metadata)){stop("Need a Metadata List file")}
 
+
+  list.files.path = attributes(Metadata)$File.path
+
   if(is.null(list.files.path)){stop("Need a list file path for saving data")}
   if(!is.list(list.files.path)){stop(paste("list.files.path must be a list of file path whith Script, Raw genomic, Raw clinic, Processed and References directories in Parent Directory." ))}
 
-  list.files.path = attributes(Metadata)$File.path
+
   project = attributes(Metadata)$Project
   count <- 0
   object <- length(Metadata)
@@ -102,12 +105,12 @@ ExportTSV <- function (Metadata){
       message(paste("Exporting", count, "/", object,"object: ",names(Metadata)[j]))
 
       if(Vnumber==1){
-        filename <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(Metadata)[j],".V1",".csv")
+        filename <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(Metadata)[j],".V1",".tsv")
         write.table(z,row.names = F ,file = filename, sep = "\t")
 
       } else {
 
-        filename <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(Metadata)[j],".V", Vnumber,".csv")
+        filename <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(Metadata)[j],".V", Vnumber,".tsv")
         write.table(z,row.names = F ,file = filename, sep = "\t")
       }
 
@@ -135,7 +138,7 @@ ExportTSV <- function (Metadata){
       if(Vnumber==1){
 
         if(attributes(Metadata)$Omics.type!="Single.Cell"){
-          filename <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(Metadata)[j], ".V1.csv")
+          filename <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(Metadata)[j], ".V1.tsv")
           write.table(z,row.names = F ,file = filename, sep = "\t")
           message(paste("Compressing"))
           R.utils::gzip(filename, destname=sprintf("%s.gz", filename), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)
@@ -145,14 +148,14 @@ ExportTSV <- function (Metadata){
 
           filename <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(Metadata)[j],".V1.mtx")
           if(!class(Metadata[[j]])[1]=="dgTMatrix"){Metadata[[j]] = as.matrix(Metadata[[j]]) }
-          writeMM(Matrix(Metadata[[j]], sparse = T),file = filename)
+          writeMM(Matrix(as.matrix(Metadata[[j]]), sparse = T),file = filename)
           message(paste("Compressing"))
           R.utils::gzip(filename, destname=sprintf("%s.gz", filename), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)
           gc()
 
           if(!"geneAnnot"%in%attributes(Metadata)$Data.Type){
             message("No geneAnnot file found. Exporting geneAnnot from count matrix.")
-            filename.genes <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(Metadata)[j],".GenesAnnot.V1.csv")
+            filename.genes <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(Metadata)[j],".GenesAnnot.V1.tsv")
             write.table(rownames(Metadata[[j]]),row.names = F ,col.names = F ,file = filename.genes, sep = "\t")
             count = count+1
             message("-------------------------------------------------")
@@ -161,7 +164,7 @@ ExportTSV <- function (Metadata){
 
           if(!"CellsAnnot"%in%attributes(Metadata)$Data.Type){
             message("No CellsAnnot file found. Exporting CellsAnnot from count matrix.")
-            filename.cells <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".CellsAnnot", "V1.csv")
+            filename.cells <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".CellsAnnot", "V1.tsv")
             write.table(data.frame("Cells"= colnames(Metadata[[j]])),row.names = F ,file = filename.cells, sep = "\t")
             count = count+1
             message("-------------------------------------------------")
@@ -169,7 +172,7 @@ ExportTSV <- function (Metadata){
 
               kk = which(attributes(Metadata)$Data.Type%in%"CellsAnnot"& attributes(Metadata)$Export=="Yes")
               if(length(kk)>0){
-                filename.cells <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(Metadata)[kk], ".V1.csv")
+                filename.cells <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(Metadata)[kk], ".V1.tsv")
                 write.table(Metadata[[kk]],row.names = F ,file = filename.cells, sep = "\t")
                 count = count+1
                 message("-------------------------------------------------")
@@ -179,7 +182,7 @@ ExportTSV <- function (Metadata){
 
               if(attributes(Metadata)$Omics.type!="Single.Cell") {
 
-                filename <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(Metadata)[j],".V",Vnumber, ".csv")
+                filename <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(Metadata)[j],".V",Vnumber, ".tsv")
                 write.table(z,row.names = F ,file = filename, sep = "\t")
                 message(paste("Compressing"))
                 R.utils::gzip(filename, destname=sprintf("%s.gz", filename), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)}
@@ -190,14 +193,14 @@ ExportTSV <- function (Metadata){
                 filename <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(Metadata)[j],".V",Vnumber,".mtx")
 
                 if(!class(Metadata[[j]])[1]=="dgTMatrix"){Metadata[[j]] = as.matrix(Metadata[[j]]) }
-                writeMM(Matrix(Metadata[[j]], sparse = T),file = filename)
+                writeMM(Matrix(as.matrix(Metadata[[j]]), sparse = T),file = filename)
                 message(paste("Compressing"))
                 R.utils::gzip(filename, destname=sprintf("%s.gz", filename), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)
                 gc()
 
                 if(!"geneAnnot"%in%attributes(Metadata)$Data.Type){
                   message("No geneAnnot file found. Exporting geneAnnot from count matrix.")
-                  filename.genes <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(Metadata)[j],".GenesAnnot",".V",Vnumber,".csv")
+                  filename.genes <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(Metadata)[j],".GenesAnnot",".V",Vnumber,".tsv")
                   count = count+1
                   message("-------------------------------------------------")
                   message(paste("Exporting", count, "/", object,"object: ","geneAnnot", "file"))
@@ -207,14 +210,14 @@ ExportTSV <- function (Metadata){
 
                 if(!"CellsAnnot"%in%attributes(Metadata)$Data.Type){
                   message("No CellsAnnot file found. Exporting CellsAnnot from count matrix.")
-                  filename.cells <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".CellsAnnot",".V",Vnumber,".csv")
+                  filename.cells <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".CellsAnnot",".V",Vnumber,".tsv")
                   count = count+1
                   message("-------------------------------------------------")
                   message(paste("Exporting", count, "/", object,"object: ","CellsAnnot", "file"))
 
                   write.table(data.frame("Cells"= colnames(Metadata[[j]])),row.names = F ,file = filename.cells, sep = "\t")} else {
 
-                    filename.cells <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".CellsAnnot",".V",Vnumber,".csv")
+                    filename.cells <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".CellsAnnot",".V",Vnumber,".tsv")
                     kk = which(attributes(Metadata)$Data.Type%in%"CellsAnnot"& attributes(Metadata)$Export=="Yes")
                     if(length(kk)>0){
                       count = count+1
@@ -252,7 +255,7 @@ ExportTSV <- function (Metadata){
 
       if(Vnumber==1){
 
-        filename <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(Metadata)[j],".V1.csv")
+        filename <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(Metadata)[j],".V1.tsv")
         write.table(z,row.names = F ,file = filename, sep = "\t")
         message(paste("Compressing"))
         R.utils::gzip(filename, destname=sprintf("%s.gz", filename), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)
@@ -260,7 +263,7 @@ ExportTSV <- function (Metadata){
 
 
 
-        filename <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(Metadata)[j],".V",Vnumber,".csv")
+        filename <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(Metadata)[j],".V",Vnumber,".tsv")
         write.table(z,row.names = F ,file = filename, sep = "\t")
         message(paste("Compressing"))
         R.utils::gzip(filename, destname=sprintf("%s.gz", filename), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)

@@ -147,7 +147,7 @@ ExportCSV <- function (Metadata){
 
             filename <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(Metadata)[j],".V1.mtx")
             if(!class(Metadata[[j]])[1]=="dgTMatrix"){Metadata[[j]] = as.matrix(Metadata[[j]]) }
-            writeMM(Matrix(Metadata[[j]], sparse = T),file = filename)
+            writeMM(Matrix(as.matrix(Metadata[[j]]), sparse = T),file = filename)
             message(paste("Compressing"))
             R.utils::gzip(filename, destname=sprintf("%s.gz", filename), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)
             gc()
@@ -192,7 +192,7 @@ ExportCSV <- function (Metadata){
               filename <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(Metadata)[j],".V",Vnumber,".mtx")
 
               if(!class(Metadata[[j]])[1]=="dgTMatrix"){Metadata[[j]] = as.matrix(Metadata[[j]]) }
-              writeMM(Matrix(Metadata[[j]], sparse = T),file = filename)
+              writeMM(Matrix(as.matrix(Metadata[[j]]), sparse = T),file = filename)
               message(paste("Compressing"))
               R.utils::gzip(filename, destname=sprintf("%s.gz", filename), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)
               gc()
