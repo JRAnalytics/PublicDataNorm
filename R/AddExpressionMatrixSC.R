@@ -159,7 +159,7 @@ AddExpressionMatrixSC <- function(Metadata=NULL,
 
 
     if(length(Metadata)>=1) {
-
+      l = length(Metadata)
       if(!all(str_detect(names(Metadata),name))==F){
         message("An Object with the same name already exist in MetaObject")
         if(force.replace==F){stop("set force.replace==T to subset object.")}

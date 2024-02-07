@@ -91,7 +91,7 @@ AddExpressionMatrixMArray<- function(Metadata=NULL,
       dt = ExpressionMatrix}else { stop("Object set in ExpressionMatrix is not of class 'data.frame', 'matrix', 'dgCMatrix' ,'dgTMatrix'")}}
 
   if(length(Metadata)>=1) {
-
+    l = length(Metadata)
     if(!all(str_detect(names(Metadata),name))==F){
       message("An Object with the same name already exist in MetaObject")
       if(force.replace==F){stop("set force.replace==T to subset object.")}
