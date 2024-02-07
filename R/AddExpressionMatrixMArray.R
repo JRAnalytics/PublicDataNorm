@@ -17,7 +17,7 @@ AddExpressionMatrixMArray<- function(Metadata=NULL,
                                      force.replace=F ) {
 
   Omics.type = "Microarray"
-
+  l <-length(names(Metadata))
   path = attributes(Metadata)$File.path$Project.RawData
 
   if(is.null(Metadata)){stop("A Metadata object must be created with CreateDataset() function. See ?CreateDataset.")}
@@ -45,7 +45,7 @@ AddExpressionMatrixMArray<- function(Metadata=NULL,
   if(inherits(ExpressionMatrix, "character")){
 
     message("Local import.")
-    l <-length(names(Metadata))
+
     lf <- list.files(path)
 
     if(length(lf)>1){print(c(message("There is more than one files in Dir :"),lf))}
@@ -91,7 +91,7 @@ AddExpressionMatrixMArray<- function(Metadata=NULL,
       dt = ExpressionMatrix}else { stop("Object set in ExpressionMatrix is not of class 'data.frame', 'matrix', 'dgCMatrix' ,'dgTMatrix'")}}
 
   if(length(Metadata)>=1) {
-    l = length(Metadata)
+
     if(!all(str_detect(names(Metadata),name))==F){
       message("An Object with the same name already exist in MetaObject")
       if(force.replace==F){stop("set force.replace==T to subset object.")}
