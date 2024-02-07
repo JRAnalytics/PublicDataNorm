@@ -34,7 +34,7 @@ AddClinicFromFile <- function(Metadata,
   if(!is.list(Metadata)){stop("Metadata should be a list.")}
   if(is.null(ClinicFile)){stop("No set ClinicFile information")}
   if(!inherits(ClinicFile,"character")){stop("ClinicFile is not a character string.") }
-  if(is.null(ExpressionMatrixIdColumn)){stop("ExpressionMatrixIdColumn must be specifierdt (i.e character string : colname of clinic to add).")}
+#  if(is.null(ExpressionMatrixIdColumn)){stop("ExpressionMatrixIdColumn must be specifierdt (i.e character string : colname of clinic to add).")}
   if(length(ExpressionMatrixIdColumn)>1){stop("ExpressionMatrixIdColumn must be of length equal to one.")}
 
   l <-length(names(Metadata))
@@ -138,7 +138,7 @@ AddClinicFromFile <- function(Metadata,
 
 
     }
-
+  if(type != "Patients"){
 if(!ExpressionMatrixIdColumn%in%colnames(dt)){stop(paste(ExpressionMatrixIdColumn, "colnames is not in the added clinical data."))}
 
 
@@ -148,7 +148,7 @@ if(type!="Cells"){
   message("Found Samples :")
   print(summary(samples%in%dt[,ExpressionMatrixIdColumn]))
   message("Unfound Samples :")
-  print(samples[!samples%in%dt[,ExpressionMatrixIdColumn]])}
+  print(samples[!samples%in%dt[,ExpressionMatrixIdColumn]])}}
 
 
     return(Metadata)

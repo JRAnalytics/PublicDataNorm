@@ -30,7 +30,7 @@ AddClinicFromObject  <- function(Metadata,
   if(!is.character(name)) { stop("name should be specified as character")}
   if(is.null(type)) { stop("Data.type should be specified")}
   if(is.null(Export)) { stop("Export should be specified")}
-  if(is.null(ExpressionMatrixIdColumn)){stop("ExpressionMatrixIdColumn must be specifierdt (i.e character string : colname of clinic to add).")}
+  #if(is.null(ExpressionMatrixIdColumn)){stop("ExpressionMatrixIdColumn must be specifierdt (i.e character string : colname of clinic to add).")}
   if(!type%in%c("Samples", "Patients", "Cells")) { stop("type should be specified from this values c('Samples', 'Patients'or 'Cells') ")}
 
 
@@ -41,7 +41,8 @@ AddClinicFromObject  <- function(Metadata,
 
 
     l <- length(Metadata)
-    if(type!="Cells"){
+
+    if(type=="Samples"){
     object =as.data.frame(object)
     zz <- which(attributes(Metadata)$Data.Type=="Count")[1]
     samples <- colnames(Metadata[[zz]])
