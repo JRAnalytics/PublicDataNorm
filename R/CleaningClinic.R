@@ -41,7 +41,7 @@ CleaningClinic <- function(Metadata = NULL,
 
 
 
-  if(!all(str_detect(names(Metadata),exportname)==F)){
+  if(exportname%in%names(Metadata)){
     message("An Object with the same exportname already exist in MetaObject")
     if(force.replace==F){stop("set force.replace==T to subset object.")}}
 
@@ -140,7 +140,7 @@ CleaningClinic <- function(Metadata = NULL,
       }
 
 
-      if(!all(str_detect(names(Metadata),exportname)==F)){
+      if(exportname%in%names(Metadata)){
         if(force.replace==F){stop("set force.replace==T to subset object.")}
         message("Subsetting object.")
 
@@ -183,7 +183,7 @@ CleaningClinic <- function(Metadata = NULL,
       cl_rolled[cl_rolled=="NA"] <- NA
 
 
-      if(!all(str_detect(names(Metadata),exportname)==F)){
+      if(exportname%in%names(Metadata)){
         if(force.replace==F){stop("set force.replace==T to subset object.")}
         message("Subsetting object.")
 
@@ -320,7 +320,7 @@ CleaningClinic <- function(Metadata = NULL,
 
 
 
-      if(!all(str_detect(names(Metadata),exportname)==F)){
+      if(exportname%in%names(Metadata)){
         if(force.replace==F){stop("set force.replace==T to subset object.")}
         message("Subsetting object.")
 
@@ -389,7 +389,7 @@ CleaningClinic <- function(Metadata = NULL,
 
 
 
-      if(!all(str_detect(names(Metadata),exportname)==F)){
+      if(exportname%in%names(Metadata)){
         if(force.replace==F){stop("set force.replace==T to subset object.")}
         message("Subsetting object.")
 

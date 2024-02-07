@@ -2,7 +2,7 @@
 % Please edit documentation in R/ExportTSV.R
 \name{ExportTSV}
 \alias{ExportTSV}
-\title{ExportTSV Export Metadata inside object into ".csv" files}
+\title{ExportTSV Export Metadata inside object into ".tsv" files}
 \usage{
 ExportTSV(Metadata)
 }
@@ -13,7 +13,7 @@ ExportTSV(Metadata)
 ".tsv" files into working directory
 }
 \description{
-ExportTSV Export Metadata inside object into ".csv" files
+ExportTSV Export Metadata inside object into ".tsv" files
 }
 \examples{
 "non"
