@@ -2,18 +2,18 @@
 % Please edit documentation in R/CheckMeta.R
 \name{CheckMeta}
 \alias{CheckMeta}
-\title{CheckMeta : Checking samples accors MetaData files}
+\title{CheckMeta : Checking samples accors Metadata files}
 \usage{
-CheckMeta(MetaData)
+CheckMeta(Metadata)
 }
 \arguments{
-\item{MetaData}{a mMetaData list}
+\item{Metadata}{a Metadata list}
 }
 \value{
 none
 }
 \description{
-CheckMeta : Checking samples accors MetaData files
+CheckMeta : Checking samples accors Metadata files
 }
 \examples{
 "none"

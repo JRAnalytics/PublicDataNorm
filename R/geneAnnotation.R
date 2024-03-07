@@ -1,4 +1,4 @@
-#' geneAnnotation function to form a genes annotated data frame for data claening rnaseq data.
+#' .geneAnnotation function to form a genes annotated data frame for data claening rnaseq data.
 #'
 #' @param gtf.files GTF file to load, a character if wd is already set, or an object of GTF file already load
 #' @param file character to names the geneAnnotation rds file
@@ -12,15 +12,16 @@
 #' "none"
 #'
 #' @export
-geneAnnotation <- function(gtf.files = NULL, saverds=F, file= ".rds" ){
+.geneAnnotation <- function(gtf.files = NULL, saverds=F, file= ".rds" ){
 
 if(is.null(gtf.files)){stop("A path to gtf files is mandatory.")}
 #loading of the gtf files
-   if(class(gtf.files)=="character") {
+
+   if(inherits(gtf.files, "character")) {
 
 
 
-      genes <- fread(gtf.files)
+      genes <- suppressWarnings({fread(gtf.files)})
       setnames(genes, names(genes), c("chr","source","type","start","end","score","strand","phase","attributes") )
   } else {
 
@@ -66,7 +67,7 @@ if(is.na(site)) {split_gene$UCSC_link = NA} else { split_gene$UCSC_link <- paste
   split_gene [which(is.na(split_gene$HGNC)),"HGNC"] <- ":-"
   split_gene [which((split_gene $HGNC)==":-"),"HGNC"] <- "-"
 
-  split_gene$Entrez.id <- mapIds(org.Hs.eg.db, split_gene$GeneSymbol, 'ENTREZID', 'SYMBOL')
+  split_gene$Entrez.id <- mapIds(org.Hs.eg.db::org.Hs.eg.db, split_gene$GeneSymbol, 'ENTREZID', 'SYMBOL')
   split_gene$Entrez_geneID_link <- paste0("https://www.ncbi.nlm.nih.gov/gene/?term=",split_gene$Entrez.id)
   split_gene[which(is.na(split_gene$Entrez.id)),"Entrez_geneID_link"] <- "-"
 

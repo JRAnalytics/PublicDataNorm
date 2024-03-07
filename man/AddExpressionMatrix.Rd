@@ -5,13 +5,16 @@
 \title{AddExpressionMatrix to Meta object}
 \usage{
 AddExpressionMatrix(
-  Metadata,
+  Metadata = NULL,
   local = c(T, F),
+  Omics.type = c("RNAseq", "Single.Cell", "Microarray", "Spatial"),
+  Cell.file = NULL,
+  Genes.file = NULL,
   query,
   data.norm,
   path,
   name,
-  Raw = T,
+  Export = T,
   name.local.file = NULL,
   force.replace = F
 )
@@ -21,6 +24,12 @@ AddExpressionMatrix(
 
 \item{local}{T of F. If F, use query form. If F, add expression patrice from local file}
 
+\item{Omics.type}{one of this category : "RNAseq", "Single.Cell", "Microarray", "Spatial".}
+
+\item{Cell.file}{name of single cell cell annotation file specific to expression matrix. Not mandatory.}
+
+\item{Genes.file}{name of single cell gene annotation file specific to expression matrix. Not mandatory.}
+
 \item{query}{query file from TCGAimportExpression function}
 
 \item{data.norm}{a character "Raw" ,"TPM", "FKPM"}
@@ -29,7 +38,7 @@ AddExpressionMatrix(
 
 \item{name}{if loca=True, names to apply in Metadata object slot}
 
-\item{Raw}{TRUE or FALSE. If Raw data, to be specified.}
+\item{Export}{TRUE or FALSE. If data to be Exported, set T.}
 
 \item{name.local.file}{name file of interest in path directory}
 

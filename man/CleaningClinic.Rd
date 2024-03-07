@@ -5,23 +5,38 @@
 \title{CleaningClinic function : Cleaning clinical data to map samples and patients in Sequençing data}
 \usage{
 CleaningClinic(
-  Metadata,
-  type = c("Sample", "Patients"),
-  list.files.path,
-  project,
-  ForceCleaning = F
+  Metadata = NULL,
+  ClinicToClean = NULL,
+  Lexic = NULL,
+  exportname = NULL,
+  type = c("Samples", "Patients"),
+  FilterSamples = F,
+  FilterPatients = F,
+  CleanFromOtherType = F,
+  force.replace = F,
+  keep.all.column = F
 )
 }
 \arguments{
 \item{Metadata}{Metadata object}
 
-\item{type}{"Sample Pheno" or "Patients' clinical data" for building clean clinical data from raw clinical data.}
+\item{ClinicToClean}{a character string of name of clinical data to clean.}
 
-\item{list.files.path}{file path to find lexique of colnames}
+\item{Lexic}{Lexic to use for cleaning. Created from CreateLexic function .}
 
-\item{project}{project}
+\item{exportname}{name to apply in Metadata object list}
 
-\item{ForceCleaning}{If TRUE, Force a cleaning method from Samples.clinical data into Patient.clinical data and vice versa.}
+\item{type}{"c("Samples", "Patients") for building clean clinical data from raw clinical data.}
+
+\item{FilterSamples}{default F, if T, keep only retrieved samples in Count matrix}
+
+\item{FilterPatients}{default F, if T, keep only retrieved patients in Count matrix}
+
+\item{CleanFromOtherType}{If TRUE, Force a cleaning method from Samples.clinical data into Patient.clinical data and vice versa.}
+
+\item{force.replace}{set as F. T : replace an already object with the same name}
+
+\item{keep.all.column}{default F, if T, copy all column from clinic.}
 }
 \value{
 a data frame of Samples pheno or patients clinical data. If Sample ID and Patients ID are the sames, so Samples.pheno and Patient_clinic are the same data frame

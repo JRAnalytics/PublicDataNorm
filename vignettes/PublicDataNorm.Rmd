@@ -1,0 +1,533 @@
+---
+title: "PublicDataNorm"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{PublicDataNorm}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+*Quick protocol to build a database from public Omics data.*
+
+`PublicDataNorm` provides R functions to build a Metaobject (`AddExpressionMatrix()`) with Expression datasets, Patients and Samples clinical, pathological and so on annotations and Gene/Probes annotation. Then help to "Clean" public data (`CleaningClinic()`)into a customizable references for Patients and Samples annotations (`LexicData()`).
+
+The database is built into a folder tree as follow:\n
+
+* "Parent dir" of your choice.\n
+  * 01RawData\n
+  * 02Processes\n
+  * 03References\n
+  * 04VerifiedDataSet\n
+
+Public genes expression dataset form The Cancer Genome Atlas (TCGA) can be retrive with the incorporation of `TCGAbiolinks` R apckage, incorporated in `PublicDataNorm` functions.
+
+Export from Metaobject can be in CSV or TSV format, then compressed in gz using `gzip` package for gene expression data.
+
+Along building and exporting the cleaned fetched public data, a summary of an exported project can be created into a Database summary `.txt` file. 
+
+## Installation and loading package
+```{r chunk, eval=c(3), message=F, warning=F, include=TRUE}
+#Download zip file from : 
+download.file("https://github.com/JRAnalytics/PublicDataNorm/tree/V2",method = "wget")
+library(PublicDataNorm)
+```
+
+
+
+## Data base building steps
+
+### Create dataBase directory and project directories
+
+```{r DataBaseCreation}
+project <- "PANC.RNAseq"
+
+  Parent.Dir.path <- "./Parent" # Change parent path matching your own Dir
+  
+  #if it is the first time that you create the database,
+  #list.files(Parent.Dir.path) will display zero character.
+  list.files(Parent.Dir.path) 
+```  
+  
+* DirCheck function will create Parent subdirectories\n
+  * 01RawData\n
+  * 02Processes\n
+  * 03References\n
+  * 04VerifiedDataSet\n
+
+```{r DataBaseCreation2}
+  #building data base in Parent dir, with Project sub directories.
+  list.files.path <- DirCheck(project,Parent.Dir.path)
+```
+
+
+
+
+Filepaths are stock in list.files.path object. It will be usefull to keep path for subsequent package functions.
+```{r DataBaseCreation3}
+  list.files.path
+```
+
+
+## Building Meta object
+
+Building a Meta object before cleaning may differ between gene expression acquisition (RNAseq/Microarray and SingleCell). 
+We will split the documentation for this part by methodologies.
+
+### A-RNAseq projects
+
+#### 1- Creating Meta object 
+
+The first step is to create a meta object with en expression matrix saved in the project directory '~/parent/01RawData/Project'
+```{r RNAseq, eval=FALSE}
+Metadata <- AddExpressionMatrixRNAseq(Metadata = NULL,
+                            Export = T,
+                            Raw.file.path = list.files.path$Project.RawData,
+                            name.local.file ="PANC.rawcount.csv",
+                            name = "Raw.count")
+
+```
+
+If a Metadata object already exist, you can add another expression matrix to the meta object.
+```{r RNAseq2, eval=FALSE}
+Metadata <-AddExpressionMatrixRNAseq(Metadata = Metadata,
+                                 Export = T,# True pour Export
+                                 Raw.file.path = list.files.path$Project.RawData,
+                                 name.local.file ="PANC.NormCount.csv",
+                                 name = "Normalized.count")
+```
+
+Also, if a sub-object in Metadata has to be replaced, you can set 'force.replace' parameter to T.
+```{r RNAseq3, eval=FALSE}
+Metadata <- AddExpressionMatrixRNAseq(Metadata = Metadata,
+                                 Export = T,
+                                 Raw.file.path = list.files.path$Project.RawData,
+                                 name.local.file ="PANC.rawcount2.csv",
+                                 name = "Raw.count",
+                                 force.replace = T # replace Metadata$PANC.rawcount.csv with the same name 
+                                 )
+```
+
+
+#### 2- Adding clinical data OR Samples annotation file
+
+##### From source file
+
+Patients clinical data or Samples characteristics can be added to the Meta object through AddClinicFromFile() function from a text file (.txt or .csv) in the project's raw.data file.
+
+###### a- From one files
+
+In this case, the loaded file is a Samples annotation file, so we set type by "Samples". 
+
+```{r RNAseq.Clin1, eval=FALSE}
+Metadata = AddClinicFromFile(Metadata = Metadata,
+                         Raw.file.path = list.files.path$Project.RawData,
+                         name.local.file ="PANC.samplesAnnotation.csv",
+                         name = "Pheno",
+                         type = "Samples")
+```
+
+Of course you can replace the Metadata sub-object "Pheno" by setting   force.replace = T. default is FALSE.
+
+```{r RNAseq.Clin1b, eval=FALSE}
+Metadata = AddClinicFromFile(Metadata = Metadata,
+                         Raw.file.path = list.files.path$Project.RawData,
+                         name.local.file ="PANC.samplesAnnotation2.csv",
+                         name = "Pheno",
+                         type = "Samples",
+                         force.replace = T)
+```
+
+By default, this file are considered as raw Patients clinical/Samples annotation files and will not be exported at the final steps of cleaning. if you want to save the raw files in the project directory in 04VerifiedDataSet dir, you can set "Export = T" (default F).
+
+```{r RNAseq.Clin2, eval=FALSE}
+Metadata = AddClinicFromFile(Metadata = Metadata,
+                         Raw.file.path = list.files.path$Project.RawData,
+                         name.local.file ="PANC.samplesAnnotation.csv",
+                         name = "Pheno",
+                         type = "Samples",
+                         Export =  T) #Default is F
+
+```
+
+If it was a Patients clinical file, it has to be set to "Patients". It is mandatory for cleaning this file in the next steps. 
+```{r RNAseq.Clin2b, eval=FALSE}
+Metadata = AddClinicFromFile(Metadata = Metadata,
+                         Raw.file.path = list.files.path$Project.RawData,
+                         name.local.file ="PANC.Clinic.all.csv",
+                         name = "Clinic",
+                         type = "Patients")
+
+```
+
+
+###### b- From more than one file.
+
+If you have multiple Samples annotation or patients clinical data, you can load them from source by pasting the file names to "name.local.file".
+
+Files will be merge as follow by setting :\n
+
+  * *mergeBy* must be referred as common column in both files.\n
+  * *join* can be selected between full_join or left_join.
+
+
+```{r RNAseq.Clin3, eval=FALSE}
+Metadata = AddClinicFromFile(Metadata = Metadata,
+                         Raw.file.path = list.files.path$Project.RawData,
+                         name.local.file = c( "PANC.samplesAnnotation.csv", "PANC.Clinic.all.csv"),
+                         mergeBy = "id_cit", #mandatory if name.local.file >1 string
+                         join = "full_join", #mandatory if name.local.file >1 string
+                         name = "Pheno",
+                         type = "Samples")
+
+
+```
+
+##### From object in environment
+
+maybe for personal reason, you build a samples annotation or patients clinical data in your r environment. 
+You can add it to your Meta object with `AddClinicFromObject()` function.
+
+
+```{r RNAseq.Clin4, eval=FALSE}
+# for Samples annotation 
+
+Metadata = AddClinicFromObject(Metadata = Metadata,
+                               object = SamplesAnnot,
+                               name = "Pheno",
+                               type = "Samples",
+                               Export= "No" )
+
+
+# for Patients clinical data 
+
+Metadata = AddClinicFromObject(Metadata = Metadata,
+                               object = Clinic,
+                               name = "Clinic",
+                               type = "Patients",
+                               Export= "No" )
+
+
+
+
+```
+
+
+You can set `SamplesFilter` to TRUE if you want your object to match samples/patients in your gene expression data. 
+
+```{r RNAseq.Clin5, eval=FALSE}
+Metadata = AddClinicFromObject(Metadata = Metadata,
+                               object = SamplesAnnot,
+                               name = "Pheno",
+                               type = "Samples",
+                               Export= "No",
+                               SamplesFilter = T)
+```
+
+
+#### 3- Adding gene annotation
+##### From a gtf reference file.
+
+You can append a gene annotation file from a ".gtf" file located in your database's dir  `02References` using the `AddgeneAnnotGtf()` function.
+
+```{r geneAnnot, eval=FALSE}
+Metadata <- AddgeneAnnotGtf(Metadata =  Metadata,
+                        gtf.file.dir =list.files.path$References ,
+                        gtf.files ="gencode.v33.annotation.gtf.gz")
+
+```
+
+
+You can also add it from an object in your environment. And By setting `Filter.Genes` to T you can subset your gene annotation file to common genes in the gene expression matrix.
+
+```{r geneAnnot2, eval=FALSE}
+geneannot = as.data.frame(data.table::fread(file.path(list.files.path$Project.RawData,"PANC.probesAnnot.csv")))
+colnames(geneannot) = c("EnsembleID","chr",
+                        "start","end" , 
+                        "strand","GeneID","GeneName")
+
+
+Metadata = addgeneAnnotFromObject(Metadata = Meta,
+                                  object =geneannot,
+                                  Filter.Genes = T)
+```
+
+
+
+### B-Microarray projects
+
+All the steps from RNAseq parts are the same for Microarray projects. It only differ for the starting function adding an Expression matrix. You have to use  `AddExpressionMatrixMArray()` function.
+
+```{r MArray, eval=FALSE}
+Metadata <- AddExpressionMatrixMArray(Metadata = NULL,
+                            Export = T,
+                            Raw.file.path = list.files.path$Project.RawData,
+                            name.local.file ="exp_array.PACA-AU.tsv.gz",
+                            name = "Raw.count")
+
+```
+
+
+### C-A SingleCell RNAseq project.
+#### 1- Creating Meta object 
+Building SingleCell RNAseq project differs in adding sequencing data has many exported files are numberd to 3. ".mtx" file, "barcodes" and "features" for 10X technologies, or ".txt" matrice for GEO  database...
+
+Using `AddExpressionMatrixSC()` function as followed, you will build a Meta object with three sub-objets :
+
+  * an expression matrix\n
+  * a CellsAnnotation\n
+  * a geneAnnotation objects.
+
+```{r SC1, eval=FALSE}
+Meta = AddExpressionMatrixSC(Metadata = NULL,
+                             Export = T, # True = Raw data. F = Normalized
+                             Raw.file.path = list.files.path$Project.RawData,
+                             name.local.file ="Exp_data_UMIcounts.mtx",
+                             Cell.file = "barcodes.tsv",
+                             Genes.file = "featurse.tsv",
+                             name = "count")
+```
+
+if you only have one file for SingleCell prject (i.e barcodes' cells in column, and gene in rows), adding the expression matrix from this quind of file will buil a meta object with 2 sub-object : 
+
+
+  * an expression matrix\n
+  * a geneAnnotation objects.
+
+```{r SC2, eval=FALSE}
+Meta = AddExpressionMatrixSC(Metadata = NULL,
+                             Export = T, # True = Raw data. F = Normalized
+                             Raw.file.path = list.files.path$Project.RawData,
+                             name.local.file ="SC.exemple.txt",
+                             Cell.file = NA,
+                             Genes.file = NA,
+                             name = "count")
+```
+
+A cells annotation file will be created if you desire with  `AddClinicFromObject()` or `AddClinicFromFile()` function.
+
+#### 2- Adding cells, samples annotation file or patients clinical data.
+
+Adding a Cells annotation file in Meta object after `AddExpressionMatrixSC()` imply that you don't have a *barcodes.tsv* file from 10X or you want to add published cells annotations.
+
+You can use `AddClinicFromObject()` or `AddClinicFromFile()` function as previously, setting `type` to "Cells".
+
+```{r SC3, eval=FALSE}
+
+### From files
+
+
+Metadata = AddClinicFromFile(Metadata = Metadata,
+                         Raw.file.path = list.files.path$Project.RawData,
+                         name.local.file ="Cells.csv",
+                         name = "CellsAnnot",
+                         type = "Cells")
+
+
+#### from Object
+
+
+# for Cells annotation 
+
+
+CellsAnnot = read.csv(filePath(list.files.path$Project.RawData, "CellsAnnot.csv"))
+
+Metadata = AddClinicFromObject(Metadata = Metadata,
+                               object = CellsAnnot,
+                               name = "CellsAnnot",
+                               type = "Cells",
+                               Export= "No" )
+
+# for samples annotation 
+Metadata = AddClinicFromObject(Metadata = Metadata,
+                               object = SamplesAnnot,
+                               name = "Pheno",
+                               type = "Samples",
+                               Export= "No" )
+
+# for Patients clinical data 
+
+Metadata = AddClinicFromObject(Metadata = Metadata,
+                               object = Clinic,
+                               name = "Clinic",
+                               type = "Patients",
+                               Export= "No" )
+```
+
+
+#### 3- Adding gene annotation file.
+
+you can add a other gene annotation file as previously. But you will have to replace the existing geneAnnotation.
+```{r SCgeneAnnot, eval=FALSE}
+Metadata <- AddgeneAnnotGtf(Metadata =  Metadata,
+                        gtf.file.dir =list.files.path$References ,
+                        gtf.files ="gencode.v33.annotation.gtf.gz",
+                        force.replace = T)
+
+```
+
+## Cleaning Data.
+
+From a built meta object, independantly of RNAseq, Microarrays or SingleCells, you will be able to substract Samples or Clinical informations that is relevant for your data.base, plus if needed keeping all the unneeded informations.
+
+You will use several functions to do so :\n
+
+  * 1- `CheckMeta()` will check the structure of your Meta object (If samples from the first expression matrix are in the other subobject - i.e Samples Annot, Cells Annot, Clinical data, other expression matrices ; genes etc etc). can be used before and after cleaning.
+  * 2- `LexicData()` will load a Samples lexic and a Patients lexic from dir 02Processes to build cleaned Samples annot and clinical data.
+  * 3- `CleanClinic()`will clean the selected Samples or clinical annotation.
+  
+  
+### 1- Checking Meta Object.
+
+```{r Check, eval=FALSE}
+CheckMeta(Metadata)
+```
+
+### 2- Loading Lexic for cleaning
+
+`LexicData()` will load from dir 02Processes a lexic, as a list of parameters to create from *SamplesLexic.txt* (or *SC.SamplesLexic.txt* if Single cell project) and *PatientLexic.txt* files.
+
+
+```{r lexic, eval=FALSE}
+LexicData(Metadata,
+          list.files.path)
+```
+
+At the final steps, exporting cleaned data, *SamplesLexic.txt* and *PatientLexic.txt* will be created into the 02Processes project file. When launching `LexicData()` to clean data for a second version, it will load the lexics from these previously saved lexic. By setting `replaceLexic = T` you will redo the lexics.
+
+```{r lexic2, eval=FALSE}
+LexicData(Metadata,
+          list.files.path,
+          replaceLexic = T)
+```
+
+For Single cell project, set `SC.Lexic = T`. 
+
+```{r lexic3, eval=FALSE}
+LexicData(Metadata,
+          list.files.path,
+          SC.Lexic = T)
+```
+
+You will be abble to customize you lexic with `AddKeyLexic()` function. 
+The parameters "Param" must have two string, c("A","B"). "A" can be an existing string in Lexic, "B" will be added to this listed string. If else, A will be created in lexic with "A" and "B" as string to looked for in raw annotations. 
+
+```{r lexic4, eval=FALSE}
+SamplesLexic <- AddKeyLexic(lexic = SamplesLexic, Param = c("SamplesID","id_cit") )
+PatientLexic <- AddKeyLexic(lexic = PatientLexic, Param = c("SamplesID","id_cit") )
+```
+
+For exemple, we added "id_cit" string to "SamplesID" listed string in SamplesLexic and PatientLexic. When cleaning samples Annotation, a data frame will be created with a column "samplesID", with data the column "id_cit" in the raw samples Annotation. 
+
+### 3- Cleaning data.
+
+The heart of the package! The reason why you want to use it!!
+
+`CleaningClinic()` function will create a SamplesAnnotation or a clinical data based on the Lexics customized previously, from a "raw" file. 
+
+In Example 1, we will clean Metadata[["Sampleannot"]], that is a 'SamplesAnnot' sub-object, and name it "Panc_SamplesAnnot".
+
+It will generate a *Samples.CleanedProcess.txt* file in the project's 02Processes dir that summarize which column from Metadata[["Sampleannot"]] is attributed to the Lexic in  the newly cleaned data.
+If the cleaning process was from a "Clinical data" (*type = Patients* ), it generate a *Patients.CleanedProcess.txt*. 
+Of course if the created sub-object already exist in the Meta object, you can replace it (Example 2 : `force.replace = T`).
+
+If you want to keep all the column from the "raw" samples annotation or clinical data, you can set ` all.column = T` (Example 3), it will paste the full "raw" data after a cleaned part structured by the Lexics.
+
+Some times, you only have a Samples annotation, or a clinic data, and you want to create its counter part samples yo patients, or Patients to Samples.In Examples 4 by setting `type ="Patients",CleanFromOtherType = T`, we will create a cleaned clinical data, from a SamplesAnnotation sub-object (`ClinicToClean ="Sampleannot"`), using PatientLexic, and naming it "Panc_SamplesAnnot.Full" (`all.column = T`) 
+
+
+```{r cl1, eval=FALSE}
+#Example 1
+Metadata = CleaningClinic(Metadata = Metadata,
+                      ClinicToClean ="Sampleannot" ,
+                      type ="Samples",
+                      name ="Panc_SamplesAnnot",
+                      list.files.path =list.files.path,
+                      project =project)
+
+#Example 2
+Metadata = CleaningClinic(Metadata = Metadata,
+                      ClinicToClean ="Sampleannot" ,
+                      type ="Samples",
+                      name ="Panc_SamplesAnnot",
+                      list.files.path =list.files.path,
+                      project =project,
+                      force.replace = T)
+
+#Example 3
+Metadata = CleaningClinic(Metadata = Metadata,
+                      ClinicToClean ="Sampleannot" ,
+                      type ="Samples",
+                      name ="Panc_SamplesAnnot.Full",
+                      list.files.path =list.files.path,
+                      project =project,
+                      all.column = T)
+
+
+#Example 4
+Metadata = CleaningClinic(Metadata = Metadata,
+                      ClinicToClean ="Sampleannot" ,
+                      type ="Patients",
+                      CleanFromOtherType = T,
+                      name ="Panc_Clinic",
+                      list.files.path =list.files.path,
+                      project =project,,
+                      all.column = T)
+```
+
+After a cleaning process, you can check the Meta Onject with `CheckMeta()` function. it will search if lost samples are found.
+
+
+
+## Exporting Meta object
+
+After all cleaning process, you can export the data into the project 04VerifiedDataset dir, using `ExportCSV()` or `ExportTSV()` function. We sugests using `ExportTSV()` for SingleCell project.
+
+All `Export=Yes` sub-object will be exported. You can check this information using `attributes()` function on the meta object.
+
+Count matrices will be .gz compressed after export.
+
+If it exist exported files in the project 04VerifiedDataset dir, a versioning of the newly exported file will be automaticaly added. (i.e *.VX.csv*)
+
+```{r export, eval=FALSE}
+attributes(Metadata)
+
+Metadata = ExportCSV(Metadata = Metadata, 
+                     list.files.path = list.files.path,
+                     project = project)
+
+Metadata = ExportTSV(Metadata = Metadata,
+                     list.files.path = list.files.path,
+                     project = project)
+```
+
+
+## Adding export to a Database summary file.
+
+Because you will have a lot of cleand data, keeping a light text file to looked for items of interest, `AddLocalDatabase()` may be useful.
+It will create, the first time, a *DataBaseSummary.txt* (tab separated), in the parent directory of your data base. Many informations can be added to (ie . methodology; anything, data acquisition First author, Paper DOI, User who did the cleaning, and a 'comment' cell to add anything.)   
+
+```{r DB, eval=FALSE}
+AddLocalDatabase(Metadata = Metadata,
+                   list.files.path = list.files.path,
+                   Normalization.Method = NA,
+                   Technology = "RNAseq",
+                   Platform = NA,
+                   Run.spec = NA,
+                   First.Author = "Puleo F.",
+                   DOI = "10.1053/j.gastro.2018.08.033",
+                   project = project,
+                   Comment = NA,
+                   User = "JR-Analytics")
+```
+
+# The End
+
+

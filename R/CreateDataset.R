@@ -1,6 +1,6 @@
-#' DirCheck Create project Dir in Processes,n Precessed, Raw Clinic, Raw genomic, and references if does not exist.
+#' CreateDataset Create project Dir in Processes,n Precessed, Raw Clinic, Raw genomic, and references if does not exist.
 #'
-#' @param project a character string : project name
+#' @param Project a character string : project name
 #' @param path dir path of Parent directory
 #' @importFrom rstudioapi getSourceEditorContext
 #' @return a file path list of dir project in ~parent/dir/project file
@@ -10,7 +10,7 @@
 #'
 #'
 #'
-DirCheck <- function(project,path){
+CreateDataset <- function(Project, path){
 
   file.path.parent <- paste(unlist(strsplit(path, "/")),collapse = "/")
   # Directories in "parent" Dir. Refereces, Processes, RawData and VerifiedDataSet
@@ -54,11 +54,14 @@ DirCheck <- function(project,path){
 
   }
 
+  Metadata = list()
+
+  attributes(Metadata)$File.path = list.files.path
+  attributes(Metadata)$Project = Project
 
 
 
-
-  return(list.files.path)
+  return(Metadata)
 
 
   }

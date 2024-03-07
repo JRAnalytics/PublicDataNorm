@@ -2,22 +2,18 @@
 % Please edit documentation in R/ExportTSV.R
 \name{ExportTSV}
 \alias{ExportTSV}
-\title{ExportTSV Export MetaData inside object into ".tsv" files}
+\title{ExportTSV Export Metadata inside object into ".tsv" files}
 \usage{
-ExportTSV(MetaData, list.files.path, project)
+ExportTSV(Metadata)
 }
 \arguments{
-\item{MetaData}{a MetaData  data files}
-
-\item{list.files.path}{dirpath}
-
-\item{project}{project}
+\item{Metadata}{a Metadata  data files}
 }
 \value{
 ".tsv" files into working directory
 }
 \description{
-ExportTSV Export MetaData inside object into ".tsv" files
+ExportTSV Export Metadata inside object into ".tsv" files
 }
 \examples{
 "non"

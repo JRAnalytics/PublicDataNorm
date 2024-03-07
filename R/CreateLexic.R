@@ -1,8 +1,7 @@
-#' LexicData function to prepare constant colnames to find in clinical data from lexiue .txt
+#' CreateLexic function to prepare constant colnames to find in clinical data from lexiue .txt
 #'
-#' @param list.files.path file path to find lexique of colnames
-#' @param replaceLexic replace Samples and Patient Lexis if already loaded
-#' @param SC.Lexic default F. If MetaObject is made of Single.Cell sequencing data, set to T.
+#' @param Dataset file path to find lexique of colnames
+#' @param type default F. If MetaObject is made of Single.Cell sequencing data, set to T.
 #' @importFrom data.table fread
 #' @import dplyr
 #' @importFrom stats na.omit
@@ -11,20 +10,22 @@
 #'
 #' @examples "none"
 
-LexicData <- function(list.files.path, SC.Lexic = F, replaceLexic = F){
+CreateLexic <- function(Dataset=NULL, type = c("SamplesLexic","PatientsLexic")){
+
+
+  if(is.null(Dataset)){stop("Dataset is null.")}
+  if(!is.list(Dataset)){stop("Dataset must be a list created from CreateDataset() function.")}
+  if(is.null(attributes(Dataset)$File.path) | is.null(attributes(Dataset)$Project)){stop("No attributes found in dataset. Create one with CreateDataset()")}
+  if(is.null(attributes(Dataset)$Omics.type)){stop("No Omics.type attributes found in dataset. Firstly add ExpressionMatrix using AddExpressionMatrixRNAseq/Ma/SC functions.")}
+  if(!type%in%c("SamplesLexic","PatientsLexic")){stop("Type must be SamplesLexic or PatientsLexic.")}
+   list.files.path = attributes(Dataset)$File.path
+   project =   attributes(Dataset)$Project
+   SC.Lexic=F
+   if(attributes(Dataset)$Omics.type=="Single.Cell"){SC.Lexic=T}
 
 
 
-if(c(exists("PatientLexic", mode = "any") | exists("SamplesLexic", mode = "any")) & replaceLexic==T |
-   c(!exists("PatientLexic", mode = "any") | !exists("SamplesLexic", mode = "any")) ){
-
-
-
-  pos <- 1
-  envir = as.environment(pos)
-
-
-
+  if(type=="PatientsLexic"){
   if(file.exists(paste0(list.files.path$Project.Processes, "/",project,".PatientLexic.txt"))){
 
     message(paste("Importing PatientLexic.txt from",project, "directory."))
@@ -32,12 +33,12 @@ if(c(exists("PatientLexic", mode = "any") | exists("SamplesLexic", mode = "any")
     names(x) <- sapply(x, `[[`, 1)
     PL<- lapply(x, `[`, -1)
 
-    assign("PatientLexic", PL, envir = envir)} else {    PL <- scan(paste(list.files.path$Processes,"PatientLexic.txt",sep = "/"), what="", sep="\n")%>%strsplit("[[:space:]]+")
+    return(PL)} else {    PL <- scan(paste(list.files.path$Processes,"PatientLexic.txt",sep = "/"), what="", sep="\n")%>%strsplit("[[:space:]]+")
     names(PL) <- sapply(PL, `[[`, 1)
     PL<- lapply(PL, `[`, -1)
-    assign("PatientLexic", PL, envir = envir)    }
+     return(PL)  }}
 
-
+  if(type=="SamplesLexic"){
   if(SC.Lexic==F) {
 
     if(file.exists(paste0(list.files.path$Project.Processes, "/",project,".SamplesLexic.txt"))){
@@ -47,7 +48,7 @@ if(c(exists("PatientLexic", mode = "any") | exists("SamplesLexic", mode = "any")
       names(x) <- sapply(x, `[[`, 1)
       SL<- lapply(x, `[`, -1)
 
-      assign("SamplesLexic", SL, envir = envir)
+      return(SL)
 
 
     } else {
@@ -56,7 +57,7 @@ if(c(exists("PatientLexic", mode = "any") | exists("SamplesLexic", mode = "any")
       names(SL) <- sapply(SL, `[[`, 1)
       SL<- lapply(SL, `[`, -1)
 
-      assign("SamplesLexic", SL, envir = envir)
+      return(SL)
       }
 
   }
@@ -70,7 +71,7 @@ if(c(exists("PatientLexic", mode = "any") | exists("SamplesLexic", mode = "any")
       names(x) <- sapply(x, `[[`, 1)
       SL<- lapply(x, `[`, -1)
 
-      assign("SamplesLexic", SL, envir = envir)
+      return(SL)
 
 
     } else {
@@ -85,15 +86,11 @@ if(c(exists("PatientLexic", mode = "any") | exists("SamplesLexic", mode = "any")
       names(SL) <- sapply(SL, `[[`, 1)
       SL<- lapply(SL, `[`, -1)}
 
-      assign("SamplesLexic", SL, envir = envir)
+      return(SL)
     }
 
-  }
+  }}
 
 
-
-
-
-} else {  stop("Patientlexic and SamplesLexic already loaded. Set replaceLexic=T to replace lexics.")}
 
 }

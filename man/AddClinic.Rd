@@ -8,7 +8,7 @@ AddClinic(
   Metadata,
   path,
   merge = F,
-  Raw = T,
+  Export = T,
   mergeBy,
   name,
   type = c("Samples", "Patients"),
@@ -24,7 +24,7 @@ AddClinic(
 
 \item{merge}{merge loaded data clinic with existing clincial data : full_join by rownames. False if you load more than 1 file.}
 
-\item{Raw}{TRUE or FALSE. If Raw data, to be specified.}
+\item{Export}{TRUE or FALSE. If data to be Exported, set T.}
 
 \item{mergeBy}{colname using for merging clinical data.}
 

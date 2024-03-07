@@ -7,7 +7,7 @@
 #' @param merge merge loaded data clinic with existing clincial data : full_join by rownames. False if you load more than 1 file.
 #' @param name.local.file name file of interest in path directory, could be multiple names. c("a.csv","b.csv")
 #' @param mergeBy colname using for merging clinical data.
-#' @param Raw TRUE or FALSE. If Raw data, to be specified.
+#' @param Export  TRUE or FALSE. If data to be Exported, set T.
 #' @param join c("left_join", "full_join")
 #' @param force.replace set as F. T : replace an already object with the same name
 #' @importFrom utils menu
@@ -17,7 +17,14 @@
 #' @export
 #'
 #' @examples "none"
-AddClinic <- function(Metadata, path, merge = F, Raw = T,mergeBy, name, type = c("Samples", "Patients"),name.local.file = NULL, force.replace=F, join = c("left_join", "full_join")) {
+AddClinic <- function(Metadata, path,
+                      merge = F,
+                      Export = T,
+                      mergeBy,
+                      name, type = c("Samples", "Patients"),
+                      name.local.file = NULL,
+                      force.replace=F,
+                      join = c("left_join", "full_join")) {
 
   ### ecrasement si même nom dans le Meta à faire.
 
@@ -115,14 +122,16 @@ AddClinic <- function(Metadata, path, merge = F, Raw = T,mergeBy, name, type = c
 
 
 
-            if(l==0) {   if(type == "Samples") {attributes(Metadata)$Data.Type <-  c("Samples.Clinical.data")}
-              if(type == "Patients") {attributes(Metadata)$Data.Type <-  c("Patient.Clinical.data")}
-            if(Raw==T){attributes(Metadata)$Raw.data <- c("Yes") } else {attributes(Metadata)$Raw.data <- c("No") }
+            if(!type%in%c("Samples","Patients")){stop("type must be set to Samples or Patients")}
+
+            if(l==0) {   if(type == "Samples") {attributes(Metadata)$Data.Type <-  c("SamplesAnnot")}
+              if(type == "Patients") {attributes(Metadata)$Data.Type <-  c("Clinic")}
+            if(Export==T){attributes(Metadata)$Export <- c("Yes") } else {attributes(Metadata)$Export <- c("No") }
 
 
-            } else {  if(type == "Samples") {attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Samples.Clinical.data")}
-            if(type == "Patients") {attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Patient.Clinical.data")}
-            if(Raw==T){attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"Yes") } else {attributes(Metadata)$Raw.data <- c(attributes(Metadata)$Raw.data,"No") }
+            } else {  if(type == "Samples") {attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"SamplesAnnot")}
+            if(type == "Patients") {attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Clinic")}
+            if(Export==T){attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes") } else {attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"No") }
 
             }}
         } else {
@@ -133,7 +142,7 @@ AddClinic <- function(Metadata, path, merge = F, Raw = T,mergeBy, name, type = c
 
           if(is.null(mergeBy)){stop("For merging data, mergeBy='colnames' must be specified")}
 
-          NB <- which(str_detect(string =attributes(Metadata)$Data.Type ,"Clinical.data") & attributes(Metadata)$Raw=="Yes")
+          NB <- which(str_detect(string =attributes(Metadata)$Data.Type ,"Clinic") & attributes(Metadata)$Export=="No")
 
           clinic <- list(Metadata[[NB]], dt)
 
