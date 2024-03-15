@@ -2,18 +2,18 @@
 % Please edit documentation in R/Pathfiles.R
 \name{Rawpath}
 \alias{Rawpath}
-\title{Rawpath Export Metadata inside object into ".csv" files}
+\title{Rawpath Export Dataset inside object into ".csv" files}
 \usage{
-Rawpath(Metadata)
+Rawpath(Dataset)
 }
 \arguments{
-\item{Metadata}{a Metadata  data files}
+\item{Dataset}{a Dataset  data files}
 }
 \value{
 a path to 01RawData project file
 }
 \description{
-Rawpath Export Metadata inside object into ".csv" files
+Rawpath Export Dataset inside object into ".csv" files
 }
 \examples{
 "non"

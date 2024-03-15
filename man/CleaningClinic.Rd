@@ -28,9 +28,9 @@ CleaningClinic(
 
 \item{type}{"c("Samples", "Patients") for building clean clinical data from raw clinical data.}
 
-\item{FilterSamples}{default F, if T, keep only retrieved samples in Count matrix}
+\item{FilterSamples}{default F, if T, keep only retrieved samples in SamplesAnnotation file}
 
-\item{FilterPatients}{default F, if T, keep only retrieved patients in Count matrix}
+\item{FilterPatients}{default F, if T, keep only retrieved patients in Count SamplesAnnotation file}
 
 \item{CleanFromOtherType}{If TRUE, Force a cleaning method from Samples.clinical data into Patient.clinical data and vice versa.}
 

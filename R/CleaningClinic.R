@@ -5,8 +5,8 @@
 #' @param exportname name to apply in Metadata object list
 #' @param type "c("Samples", "Patients") for building clean clinical data from raw clinical data.
 #' @param Lexic Lexic to use for cleaning. Created from CreateLexic function .
-#' @param FilterSamples default F, if T, keep only retrieved samples in Count matrix
-#' @param FilterPatients default F, if T, keep only retrieved patients in Count matrix
+#' @param FilterSamples default F, if T, keep only retrieved samples in SamplesAnnotation file
+#' @param FilterPatients default F, if T, keep only retrieved patients in Count SamplesAnnotation file
 #' @param CleanFromOtherType If TRUE, Force a cleaning method from Samples.clinical data into Patient.clinical data and vice versa.
 #' @param force.replace set as F. T : replace an already object with the same name
 #' @param keep.all.column default F, if T, copy all column from clinic.
@@ -150,7 +150,7 @@ CleaningClinic <- function(Metadata = NULL,
 
         attributes(Metadata)$Data.Type[t] <-  c("SamplesAnnot")
         attributes(Metadata)$Export[t] <- c("Yes")
-
+        attributes(Metadata)$Cleaned[t] = c("Yes")
 
 
 
@@ -160,7 +160,8 @@ CleaningClinic <- function(Metadata = NULL,
         Metadata[[l+1]] <- clinic2
         names(Metadata)[l+1] <- exportname
         attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"SamplesAnnot")
-        attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes")}
+        attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes")
+        attributes(Metadata)$Cleaned = c(attributes(Metadata)$Cleaned,"Yes")}
 
 
 
@@ -215,6 +216,7 @@ CleaningClinic <- function(Metadata = NULL,
 
         attributes(Metadata)$Data.Type[t] <-  c("SamplesAnnot")
         attributes(Metadata)$Export[t] <- c("Yes")
+        attributes(Metadata)$Cleaned[t] = c("Yes")
 
 
       }else {
@@ -223,7 +225,8 @@ CleaningClinic <- function(Metadata = NULL,
         Metadata[[l+1]] <- cl_rolled
         names(Metadata)[l+1] <- exportname
         attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"SamplesAnnot")
-        attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes")}
+        attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes")
+        attributes(Metadata)$Cleaned = c(attributes(Metadata)$Cleaned,"Yes")}
     }
 
   #  file.show(paste0(list.files.path$Project.Processes,"/Samples.CleanedProcess.txt"))
@@ -281,7 +284,7 @@ CleaningClinic <- function(Metadata = NULL,
     cc <- cc[!cc%in%("PatientsID")]
 
     if(all(is.na(clcl$PatientsID))){
-      message("No PatientsID found in raw clinical data. Using PatientID instead")
+      message("No PatientsID found in raw clinical data. Using SamplesID instead")
       clcl$PatientsID <- clcl$SamplesID
     }
 
@@ -330,6 +333,7 @@ CleaningClinic <- function(Metadata = NULL,
 
         attributes(Metadata)$Data.Type[t] <-  c("Clinic")
         attributes(Metadata)$Export[t] <- c("Yes")
+        attributes(Metadata)$Cleaned[t] = c("Yes")
 
 
       }else {
@@ -338,7 +342,8 @@ CleaningClinic <- function(Metadata = NULL,
         Metadata[[l+1]] <- clinic2
         names(Metadata)[l+1] <- exportname
         attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Clinic")
-        attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes")}
+        attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes")
+        attributes(Metadata)$Cleaned = c(attributes(Metadata)$Cleaned,"Yes")}
 
 
 
@@ -399,6 +404,7 @@ CleaningClinic <- function(Metadata = NULL,
 
         attributes(Metadata)$Data.Type[t] <-  c("Clinic")
         attributes(Metadata)$Export[t] <- c("Yes")
+        attributes(Metadata)$Cleaned[t] = c("Yes")
 
 
       }else {
@@ -407,7 +413,8 @@ CleaningClinic <- function(Metadata = NULL,
         Metadata[[l+1]] <- cl_rolled
         names(Metadata)[l+1] <- exportname
         attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Clinic")
-        attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes")}
+        attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes")
+        attributes(Metadata)$Cleaned = c(attributes(Metadata)$Cleaned,"Yes")}
 
 
 

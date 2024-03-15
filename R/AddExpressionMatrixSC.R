@@ -21,7 +21,7 @@ AddExpressionMatrixSC <- function(Metadata=NULL,
                                 ExpressionMatrix = NULL,
                                 force.replace=F ) {
   Omics.type = "Single.Cell"
-  path = attributes(Metadata)$File.path$Project.RawData
+  path = Rawpath(Metadata)
 
   if(is.null(Metadata)){stop("A Metadata object must be created with CreateDataset() function. See ?CreateDataset.")}
 
@@ -170,7 +170,8 @@ AddExpressionMatrixSC <- function(Metadata=NULL,
       if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
         attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type, "Count")
 
-     attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes")}
+     attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes")
+     attributes(Metadata)$Cleaned = c("No")}
 
 
       if(!is.null(Cell.file)){
@@ -178,6 +179,7 @@ AddExpressionMatrixSC <- function(Metadata=NULL,
         Metadata$CellsAnnot = Cells
         attributes(Metadata)$Data.Type = c(attributes(Metadata)$Data.Type, "CellsAnnot")
         attributes(Metadata)$Export = c(attributes(Metadata)$Export, "Yes")
+        attributes(Metadata)$Cleaned = c(attributes(Metadata)$Cleaned,"No")
 
       }
 
@@ -185,6 +187,7 @@ AddExpressionMatrixSC <- function(Metadata=NULL,
         Metadata$geneAnnotation = Genes
         attributes(Metadata)$Data.Type = c(attributes(Metadata)$Data.Type, "geneAnnot")
         attributes(Metadata)$Export = c(attributes(Metadata)$Export, "Yes")
+        attributes(Metadata)$Cleaned = c(attributes(Metadata)$Cleaned,"No")
 
       }
 
@@ -198,12 +201,14 @@ AddExpressionMatrixSC <- function(Metadata=NULL,
 
       if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
         attributes(Metadata)$Data.Type <-  c("Count")
-       attributes(Metadata)$Export <- "Yes"}
+       attributes(Metadata)$Export <- "Yes"
+       attributes(Metadata)$Cleaned = c("No")}
 
       if(!is.null(Cell.file)){
         Metadata$CellsAnnot = Cells
         attributes(Metadata)$Data.Type = c(attributes(Metadata)$Data.Type, "CellsAnnot")
         attributes(Metadata)$Export = c(attributes(Metadata)$Export, "Yes")
+        attributes(Metadata)$Cleaned = c(attributes(Metadata)$Cleaned,"No")
 
       }
 
@@ -211,6 +216,7 @@ AddExpressionMatrixSC <- function(Metadata=NULL,
         Metadata$geneAnnotation = Genes
         attributes(Metadata)$Data.Type = c(attributes(Metadata)$Data.Type, "geneAnnot")
         attributes(Metadata)$Export = c(attributes(Metadata)$Export, "Yes")
+        attributes(Metadata)$Cleaned = c(attributes(Metadata)$Cleaned,"No")
 
       }
 

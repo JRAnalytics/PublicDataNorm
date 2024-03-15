@@ -19,7 +19,7 @@ AddExpressionMatrixRNAseq <- function(Metadata=NULL,
 
    Omics.type = "RNAseq"
    l <-length(names(Metadata))
-   path = attributes(Metadata)$File.path$Project.RawData
+   path = Rawpath(Metadata)
 
   if(is.null(Metadata)){stop("A Metadata object must be created with CreateDataset() function. See ?CreateDataset.")}
 
@@ -104,6 +104,7 @@ AddExpressionMatrixRNAseq <- function(Metadata=NULL,
             attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type, "Count")
 
            attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes")
+           attributes(Metadata)$Cleaned = c(attributes(Metadata)$Cleaned,"No")
           }
 
           return(Metadata)} # Metadat >1
@@ -114,7 +115,9 @@ AddExpressionMatrixRNAseq <- function(Metadata=NULL,
 
           if(length(attributes(Metadata)$Data.Type)<length(Metadata)){
             attributes(Metadata)$Data.Type <-  c("Count")
-            attributes(Metadata)$Export <- "Yes" }
+            attributes(Metadata)$Export <- "Yes"
+            attributes(Metadata)$Cleaned = "No"}
+
           return(Metadata)
         } # Metadata = 0
 

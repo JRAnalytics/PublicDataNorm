@@ -7,8 +7,8 @@
 AddClinicFromObject(
   Metadata,
   object,
+  setID.Column = NULL,
   name,
-  ExpressionMatrixIdColumn = NULL,
   type = c("Samples", "Patients", "Cells"),
   Export = T,
   force.replace = F
@@ -19,9 +19,9 @@ AddClinicFromObject(
 
 \item{object}{an object to add}
 
-\item{name}{name to apply in Metadata object list}
+\item{setID.Column}{a character string : column to fetch colnames from Count matrix.}
 
-\item{ExpressionMatrixIdColumn}{column to fetch colnames from Count matrix.}
+\item{name}{name to apply in Metadata object list}
 
 \item{type}{can be Samples", "Patients" or "Cells", to defiens Data.type attributes}
 

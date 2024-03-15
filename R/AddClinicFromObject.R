@@ -2,7 +2,7 @@
 #'
 #' @param Metadata  a Metadata Object to fill
 #' @param object an object to add
-#' @param ExpressionMatrixIdColumn column to fetch colnames from Count matrix.
+#' @param setID.Column a character string : column to fetch colnames from Count matrix.
 #' @param name name to apply in Metadata object list
 #' @param type can be Samples", "Patients" or "Cells", to defiens Data.type attributes
 #' @param Export  TRUE or FALSE. If data to be Exported, set T.
@@ -16,11 +16,13 @@
 #'
 AddClinicFromObject  <- function(Metadata,
                            object,
+                           setID.Column = NULL,
                            name,
-                           ExpressionMatrixIdColumn = NULL,
                            type = c("Samples", "Patients", "Cells"),
                            Export = T,
                            force.replace = F){
+
+
 
 
 
@@ -30,9 +32,8 @@ AddClinicFromObject  <- function(Metadata,
   if(!is.character(name)) { stop("name should be specified as character")}
   if(is.null(type)) { stop("Data.type should be specified")}
   if(is.null(Export)) { stop("Export should be specified")}
-  #if(is.null(ExpressionMatrixIdColumn)){stop("ExpressionMatrixIdColumn must be specifierdt (i.e character string : colname of clinic to add).")}
-  if(!type%in%c("Samples", "Patients", "Cells")) { stop("type should be specified from this values c('Samples', 'Patients'or 'Cells') ")}
 
+  if(!type%in%c("Samples", "Patients", "Cells")) { stop("type should be specified from this values c('Samples', 'Patients'or 'Cells') ")}
 
 
   if(!all(str_detect(names(Metadata),name)==F)){
@@ -42,29 +43,21 @@ AddClinicFromObject  <- function(Metadata,
 
     l <- length(Metadata)
 
-    if(type=="Samples"){
-    object =as.data.frame(object)
-    zz <- which(attributes(Metadata)$Data.Type=="Count")[1]
-    samples <- colnames(Metadata[[zz]])
-    message("Found Samples :")
-    print(summary(samples%in%object[,ExpressionMatrixIdColumn]))
-    message("Unfound Samples :")
-    print(samples[!samples%in%object[,ExpressionMatrixIdColumn]])}
+    if(type=="Samples"){ExpressionMatrixIdColumn = "SamplesID"}
+    if(type=="Patients"){ExpressionMatrixIdColumn = "PatientsID"}
+    if(type=="Cells"){ExpressionMatrixIdColumn = "CellsBarcode"}
 
-    # if(SamplesFilter==T){
-    #   message("Selecting only Samples present in both Count and Clinical data.")
-    #
-    #   # Diviser chaque élément de la colonne en un vecteur de sous-chaînes
-    #   substrings <- strsplit(as.data.frame(object)[,colT], ";")
-    #   # Vérifier si chaque valeur du vecteur est présente dans chaque vecteur de sous-chaînes
-    #   est_present <- sapply(substrings, function(x) any(colnames(Metadata[[zz]]) %in% x))
-    #
-    #   # Récupérer les index de position correspondants
-    #   indices <- which(est_present)
-    #   object <- object[indices,]
-    #
-    #
-    # }
+
+    if(!is.null(setID.Column)){
+      if(type=="Samples"){ object$SamplesID =object[,setID.Column]}
+      if(type=="Patients"){object$PatientsID =object[,setID.Column]}
+      if(type=="Cells"){object$CellsBarcode =object[,setID.Column]}
+    }
+
+    if(type != "Patients"){type2 = "Samples annotation"}else{type2 = "Patients clinical data"}
+    if(!ExpressionMatrixIdColumn%in%colnames(object)){stop(paste(ExpressionMatrixIdColumn, "is not in",type2, "object colnames."))}
+
+
 
 
     if(!all(str_detect(names(Metadata),name)==F)){
@@ -82,7 +75,7 @@ AddClinicFromObject  <- function(Metadata,
         if(type == "Cells") {attributes(Metadata)$Data.Type[t] <-  c("CellsAnnot")}
 
         if(Export==T){attributes(Metadata)$Export[t] <- c("Yes") } else {attributes(Metadata)$Export[t] <- c("No") }
-
+      attributes(Metadata)$Cleaned[t] = "No"
       return(Metadata)
 
 
@@ -99,14 +92,14 @@ AddClinicFromObject  <- function(Metadata,
       if(type == "Cells") {attributes(Metadata)$Data.Type <-  c("CellsAnnot")}
 
       if(Export==T){attributes(Metadata)$Export <- c("Yes") } else {attributes(Metadata)$Export <- c("No") }
-
+      attributes(Metadata)$Cleaned = c( "No")
 
     } else {  if(type == "Samples") {attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"SamplesAnnot")}
       if(type == "Patients") {attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Clinic")}
       if(type == "Cells") {attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"CellsAnnot")}
 
       if(Export==T){attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes") } else {attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"No") }
-
+      attributes(Metadata)$Cleaned = c( attributes(Metadata)$Cleaned,"No")
     }}
 
 
