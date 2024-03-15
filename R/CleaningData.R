@@ -32,7 +32,7 @@ CleaningData = function(Metadata = NULL,
 
 
   if(is.null(Metadata)){stop("No Metadata found.")}
-  if(is.null(PatientsLexic)&is.null(SamplesLexic)){stop("a PatientsLexic or SamplesLexic is mandatory for data cleaning")}
+  if(is.null(PatientsLexic)&is.null(SamplesLexic)){stop("A PatientsLexic or SamplesLexic is mandatory for data cleaning")}
 
 
   if(!is.null(SamplesLexic)){
@@ -65,8 +65,49 @@ CleaningData = function(Metadata = NULL,
   }
 
 
-  if(!is.null(PatientsLexic)){
-    if(is.null(PatientsAnnotToClean)){stop("PatientsAnnotToClean has to be specify.")}
+    if(is.null(PatientsAnnotToClean)){
+
+      RP = which(attributes(Metadata)$Data.Type=="Clinic" &attributes(Metadata)$Cleaned=="No")
+      message("Creating a Patient clinical table from Samples annotation")
+      if(length(RP)>0){stop("Raw Patients clinical data found in Metaobject, Specify PatientsAnnotToClean")}
+      if(is.null(PatientsExportname)){stop("Specify PatientsExportname.")}
+      if(is.null(PatientsLexic)){stop("PatientsLexic is mandatory.")}
+
+
+      Metadata <- CleaningClinic(Metadata = Metadata,
+                                 Lexic = PatientsLexic,
+                                 type = "Patients",
+                                 ClinicToClean = SamplesAnnotToClean,
+                                 exportname = PatientsExportname,
+                                 FilterPatients =  FilterSP,
+                                 FilterSamples = F,
+                                 force.replace = force.replace,
+                                 CleanFromOtherType = T)
+
+
+
+      if(keep.all.column==T){
+      Metadata <- CleaningClinic(Metadata = Metadata,
+                                 Lexic = PatientsLexic,
+                                 type = "Patients",
+                                 ClinicToClean = SamplesAnnotToClean,
+                                 exportname = paste0(PatientsExportname,".fullCol"),
+                                 FilterPatients =  FilterSP,
+                                 FilterSamples = F,
+                                 force.replace = force.replace,
+                                 CleanFromOtherType = T,
+                                 keep.all.column = T)
+
+      }
+
+
+
+
+
+      } else{
+
+      if(is.null(PatientsLexic)){stop("A PatientsLexic is mandatory for data cleaning")}
+
 
     ClinicRaw = which(attributes(Metadata)$Data.Type=="Clinic" & attributes(Metadata)$Cleaned == "No")
     SamAnnotRaw = which(attributes(Metadata)$Data.Type=="SamplesAnnot" & attributes(Metadata)$Cleaned == "No")
