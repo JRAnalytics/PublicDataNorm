@@ -10,6 +10,7 @@
 #' @param FilterSP default F, if T, keep only retrieved samples in SamplesAnnotation file
 #' @param force.replace set as F. T : replace an already object with the same name
 #' @param keep.all.column default F, if T, copy all column from clinic.
+#' @param FilterGenes Filter for genes found in geneannotation file and rownames of matrices.
 #' @importFrom utils menu
 #' @import dplyr
 #' @return a meataobject
@@ -25,7 +26,8 @@ CleaningData = function(Metadata = NULL,
                         SamplesExportname = NULL,
                         FilterSP =  F,
                         force.replace = F,
-                        keep.all.column = F){
+                        keep.all.column = F,
+                        FilterGenes = F){
 
 
 
@@ -165,7 +167,35 @@ CleaningData = function(Metadata = NULL,
 
   }}
 
+if(FilterGenes == T){
 
+
+  g =  which(attributes(Metadata)$Data.Type=="geneAnnot")[1]
+  m <- which(attributes(Metadata)$Data.Type=="Count")
+  object = Metadata[[g]]
+  if(!is.na(g)){geneAnnot = as.matrix(Metadata[[g]])}
+
+  for (i in m){
+
+    gene = rownames(Metadata[[i]])
+    sel = which(geneAnnot %in% gene)
+    colT = which(apply(geneAnnot, 2, function(x) which(x %in% geneAnnot[sel[1]]))>0)[1]
+
+    object <- object[object[,colT]%in%gene,]
+
+    if(length(object[,colT])!=length(unique(object[,colT]))){object <- object[!duplicated(object[,colT]),]}
+
+    Metadata[[i]] = Metadata[[i]][rownames(object),]
+
+    attributes(Metadata)$Cleaned[i] = "Yes"
+
+    }
+
+
+    Metadata[[g]] = object
+
+
+}
 
 
 

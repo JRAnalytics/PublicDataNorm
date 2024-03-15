@@ -15,7 +15,7 @@ AddgeneAnnotGtf <- function(Metadata ,gtf.files, force.replace=F){
 
   Metadata <- Metadata
 
-  path = attributes(Metadata)$File.path$References
+  path = Refpath(Metadata)
 
 
 
@@ -71,7 +71,9 @@ AddgeneAnnotGtf <- function(Metadata ,gtf.files, force.replace=F){
     geneAnnot <- geneAnnot[order(geneAnnot$GeneSymbol,decreasing = F),]
 
     if(is.null(Metadata$geneAnnotation)){ attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type, "geneAnnot")
-    attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"No") }
+    attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes")
+    attributes(Metadata)$Cleaned = c(attributes(Metadata)$Cleaned,"Yes")
+    }
 
     Metadata$geneAnnotation <- geneAnnot
 
@@ -88,7 +90,8 @@ AddgeneAnnotGtf <- function(Metadata ,gtf.files, force.replace=F){
     geneAnnot <- geneAnnot[order(geneAnnot$GeneSymbol,decreasing = F),]
 
     if(is.null(Metadata$geneAnnotation)){ attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type, "geneAnnot")
-    attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes") }
+    attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes")
+    attributes(Metadata)$Cleaned = c(attributes(Metadata)$Cleaned,"Yes")}
 
 
     Metadata$geneAnnotation <- geneAnnot

@@ -14,7 +14,8 @@ CleaningData(
   SamplesExportname = NULL,
   FilterSP = F,
   force.replace = F,
-  keep.all.column = F
+  keep.all.column = F,
+  FilterGenes = F
 )
 }
 \arguments{
@@ -37,6 +38,8 @@ CleaningData(
 \item{force.replace}{set as F. T : replace an already object with the same name}
 
 \item{keep.all.column}{default F, if T, copy all column from clinic.}
+
+\item{FilterGenes}{Filter for genes found in geneannotation file and rownames of matrices.}
 }
 \value{
 a meataobject

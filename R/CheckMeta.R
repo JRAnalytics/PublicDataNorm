@@ -36,7 +36,7 @@ CheckMeta <- function(Metadata) {
 
 
   message("-------------------------")
-  message(paste("Checking colnames of matrices in Metadata from", names(Metadata)[c[1]]))
+  message(paste("Checking SamplesID in Metadata sub-objects from", names(Metadata)[c[1]]))
   message("-------------------------")
 
 
@@ -131,7 +131,7 @@ CheckMeta <- function(Metadata) {
 
   message("-------------------------")
 if(length(c>0)){
-  message(paste("Checking Common Samples from", names(Metadata)[c[1]] ,"in other samples or patients annotatons data."))
+  message(paste("Checking Common Samples from", names(Metadata)[c[1]] ,"in other Samples or Patients annotations data."))
   message("-------------------------")
 
   for (i in c){
