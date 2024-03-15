@@ -69,7 +69,8 @@ AddgeneAnnotFromObject <- function(Metadata=NULL ,object=NULL, geneAnnotIDcolumn
     if(length(object[,colT])!=length(unique(object[,colT]))){object <- object[!duplicated(object[,colT]),]} }
 
     if(is.null(Metadata$geneAnnotation)){ attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type, "geneAnnot")
-    attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes") } else {
+    attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes")
+    attributes(Metadata)$Cleaned = c(attributes(Metadata)$Cleaned,"Yes")} else {
 
       }
 
