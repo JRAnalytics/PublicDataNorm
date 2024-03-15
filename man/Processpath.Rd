@@ -2,18 +2,18 @@
 % Please edit documentation in R/Pathfiles.R
 \name{Processpath}
 \alias{Processpath}
-\title{Processpath Export Metadata inside object into ".csv" files}
+\title{Processpath Export Dataset inside object into ".csv" files}
 \usage{
-Processpath(Metadata)
+Processpath(Dataset)
 }
 \arguments{
-\item{Metadata}{a Metadata  data files}
+\item{Dataset}{a Dataset  data files}
 }
 \value{
 a path to 02process project file
 }
 \description{
-Processpath Export Metadata inside object into ".csv" files
+Processpath Export Dataset inside object into ".csv" files
 }
 \examples{
 "non"

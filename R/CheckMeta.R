@@ -10,7 +10,7 @@ CheckMeta <- function(Metadata) {
 
   if(is.null(Metadata)){stop("Need a Metadata List file")}
   if(!is.list(Metadata)){stop("Need a Metadata List file")}
-
+  if(is.null(attributes(Metadata)$Omics.type)){attributes(Metadata)$Omics.type="NotDefine"}
 
   l <-length(names(Metadata))
   MetaDataN <- names(Metadata)
@@ -28,16 +28,25 @@ CheckMeta <- function(Metadata) {
   if(attributes(Metadata)$Omics.type=="Single.Cell"){
     c <- which(attributes(Metadata)$Data.Type=="Clinic"  & attributes(Metadata)$Export=="No")}
 
-  ColN <- colnames(Metadata[[m[1]]])
+  if(attributes(Metadata)$Data.Type[c[1]]=="SamplesAnnot"){ }
+
+
+  if(attributes(Metadata)$Data.Type[c[1]]=="SamplesAnnot"){sID <- Metadata[[c[1]]][,"SamplesID"] }
+  if(attributes(Metadata)$Data.Type[c[1]]=="Clinic"){sID <- Metadata[[c[1]]][,"PatientsID"] }
+
 
   message("-------------------------")
-  message(paste("Checking colnames of matrices in Metadata from", names(Metadata)[m[1]]))
+  message(paste("Checking colnames of matrices in Metadata from", names(Metadata)[c[1]]))
   message("-------------------------")
+
+
   for (i in m){
 
 
 
-    if(all(ColN %in% colnames(Metadata[[i]]))==T) {   message(paste(MetaDataN[i]), " colnames : PASS") } else {  message(paste(MetaDataN[i]), " colnames : FAIL") }
+    if(all(sID %in% colnames(Metadata[[i]]))==T) {   message(paste(MetaDataN[i]), " colnames : PASS") } else {
+      message(paste(MetaDataN[i]), " colnames : FAIL")
+      message(paste("Samples not found in ", MetaDataN[i]," : "), paste0(na.omit(sID[!sID%in%colnames(Metadata[[i]])]),collapse = "; "))}
 
   }
 
@@ -122,14 +131,20 @@ CheckMeta <- function(Metadata) {
 
   message("-------------------------")
 if(length(c>0)){
-  message(paste("Checking colnames of", names(Metadata)[m[1]] ,"in Metadata in clinical data."))
+  message(paste("Checking Common Samples from", names(Metadata)[c[1]] ,"in other samples or patients annotatons data."))
   message("-------------------------")
 
   for (i in c){
 
     if(attributes(Metadata)$Omics.type!="Single.Cell"){
 
-    if(all(ColN%in%as.matrix(Metadata[[i]]))) {   message(paste(MetaDataN[i]), " : PASS") } else {  message(paste(MetaDataN[i]), " : FAIL") }
+    if(all(sID%in%as.matrix(Metadata[[i]]))) {   message(paste(MetaDataN[i]), " : PASS") } else {
+
+      message(paste(MetaDataN[i]), " : FAIL")
+      message(paste("Samples not found in ", MetaDataN[i]," : "), paste0(na.omit(sID[!sID%in%as.matrix(Metadata[[i]])]),collapse = "; "))
+
+
+      }
     }
 
 
@@ -138,7 +153,7 @@ if(length(c>0)){
       message(paste("Patients from Single.Cell data:", names(Metadata)[i]))
       tot=0
       for (z in rownames(Metadata[[i]])) {
-        t = summary(str_detect(pattern = z, ColN))["TRUE"][1]
+        t = summary(str_detect(pattern = z, sID))["TRUE"][1]
 
         if(is.na(as.numeric(t))){ t = 0}
 
@@ -148,7 +163,7 @@ if(length(c>0)){
       message(c(z," N= ",as.numeric(t)))
 
       }
-      message("Total = " , tot, "\nAre all Patients found in Expression matrix ? ", tot/length(ColN)==1)
+      message("Total = " , tot, "\nAre all Patients found in Expression matrix ? ", tot/length(sID)==1)
       message("-------------------------")
 
 
@@ -161,7 +176,7 @@ if(length(c>0)){
 
        tot=0
        for (z in rownames(Metadata[[p]])) {
-         t = summary(str_detect(pattern = z, ColN))["TRUE"][1]
+         t = summary(str_detect(pattern = z, sID))["TRUE"][1]
 
          if(is.na(as.numeric(t))){ t = 0}
 
@@ -171,7 +186,7 @@ if(length(c>0)){
          message(c(z," N= ",as.numeric(t)))
 
        }
-       message("Total = " , tot, "\nAre all Patients found in Expression matrix ? ", tot/length(ColN)==1)
+       message("Total = " , tot, "\nAre all Patients found in Expression matrix ? ", tot/length(sID)==1)
        message("-------------------------")
    }
 

@@ -2,18 +2,18 @@
 % Please edit documentation in R/Pathfiles.R
 \name{Verifiedpath}
 \alias{Verifiedpath}
-\title{Verifiedpath Export Metadata inside object into ".csv" files}
+\title{Verifiedpath Export Dataset inside object into ".csv" files}
 \usage{
-Verifiedpath(Metadata)
+Verifiedpath(Dataset)
 }
 \arguments{
-\item{Metadata}{a Metadata  data files}
+\item{Dataset}{a Dataset  data files}
 }
 \value{
 a path to 04VerifiedDataSet project file
 }
 \description{
-Verifiedpath Export Metadata inside object into ".csv" files
+Verifiedpath Export Dataset inside object into ".csv" files
 }
 \examples{
 "non"

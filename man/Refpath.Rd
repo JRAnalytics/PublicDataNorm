@@ -2,18 +2,18 @@
 % Please edit documentation in R/Pathfiles.R
 \name{Refpath}
 \alias{Refpath}
-\title{Refpath Export Metadata inside object into ".csv" files}
+\title{Refpath Export Dataset inside object into ".csv" files}
 \usage{
-Refpath(Metadata)
+Refpath(Dataset)
 }
 \arguments{
-\item{Metadata}{a Metadata  data files}
+\item{Dataset}{a Dataset  data files}
 }
 \value{
 a path to 03Referecence project file
 }
 \description{
-Refpath Export Metadata inside object into ".csv" files
+Refpath Export Dataset inside object into ".csv" files
 }
 \examples{
 "non"

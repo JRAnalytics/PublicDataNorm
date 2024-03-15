@@ -5,7 +5,7 @@
 #' @param type c("Samples", "Patients") To specify if clinical data refers to samples or patients data. Importat if mutliple samples for one patient.
 #' @param mergeToClinic default NULL. name of loaded clinical data in Metadata. Merge the newly added clinical data to a already loaded data clinic with existing clincial data : full_join by rownames.
 #' @param ClinicFile name file of interest in path directory, could be multiple names. c("a.csv","b.csv")
-#' @param ExpressionMatrixIdColumn column to fetch colnames from Count matrix.
+#' @param setID.Column a character string : column to fetch colnames from Count matrix.
 #' @param mergeBy colname using for merging clinical data.
 #' @param Export  TRUE or FALSE. If data to be Exported, set T.
 #' @param join c("left_join", "full_join")
@@ -19,7 +19,7 @@
 #' @examples "none"
 AddClinicFromFile <- function(Metadata,
                               ClinicFile = NULL,
-                              ExpressionMatrixIdColumn=NULL,
+                              setID.Column = NULL,
                               name= NULL,
                               type = c("Samples", "Patients", "Cells"),
                               force.replace=F,
@@ -34,11 +34,18 @@ AddClinicFromFile <- function(Metadata,
   if(!is.list(Metadata)){stop("Metadata should be a list.")}
   if(is.null(ClinicFile)){stop("No set ClinicFile information")}
   if(!inherits(ClinicFile,"character")){stop("ClinicFile is not a character string.") }
-#  if(is.null(ExpressionMatrixIdColumn)){stop("ExpressionMatrixIdColumn must be specifierdt (i.e character string : colname of clinic to add).")}
-  if(length(ExpressionMatrixIdColumn)>1){stop("ExpressionMatrixIdColumn must be of length equal to one.")}
+
 
   l <-length(names(Metadata))
   filepath <- paste(attributes(Metadata)$File.path$Project.RawData,ClinicFile,sep="/")
+
+
+
+  if(type=="Samples"){ExpressionMatrixIdColumn = "SamplesID"}
+  if(type=="Patients"){ExpressionMatrixIdColumn = "PatientsID"}
+  if(type=="Cells"){ExpressionMatrixIdColumn = "CellsBarcode"}
+
+
 
 
   if(length(filepath)>1){
@@ -75,6 +82,14 @@ AddClinicFromFile <- function(Metadata,
           rownames(dt) <-    dt[,1]}
         }
 
+          if(!is.null(setID.Column)){
+          if(type=="Samples"){ dt$SamplesID =dt[,setID.Column]}
+          if(type=="Patients"){dt$PatientsID =dt[,setID.Column]}
+          if(type=="Cells"){dt$CellsBarcode =dt[,setID.Column]}
+          }
+
+
+
 
     if (is.null(mergeToClinic)){
 
@@ -95,9 +110,12 @@ AddClinicFromFile <- function(Metadata,
           if(Export==T){attributes(Metadata)$Export[tt] <- "Yes" } else {
             attributes(Metadata)$Export[tt] <- "No" }
 
+        attributes(Metadata)$Cleaned[tt] = "No"
+
 
       } else { Metadata[[l+1]] <- dt
       names(Metadata)[l+1] <- name
+
 
 
 
@@ -107,13 +125,14 @@ AddClinicFromFile <- function(Metadata,
         if(type == "Patients") {attributes(Metadata)$Data.Type <-  c("Clinic")}
         if(type == "Cells") {attributes(Metadata)$Data.Type <-  "CellsAnnot"}
         if(Export==T){attributes(Metadata)$Export <- c("Yes") } else {attributes(Metadata)$Export <- c("No") }
+        attributes(Metadata)$Cleaned = "No"
 
 
       } else {  if(type == "Samples") {attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"SamplesAnnot")}
         if(type == "Patients") {attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"Clinic")}
         if(type == "Cells") {attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"CellsAnnot")}
         if(Export==T){attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes") } else {attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"No") }
-
+        attributes(Metadata)$Cleaned = c( attributes(Metadata)$Cleaned,"No")
       }}
     } else {
 
@@ -138,17 +157,12 @@ AddClinicFromFile <- function(Metadata,
 
 
     }
-  if(type != "Patients"){
-if(!ExpressionMatrixIdColumn%in%colnames(dt)){stop(paste(ExpressionMatrixIdColumn, "colnames is not in the added clinical data."))}
 
 
-if(type!="Cells"){
-  zz <- which(attributes(Metadata)$Data.Type=="Count")[1]
-  samples <- colnames(Metadata[[zz]])
-  message("Found Samples :")
-  print(summary(samples%in%dt[,ExpressionMatrixIdColumn]))
-  message("Unfound Samples :")
-  print(samples[!samples%in%dt[,ExpressionMatrixIdColumn]])}}
+  if(type != "Patients"){type2 = "Samples annotation"}else{type2 = "Patients clinical data"}
+  if(!ExpressionMatrixIdColumn%in%colnames(dt)){stop(paste(ExpressionMatrixIdColumn, "is not in",type2, ClinicFile , "colnames."))}
+
+
 
 
     return(Metadata)
