@@ -37,7 +37,7 @@ AddClinicFromFile <- function(Metadata,
 
 
   l <-length(names(Metadata))
-  filepath <- paste(attributes(Metadata)$File.path$Project.RawData,ClinicFile,sep="/")
+  filepath <- paste(Rawpath(Metadata),ClinicFile,sep="/")
 
 
 
@@ -152,6 +152,11 @@ AddClinicFromFile <- function(Metadata,
       if(join=="left_join"){
         dt <- dt %>% purrr::reduce(left_join, by=mergeBy)
       }
+
+      if(!is.null(setID.Column)){
+        if(type=="Samples"){ dt$SamplesID =dt[,setID.Column]}
+        if(type=="Patients"){dt$PatientsID =dt[,setID.Column]}
+        if(type=="Cells"){dt$CellsBarcode =dt[,setID.Column]}}
 
       Metadata[[mergeToClinic]] <- dt
 

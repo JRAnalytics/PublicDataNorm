@@ -17,6 +17,7 @@
 AddExpressionMatrixSC <- function(Metadata=NULL,
                                 Cell.file=NULL,
                                 Genes.file=NULL,
+                                setID.cellAnnotColumn = NULL,
                                 name,
                                 ExpressionMatrix = NULL,
                                 force.replace=F ) {
@@ -91,7 +92,7 @@ AddExpressionMatrixSC <- function(Metadata=NULL,
       }#ExpressionMatrix caract
     else {
 
-      if(inherits_any(ExpressionMatrix, c("data.frame", "matrix", "dgCMatrix" ,"dgTMatrix"))){
+      if(rlang::inherits_any(ExpressionMatrix, c("data.frame", "matrix", "dgCMatrix" ,"dgTMatrix"))){
         dt = ExpressionMatrix
 
              }else { stop("Object set in ExpressionMatrix is not of class 'data.frame', 'matrix', 'dgCMatrix' ,'dgTMatrix'")}}
@@ -101,18 +102,20 @@ AddExpressionMatrixSC <- function(Metadata=NULL,
     if(is.null(colnames(dt))){
       message(paste(ExpressionMatrix,"has no colnames. A Cell.csv file may be associated in raw data directory."))}
 
+
+    if(!"CellsAnnot" %in% attributes(Metadata)){
       if(!is.null(Cell.file)){
 
-        if(inherits_any(Cell.file, c("data.frame", "matrix"))){Cells = Cell.file} else {
+        if(rlang::inherits_any(Cell.file, c("data.frame", "matrix"))){Cells = Cell.file} else {
 
           if(inherits(Cell.file, "character")){
             message(paste("Loading",Cell.file ))
-            Cells <- fread(file.path(path,Cell.file))
+            Cells <- data.table::fread(file.path(path,Cell.file))
             if("cell_name"%in%colnames(Cells)){
               rownames(Cells)  = Cells$cell_name} else {
                 message("Cell.file has no colnames specified 'cell_name', the first collumn will be used.\n Please check file before adding cell file.")
 
-                Cells <- as.data.frame(fread(file.path(path,Cell.file),header = F))
+                Cells <- as.data.frame(data.table::fread(file.path(path,Cell.file),header = F))
                 rownames(Cells) = Cells[,1]}}else {stop("Cell.file is not a character string or an environment object as data.frame or matrix.")}}
 
 
@@ -122,7 +125,12 @@ AddExpressionMatrixSC <- function(Metadata=NULL,
         }
 
 
+        if(is.null(setID.cellAnnotColumn)){stop("setID.cellAnnotColumn mus be specify")}
+        if(!setID.cellAnnotColumn %in%colnames(Cells) ){stop(paste(setID.cellAnnotColumn, "is not found in colnames of Cell.File"))}
+        Cells$CellsBarcode = Cells[,setID.cellAnnotColumn]
 
+
+      }
       }
 
 
@@ -131,11 +139,11 @@ AddExpressionMatrixSC <- function(Metadata=NULL,
       message(paste(ExpressionMatrix,"has no rownames A Genes.csv file may be associated in raw data directory."))}
 
         if(!is.null(Genes.file)){
-          if(inherits_any(Genes.file, c("data.frame", "matrix"))){Genes =Genes.file }else {
+          if(rlang::inherits_any(Genes.file, c("data.frame", "matrix"))){Genes =Genes.file }else {
 
             if(inherits(Genes.file, "character")){
               message(paste("Loading",Genes.file ))
-              Genes <- as.data.frame(fread(file.path(path,Genes.file), header = F))}
+              Genes <- as.data.frame(data.table::fread(file.path(path,Genes.file), header = F))}
             else {stop("Genes.file is not a character string or an environment object as data.frame or matrix.")}}
 
           if(length(Genes[,1])==nrow(dt)){
@@ -143,16 +151,6 @@ AddExpressionMatrixSC <- function(Metadata=NULL,
             rownames(dt) =  Genes[,1]
           } else { stop(paste(Genes.file, "has not the same length as rows of expression matrix"))}
         }
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -171,14 +169,13 @@ AddExpressionMatrixSC <- function(Metadata=NULL,
         attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type, "Count")
 
      attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes")
-     attributes(Metadata)$Cleaned = c("No")}
+     attributes(Metadata)$Cleaned = c(attributes(Metadata)$Cleaned, "No")}
 
 
       if(!is.null(Cell.file)){
-
         Metadata$CellsAnnot = Cells
         attributes(Metadata)$Data.Type = c(attributes(Metadata)$Data.Type, "CellsAnnot")
-        attributes(Metadata)$Export = c(attributes(Metadata)$Export, "Yes")
+        attributes(Metadata)$Export = c(attributes(Metadata)$Export, "No")
         attributes(Metadata)$Cleaned = c(attributes(Metadata)$Cleaned,"No")
 
       }
@@ -207,7 +204,7 @@ AddExpressionMatrixSC <- function(Metadata=NULL,
       if(!is.null(Cell.file)){
         Metadata$CellsAnnot = Cells
         attributes(Metadata)$Data.Type = c(attributes(Metadata)$Data.Type, "CellsAnnot")
-        attributes(Metadata)$Export = c(attributes(Metadata)$Export, "Yes")
+        attributes(Metadata)$Export = c(attributes(Metadata)$Export, "No")
         attributes(Metadata)$Cleaned = c(attributes(Metadata)$Cleaned,"No")
 
       }
