@@ -121,7 +121,7 @@ AddLocalDatabase <- function(Metadata,
   if(!is.na(NBS)){
   met <- length(which(str_detect(toupper(Metadata[[NBS[1]]]$SamplePathologicalState),"MET")))}else{met = 0}
 
-  print("Ok")
+
 
   dt <- data.frame("Project" = project,
                    "Version" = Version,

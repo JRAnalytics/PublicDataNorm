@@ -20,7 +20,7 @@ CleaningClinic <- function(Metadata = NULL,
                            ClinicToClean = NULL,
                            Lexic = NULL,
                            exportname = NULL,
-                           type = c("Samples", "Patients"),
+                           type = c("Samples", "Patients", "Cells"),
                            FilterSamples= F,
                            FilterPatients = F,
                            CleanFromOtherType = F,
@@ -28,7 +28,7 @@ CleaningClinic <- function(Metadata = NULL,
                            keep.all.column = F){
 
 
-  list.files.path = attributes(Metadata)$File.path
+
 
 
 
@@ -49,7 +49,7 @@ CleaningClinic <- function(Metadata = NULL,
 
     if(type=="Samples"){
 
-    NBS <- which(attributes(Metadata)$Data.Type=="SamplesAnnot")
+    NBS <- which(attributes(Metadata)$Data.Type=="SamplesAnnot" & attributes(Metadata)$Cleaned == "No")
 
 
     if(CleanFromOtherType==F &length(NBS)==0 ){stop("No SamplesAnnot found in Metadata object. Set CleanFromOtherType=T to force cleaning from Clinic")
@@ -78,17 +78,17 @@ CleaningClinic <- function(Metadata = NULL,
     colnames(clinic) <-gsub("[.]", "_",colnames(clinic))
     LexicClinic <-  lapply(LexicClinic,function(x) gsub("[.]", "_",x))
 
-    if(file.exists(paste0(list.files.path$Project.Processes,"/Samples.CleanedProcess.txt"))){ file.remove(paste0(list.files.path$Project.Processes,"/Samples.CleanedProcess.txt"))}
+    if(file.exists(paste0(Processpath(Metadata),"/Samples.CleanedProcess.txt"))){ file.remove(paste0(Processpath(Metadata),"/Samples.CleanedProcess.txt"))}
 
-    cat("Samples.CleanedProcess" , file=paste0(list.files.path$Project.Processes,"/Samples.CleanedProcess.txt"),sep="\n",append = T)
-    cat("Raw.Clinic colnames Origin,Clean.Called" , file=paste0(list.files.path$Project.Processes,"/Samples.CleanedProcess.txt"),sep="\n",append = T)
+    cat("Samples.CleanedProcess" , file=paste0(Processpath(Metadata),"/Samples.CleanedProcess.txt"),sep="\n",append = T)
+    cat("Raw.Clinic colnames Origin,Clean.Called" , file=paste0(Processpath(Metadata),"/Samples.CleanedProcess.txt"),sep="\n",append = T)
     for (i in 1:ncol(clinic)) {
       pat <- toupper(colnames(clinic)[i])
       col <- grep(paste("\\b",pat, "\\b",sep=""), LexicClinic)
 
 
 
-      cat(paste(pat,",", names(LexicClinic)[col]) , file=paste0(list.files.path$Project.Processes,"/Samples.CleanedProcess.txt"),sep="\n",append = T)
+      cat(paste(pat,",", names(LexicClinic)[col]) , file=paste0(Processpath(Metadata),"/Samples.CleanedProcess.txt"),sep="\n",append = T)
 
 
       if(!length(col)==0){
@@ -119,11 +119,11 @@ CleaningClinic <- function(Metadata = NULL,
       if(FilterPatients==T){stop("Data type is not 'Samples', you can't substet it by SamplesID. Try FilterPatients = T.")}
       if(FilterSamples==T){
 
-
+        if(attributes(Metadata)$Omics.type != "Single.Cell"){
         message("Selecting only Samples present in both Count and SamplesAnnot.")
 
 
-        zz = which(attributes(Metadata)$Data.Type=="Count")[1]
+          zz = which(attributes(Metadata)$Data.Type=="Count")[1]
 
         # Diviser chaque élément de la colonne en un vecteur de sous-chaînes
         substrings <- clinic2$SamplesID
@@ -137,8 +137,20 @@ CleaningClinic <- function(Metadata = NULL,
         # Récupérer les index de position correspondants
         indices <- which(est_present)
         clinic2 <- clinic2[indices,]
-      }
+        } else {
 
+          zz = which(attributes(Metadata)$Data.Type=="Count")[1]
+          substrings <- clinic2$SamplesID
+          names(substrings) = substrings
+          for(z in substrings){
+            if("TRUE" %in% str_detect(pattern = paste0(z,"_"), colnames(Metadata[[zz]]))){substrings[z] = T }else { substrings[z] = F}
+          }
+          clinic2 <- clinic2[which(substrings==T),]
+
+
+        }}
+
+      rownames(clinic2) = clinic2$SamplesID
 
       if(exportname%in%names(Metadata)){
         if(force.replace==F){stop("set force.replace==T to subset object.")}
@@ -208,7 +220,7 @@ CleaningClinic <- function(Metadata = NULL,
           indices <- which(est_present)
           cl_rolled <- cl_rolled[indices,]
         }
-
+        rownames(cl_rolled) = cl_rolled$SamplesID
 
         Metadata[[exportname]] <- cl_rolled
 
@@ -229,12 +241,12 @@ CleaningClinic <- function(Metadata = NULL,
         attributes(Metadata)$Cleaned = c(attributes(Metadata)$Cleaned,"Yes")}
     }
 
-  #  file.show(paste0(list.files.path$Project.Processes,"/Samples.CleanedProcess.txt"))
+  #  file.show(paste0(Processpath(Metadata),"/Samples.CleanedProcess.txt"))
 
   } else if(type=="Patients")
   {
 
-    NBP <- which(attributes(Metadata)$Data.Type=="Clinic")
+    NBP <- which(attributes(Metadata)$Data.Type=="Clinic" & attributes(Metadata)$Cleaned == "No")
 
     if(CleanFromOtherType==F & length(NBP)==0){stop("No Clinic found in Metadata object. Set CleanFromOtherType=T to force cleaning from SamplesAnnot")}
 
@@ -262,16 +274,16 @@ CleaningClinic <- function(Metadata = NULL,
     colnames(clinic) <-gsub("[.]", "_",colnames(clinic))
     LexicClinic <-  lapply(LexicClinic,function(x) gsub("[.]", "_",x))
 
-    if(file.exists(paste0(list.files.path$Project.Processes,"/Patients.CleanedProcess.txt"))){ file.remove(paste0(list.files.path$Project.Processes,"/Patients.CleanedProcess.txt"))}
+    if(file.exists(paste0(Processpath(Metadata),"/Patients.CleanedProcess.txt"))){ file.remove(paste0(Processpath(Metadata),"/Patients.CleanedProcess.txt"))}
 
-    cat("Patients.CleanedProcess" , file=paste0(list.files.path$Project.Processes,"/Patients.CleanedProcess.txt"),sep="\n",append = T)
-    cat("Raw.Clinic colnames Origin,Clean.Called" , file=paste0(list.files.path$Project.Processes,"/Patients.CleanedProcess.txt"),sep="\n",append = T)
+    cat("Patients.CleanedProcess" , file=paste0(Processpath(Metadata),"/Patients.CleanedProcess.txt"),sep="\n",append = T)
+    cat("Raw.Clinic colnames Origin,Clean.Called" , file=paste0(Processpath(Metadata),"/Patients.CleanedProcess.txt"),sep="\n",append = T)
 
     for (i in 1:ncol(clinic)) {
       pat <- toupper(colnames(clinic)[i])
       col <- grep(paste("\\b",pat, "\\b",sep=""), LexicClinic)
 
-      cat(paste(pat,",", names(LexicClinic)[col]) , file=paste0(list.files.path$Project.Processes,"/Patients.CleanedProcess.txt"),sep="\n",append = T)
+      cat(paste(pat,",", names(LexicClinic)[col]) , file=paste0(Processpath(Metadata),"/Patients.CleanedProcess.txt"),sep="\n",append = T)
 
       if(!length(col)==0){
 
@@ -300,7 +312,7 @@ CleaningClinic <- function(Metadata = NULL,
       if(FilterSamples ==T){stop("Data type is not 'Patients',you can't substet it by PatientsID. Try FilterSamples = T.")}
       if(FilterPatients==T){
 
-
+      if(attributes(Metadata)$Omics.type != "Single.Cell"){
         message("Selecting only Patient present in both Count and clinical data.")
 
         zz = which(attributes(Metadata)$Data.Type=="Count")[1]
@@ -317,9 +329,24 @@ CleaningClinic <- function(Metadata = NULL,
         # Récupérer les index de position correspondants
         indices <- which(est_present)
         clinic2 <- clinic2[indices,]
+      }else {
+
+        zz = which(attributes(Metadata)$Data.Type=="Count")[1]
+
+        substrings <- clinic2$PatientsID
+        names(substrings) = substrings
+        for(z in substrings){
+        if("TRUE" %in% str_detect(pattern = paste0(z,"_"), colnames(Metadata[[zz]]))){substrings[z] = T }else { substrings[z] = F}
+          }
+        clinic2 <- clinic2[which(substrings==T),]
+
       }
 
 
+
+        }
+
+      rownames(clinic2) = clinic2$PatientsID
 
 
 
@@ -392,7 +419,7 @@ CleaningClinic <- function(Metadata = NULL,
       }
 
 
-
+      rownames(cl_rolled) = cl_rolled$PatientsID
 
       if(exportname%in%names(Metadata)){
         if(force.replace==F){stop("set force.replace==T to subset object.")}
@@ -422,10 +449,104 @@ CleaningClinic <- function(Metadata = NULL,
 
     }
 
-    #file.show(paste0(list.files.path$Project.Processes,"/Patients.CleanedProcess.txt"))
+    #file.show(paste0(Processpath(Metadata),"/Patients.CleanedProcess.txt"))
 
 
-  } else {
+  } else if(type == "Cells"){
+
+    clinic <- as.data.frame(Metadata[[ClinicToClean]])
+
+
+    if(keep.all.column==T){
+
+      for (i in colnames(clinic)){
+
+        if (!i %in% names(Lexic)){Lexic <- AddKeyLexic(lexic = Lexic, key =i  ,value = i) }
+
+      }
+      LexicClinic <- Lexic
+
+    }else {  LexicClinic <- Lexic}
+
+
+    clcl <-  data.frame(matrix(nrow = nrow(clinic), ncol = length(LexicClinic)))
+    colnames(clcl) = names(LexicClinic)
+    LexicClinic <- lapply(LexicClinic, toupper)
+
+    colnames(clinic) <-gsub("[.]", "_",colnames(clinic))
+    LexicClinic <-  lapply(LexicClinic,function(x) gsub("[.]", "_",x))
+
+    if(file.exists(paste0(Processpath(Metadata),"/CellAnnotation.CleanedProcess.txt"))){ file.remove(paste0(Processpath(Metadata),"/CellAnnotation.CleanedProcess.txt"))}
+
+    cat("CellAnnotation.CleanedProcess" , file=paste0(Processpath(Metadata),"/CellAnnotation.CleanedProcess.txt"),sep="\n",append = T)
+    cat("Raw.CellAnnotation colnames Origin,Clean.Called" , file=paste0(Processpath(Metadata),"/CellAnnotation.CleanedProcess.txt"),sep="\n",append = T)
+
+    for (i in 1:ncol(clinic)) {
+      pat <- toupper(colnames(clinic)[i])
+      col <- grep(paste("\\b",pat, "\\b",sep=""), LexicClinic)
+
+      cat(paste(pat,",", names(LexicClinic)[col]) , file=paste0(Processpath(Metadata),"/CellAnnotation.CleanedProcess.txt"),sep="\n",append = T)
+
+      if(!length(col)==0){
+
+        clcl[,col] <- clinic[,i]
+
+      }
+    }
+
+    clcl$CellsBarcode = clinic$CellsBarcode
+    cc <- names(LexicClinic)
+    cc <- cc[!cc%in%("CellsBarcode")]
+
+    if(all(is.na(clcl$CellsBarcode))){
+      stop("No Cells found in raw Cells annotation.")
+
+    }
+
+
+
+      clinic2 <-  clcl[,c("CellsBarcode", cc)]
+      clinic2 <- as.data.frame(clinic2)
+      clinic2[clinic2==""] <- NA
+      clinic2[clinic2=="NA"] <- NA
+
+
+        message("Selecting only Cells present in both Count and Cells annotation data.")
+
+        zz = which(attributes(Metadata)$Data.Type=="Count")[1]
+
+        clinic2 <- clinic2[which(clinic2$CellsBarcode%in%colnames(Metadata[[zz]])),]
+
+        rownames(clinic2) = clinic2$CellsBarcode
+
+
+      if(exportname%in%names(Metadata)){
+        if(force.replace==F){stop("set force.replace==T to subset object.")}
+        message("Subsetting object.")
+
+        Metadata[[exportname]] <- clinic2
+
+        t= which(str_detect(names(Metadata),exportname))
+
+        attributes(Metadata)$Data.Type[t] <-  c("CellsAnnot")
+        attributes(Metadata)$Export[t] <- c("Yes")
+        attributes(Metadata)$Cleaned[t] = c("Yes")
+
+
+      }else {
+
+        l <- length(Metadata)
+        Metadata[[l+1]] <- clinic2
+        names(Metadata)[l+1] <- exportname
+        attributes(Metadata)$Data.Type <-  c(attributes(Metadata)$Data.Type,"CellsAnnot")
+        attributes(Metadata)$Export <- c(attributes(Metadata)$Export,"Yes")
+        attributes(Metadata)$Cleaned = c(attributes(Metadata)$Cleaned,"Yes")}
+
+
+
+
+
+  } else{
     stop("Choose type = c('Samples', 'Patients')")}
 
 
