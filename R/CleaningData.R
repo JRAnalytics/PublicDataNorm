@@ -35,7 +35,7 @@ CleaningData = function(Metadata = NULL,
   if(is.null(PatientsLexic)&is.null(SamplesLexic)){stop("A PatientsLexic or SamplesLexic is mandatory for data cleaning")}
 
 
-  if(!is.null(SamplesLexic)){
+  if(!is.null(SamplesLexic) & attributes(Metadata)$Omics.type!="Single.Cell"){
       if(is.null(SamplesAnnotToClean)){stop("SamplesAnnotToClean has to be specify.")}
 
     SamAnnotRaw = which(attributes(Metadata)$Data.Type=="SamplesAnnot" & attributes(Metadata)$Cleaned == "No")
@@ -179,7 +179,7 @@ CleaningData = function(Metadata = NULL,
                                    type = "Patients",
                                    ClinicToClean = PatientsAnnotToClean,
                                    exportname = PatientsExportname,
-                                   FilterPatients =  FilterSP,
+                                   FilterPatients =  T,
                                    FilterSamples = F,
                                    force.replace = force.replace )
 
@@ -226,7 +226,7 @@ if(FilterGenes == T){
 
     if(length(object[,colT])!=length(unique(object[,colT]))){object <- object[!duplicated(object[,colT]),]}
 
-    Metadata[[i]] = Metadata[[i]][rownames(object),]
+    Metadata[[i]] = Metadata[[i]][object[,colT],]
 
     attributes(Metadata)$Cleaned[i] = "Yes"
 
@@ -238,7 +238,71 @@ if(FilterGenes == T){
 
 }
 
+  if(attributes(Metadata)$Omics.type=="Single.Cell"){
 
+    if(is.null(SamplesLexic)){stop("You can set SamplesLexic with a Lexic for Cells Annotation cleaning.")}
+    if(!"SamplesAnnot"%in%attributes(Metadata)$Data.Type & !is.null(SamplesLexic)){
+
+      SamAnnotRaw = which(attributes(Metadata)$Data.Type=="CellsAnnot" & attributes(Metadata)$Cleaned == "No")
+      pp = which(attributes(Metadata)$Data.Type=="Clinic" &attributes(Metadata)$Cleaned=="Yes")
+
+      Metadata <- CleaningClinic(Metadata = Metadata,
+                                 Lexic = SamplesLexic,
+                                 type = "Cells",
+                                 ClinicToClean = names(Metadata)[SamAnnotRaw],
+                                 exportname = paste("Cells.Annotation"),
+                                 FilterPatients =FilterSP,
+                                 FilterSamples = F,
+                                 CleanFromOtherType = F,
+                                 force.replace = force.replace,
+                                 keep.all.column =F )
+
+      cellID = Metadata$Cells.Annotation$CellsBarcode
+
+      if(length(pp)>0){
+        clinic = Metadata[[pp]]
+        for (z in clinic$PatientsID){
+
+          Metadata$Cells.Annotation$PatientsID=ifelse(str_detect(pattern = paste0(z,"_"), cellID),z,Metadata$Cells.Annotation$PatientsID)
+        }
+
+      }
+
+
+      if(keep.all.column==T){
+      Metadata <- CleaningClinic(Metadata = Metadata,
+                                 Lexic = SamplesLexic,
+                                 type = "Cells",
+                                 ClinicToClean = names(Metadata)[SamAnnotRaw],
+                                 exportname = "Cells.Annotation.Full",
+                                 FilterPatients =FilterSP,
+                                 FilterSamples = F,
+                                 CleanFromOtherType = F,
+                                 force.replace = force.replace,
+                                 keep.all.column =keep.all.column )
+
+
+      cellID = Metadata$Cells.Annotation$CellsBarcode
+
+      if(length(pp)>0){
+        clinic = Metadata[[pp]]
+        for (z in clinic$PatientsID){
+          Metadata$Cells.Annotation.Full$PatientsID=ifelse(str_detect(pattern = paste0(z,"_"), cellID),z,Metadata$Cells.Annotation.Full$PatientsID)
+        }
+
+      }
+
+
+
+      }
+
+
+
+
+
+      }
+
+    }
 
 
 
