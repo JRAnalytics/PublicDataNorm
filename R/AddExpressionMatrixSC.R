@@ -6,6 +6,7 @@
 #' @param Cell.file an object or a character string name of single cell cell annotation file specific to expression matrix. Not mandatory.
 #' @param Genes.file an object or a character string name of single cell gene annotation file specific to expression matrix. Not mandatory.
 #' @param force.replace set as F. T : replace an already object with the same name
+#' @param setID.cellAnnotColumn  a character string or numeric : column in CellAnnot to fetch colnames from Count matrix.
 #' @importFrom utils menu
 #' @importFrom Matrix readMM
 #' @import data.table
@@ -110,7 +111,7 @@ AddExpressionMatrixSC <- function(Metadata=NULL,
 
           if(inherits(Cell.file, "character")){
             message(paste("Loading",Cell.file ))
-            Cells <- data.table::fread(file.path(path,Cell.file))
+            Cells <- as.data.frame(data.table::fread(file.path(path,Cell.file)))
             if("cell_name"%in%colnames(Cells)){
               rownames(Cells)  = Cells$cell_name} else {
                 message("Cell.file has no colnames specified 'cell_name', the first collumn will be used.\n Please check file before adding cell file.")
@@ -126,8 +127,13 @@ AddExpressionMatrixSC <- function(Metadata=NULL,
 
 
         if(is.null(setID.cellAnnotColumn)){stop("setID.cellAnnotColumn mus be specify")}
+        if(inherits(setID.cellAnnotColumn,"character")){
         if(!setID.cellAnnotColumn %in%colnames(Cells) ){stop(paste(setID.cellAnnotColumn, "is not found in colnames of Cell.File"))}
         Cells$CellsBarcode = Cells[,setID.cellAnnotColumn]
+        colnames(dt) = Cells$CellsBarcode}
+        if(inherits(setID.cellAnnotColumn,"numeric")){Cells$CellsBarcode = Cells[,setID.cellAnnotColumn]
+        colnames(dt) = Cells$CellsBarcode}
+
 
 
       }
