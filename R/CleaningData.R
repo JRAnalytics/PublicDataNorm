@@ -329,7 +329,7 @@ if(FilterGenes == T){
       Metadata <- CleaningClinic(Metadata = Metadata,
                                  Lexic = SamplesLexic,
                                  type = "Cells",
-                                 ClinicToClean = names(Metadata)[ClinicRaw],
+                                 ClinicToClean = names(Metadata)[CellNAnotRaw],
                                  exportname = paste("Cells.Annotation"),
                                  FilterPatients =FilterSP,
                                  FilterSamples = FilterSP,
