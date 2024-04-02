@@ -32,7 +32,12 @@ CheckMeta <- function(Metadata) {
 
   }
 
-  if(attributes(Metadata)$Omics.type=="Single.Cell"){ c <- which(attributes(Metadata)$Data.Type=="Clinic")}
+  if(attributes(Metadata)$Omics.type=="Single.Cell"){
+    if("Clinic" %in%attributes(Metadata)$Data.Type){ c <- which(attributes(Metadata)$Data.Type=="Clinic")}
+    if("SamplesAnnot" %in%attributes(Metadata)$Data.Type & !"Clinic" %in%attributes(Metadata)$Data.Type){
+      c <- which(attributes(Metadata)$Data.Type=="SamplesAnnot") }
+
+  }
 
 
 
@@ -42,12 +47,21 @@ CheckMeta <- function(Metadata) {
   if(attributes(Metadata)$Data.Type[c[1]]=="Clinic" & attributes(Metadata)$Omics.type=="Single.Cell"){
     cellannot = which(attributes(Metadata)$Data.Type=="CellsAnnot"& attributes(Metadata)$Cleaned=="No")
     cellannot2 = which(attributes(Metadata)$Data.Type=="CellsAnnot"& attributes(Metadata)$Cleaned=="Yes")
-    c <- which(attributes(Metadata)$Data.Type=="Clinic"  & attributes(Metadata)$Cleaned=="No")
+    if("Clinic" %in%attributes(Metadata)$Data.Type){ c <- which(attributes(Metadata)$Data.Type=="Clinic"  & attributes(Metadata)$Cleaned=="No")
     c2 <- which(attributes(Metadata)$Data.Type=="Clinic"  & attributes(Metadata)$Cleaned=="Yes")
 
     cellID <- Metadata[[cellannot[1]]][,"CellsBarcode"]
     if(length(c2>0)){     sID <- Metadata[[c2[1]]][,"PatientsID"];c=c2} else {     sID <- Metadata[[c[1]]][,"PatientsID"]}
     if(length(cellannot2>0)){ cellID <- Metadata[[cellannot2[1]]][,"CellsBarcode"];cellannot=cellannot2} else {   cellID <- Metadata[[cellannot[1]]][,"CellsBarcode"]}
+    }
+
+    if("SamplesAnnot" %in%attributes(Metadata)$Data.Type){ c <- which(attributes(Metadata)$Data.Type=="Clinic"  & attributes(Metadata)$Cleaned=="No")
+    c2 <- which(attributes(Metadata)$Data.Type=="SamplesAnnot"  & attributes(Metadata)$Cleaned=="Yes")
+
+    cellID <- Metadata[[cellannot[1]]][,"CellsBarcode"]
+    if(length(c2>0)){     sID <- Metadata[[c2[1]]][,"SamplesID"];c=c2} else {     sID <- Metadata[[c[1]]][,"SamplesID"]}
+    if(length(cellannot2>0)){ cellID <- Metadata[[cellannot2[1]]][,"CellsBarcode"];cellannot=cellannot2} else {   cellID <- Metadata[[cellannot[1]]][,"CellsBarcode"]}
+    }
 
     }
 
