@@ -33,10 +33,10 @@ AddLocalDatabase <- function(Metadata,
 
   if(is.null(attributes(Metadata)$Version)){ Version = "V1"} else {   Version <- attributes(Metadata)$Version }
 
-  NBS <- which(attributes(Metadata)$Data.Type=="SamplesAnnot" & attributes(Metadata)$Export=="Yes")
+  NBS <- which(attributes(Metadata)$Data.Type=="SamplesAnnot" & attributes(Metadata)$Cleaned=="Yes")
   NBS = NBS[1]
 
-  NBP <- which(attributes(Metadata)$Data.Type=="Clinic" & attributes(Metadata)$Export=="Yes")
+  NBP <- which(attributes(Metadata)$Data.Type=="Clinic" & attributes(Metadata)$Cleaned=="Yes")
   NBP = NBP[1]
 
 
