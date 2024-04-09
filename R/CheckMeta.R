@@ -24,11 +24,14 @@ CheckMeta <- function(Metadata) {
 
 
   if(attributes(Metadata)$Omics.type!="Single.Cell"){
-  c <- which(c(attributes(Metadata)$Data.Type=="Clinic" | attributes(Metadata)$Data.Type=="SamplesAnnot")  & attributes(Metadata)$Cleaned=="No")
+  c <- which(attributes(Metadata)$Data.Type=="Clinic" & attributes(Metadata)$Cleaned=="No")
+  c2 <- which(attributes(Metadata)$Data.Type=="Clinic" & attributes(Metadata)$Cleaned=="Yes")
 
-  c2 <- which(c(attributes(Metadata)$Data.Type=="Clinic" |attributes(Metadata)$Data.Type=="SamplesAnnot")  & attributes(Metadata)$Cleaned=="Yes")
+  s <- which(attributes(Metadata)$Data.Type=="SamplesAnnot" & attributes(Metadata)$Cleaned=="No")
+  s2 <- which(attributes(Metadata)$Data.Type=="SamplesAnnot" & attributes(Metadata)$Cleaned=="Yes")
 
   if(length(c2)>0){c=c2}
+  if(length(s2)>0){s=s2}
 
   }
 
@@ -40,9 +43,12 @@ CheckMeta <- function(Metadata) {
   }
 
 
+  if(length(s)!=0){
+  if(attributes(Metadata)$Data.Type[s[1]]=="SamplesAnnot"){sID <- Metadata[[s[1]]][,"SamplesID"] }}
+  if(length(c)!=0){
+  if(attributes(Metadata)$Data.Type[c[1]]=="Clinic"){pID <- Metadata[[c[1]]][,"PatientsID"] }}
 
-  if(attributes(Metadata)$Data.Type[c[1]]=="SamplesAnnot"){sID <- Metadata[[c[1]]][,"SamplesID"] }
-  if(attributes(Metadata)$Data.Type[c[1]]=="Clinic"){sID <- Metadata[[c[1]]][,"PatientsID"] }
+
 
   if(attributes(Metadata)$Data.Type[c[1]]=="Clinic" & attributes(Metadata)$Omics.type=="Single.Cell"){
     cellannot = which(attributes(Metadata)$Data.Type=="CellsAnnot"& attributes(Metadata)$Cleaned=="No")
@@ -51,7 +57,7 @@ CheckMeta <- function(Metadata) {
     c2 <- which(attributes(Metadata)$Data.Type=="Clinic"  & attributes(Metadata)$Cleaned=="Yes")
 
     cellID <- Metadata[[cellannot[1]]][,"CellsBarcode"]
-    if(length(c2>0)){     sID <- Metadata[[c2[1]]][,"PatientsID"];c=c2} else {     sID <- Metadata[[c[1]]][,"PatientsID"]}
+    if(length(c2>0)){     pID <- Metadata[[c2[1]]][,"PatientsID"];c=c2} else {     pID <- Metadata[[c[1]]][,"PatientsID"]}
     if(length(cellannot2>0)){ cellID <- Metadata[[cellannot2[1]]][,"CellsBarcode"];cellannot=cellannot2} else {   cellID <- Metadata[[cellannot[1]]][,"CellsBarcode"]}
     }
 
@@ -93,8 +99,8 @@ if(attributes(Metadata)$Omics.type!="Single.Cell"){
 
   ccc = which(attributes(Metadata)$Cleaned=="Yes"& attributes(Metadata)$Data.Type!="geneAnnot")
 
-  if(length(ccc)>0){  message(paste("Checking SamplesID in Cleaned Metadata sub-objects from", names(Metadata)[c2[1]]))}else {
-    message(paste("Checking SamplesID in Metadata sub-objects from", names(Metadata)[c[1]])) }
+  if(length(ccc)>0){  message(paste("Checking SamplesID in Cleaned Metadata sub-objects from", names(Metadata)[s2[1]]))}else {
+    message(paste("Checking SamplesID in Metadata sub-objects from", names(Metadata)[s[1]])) }
 
   message("-------------------------")
 
@@ -218,18 +224,23 @@ if(length(c>0)){
 
   ccc = which(attributes(Metadata)$Cleaned=="Yes"& attributes(Metadata)$Data.Type!="geneAnnot")
 
-  if(length(ccc)>0){  message(paste("Checking Common Samples from", names(Metadata)[c2[1]] ,"in other Cleaned Samples or Patients annotations data."))}else {
-  message(paste("Checking Common Samples from", names(Metadata)[c[1]] ,"in other Samples or Patients annotations data."))}
+  if(length(ccc)>0){  message(paste("Checking Common Samples from", names(Metadata)[s2[1]] ,"in other Cleaned Samples or Patients annotations data."))
+    }else {
+  message(paste("Checking Common Samples from", names(Metadata)[s[1]] ,"in other Samples or Patients annotations data."))}
   message("-------------------------")
 
-  for (i in c){
+
+  for (i in c(c,s[-1])){
 
     if(attributes(Metadata)$Omics.type!="Single.Cell"){
 
-    if(all(sID%in%as.matrix(Metadata[[i]]))) {   message(paste(MetaDataN[i]), " : PASS") } else {
+      psID =  Metadata[[i]][,"SamplesID"]
 
-      message(paste(MetaDataN[i]), " : FAIL")
-      message(paste("Samples not found in ", MetaDataN[i]," : "), paste0(na.omit(sID[!sID%in%as.matrix(Metadata[[i]])]),collapse = "; "))
+      if(length(which(psID %in% as.matrix(Metadata[[s]])))==length(sID)){message(paste(MetaDataN[i]), " : PASS") }
+      if(length(which(psID %in% as.matrix(Metadata[[s]])))<length(sID)){
+        message(paste(MetaDataN[i]), " : FAIL")
+        message(paste("SamplesID not found in ", MetaDataN[i]," : "), paste0(na.omit(sID[!sID%in%psID]),collapse = "; "))
+        }
 
 
       }
@@ -313,4 +324,4 @@ if(length(c>0)){
 
 
 
-}
+

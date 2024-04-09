@@ -2,7 +2,9 @@
 #'
 #' @param Metadata  a Metadata Object to fill
 #' @param object an object to add
-#' @param setID.Column a character string : column to fetch colnames from Count matrix.
+#' @param setSamplesID.Column a character string : column to fetch SamplesID from Count matrix.
+#' @param setPatientID.Column a character string : column to fetch PatientsID from Count matrix.
+#' @param setCellsBarcode.Column a character string : column to fetch CellBarcode from Count matrix.
 #' @param name name to apply in Metadata object list
 #' @param type can be Samples", "Patients" or "Cells", to defiens Data.type attributes
 #' @param Export  TRUE or FALSE. If data to be Exported, set T.
@@ -16,7 +18,9 @@
 #'
 AddClinicFromObject  <- function(Metadata,
                            object,
-                           setID.Column = NULL,
+                           setSamplesID.Column = NULL,
+                           setPatientID.Column=NULL,
+                           setCellsBarcode.Column=NULL,
                            name,
                            type = c("Samples", "Patients", "Cells"),
                            Export = T,
@@ -47,12 +51,21 @@ AddClinicFromObject  <- function(Metadata,
     if(type=="Patients"){ExpressionMatrixIdColumn = "PatientsID"}
     if(type=="Cells"){ExpressionMatrixIdColumn = "CellsBarcode"}
 
+    if(type=="Samples"){
+      if(!is.null(setSamplesID.Column)){dt$SamplesID =dt[,setSamplesID.Column]
+      if(!is.null(setPatientID.Column)){
+        dt$PatientsID =dt[,setPatientID.Column]}else {stop("setPatientID.Column must be set")}}else{stop("setSamplesID.Column must be set")}}
 
-    if(!is.null(setID.Column)){
-      if(type=="Samples"){ object$SamplesID =object[,setID.Column]}
-      if(type=="Patients"){object$PatientsID =object[,setID.Column]}
-      if(type=="Cells"){object$CellsBarcode =object[,setID.Column]}
-    }
+    if(type=="Patients"){
+      if(!is.null(setPatientID.Column)){
+        dt$PatientsID =dt[,setPatientID.Column]}else{stop("setPatientID.Column must be set")}
+      if(!is.null(setPatientID.Column)){ dt$SamplesID =dt[,setSamplesID.Column]}}
+
+
+    if(type=="Cells"){
+      if(!is.null(setCellsBarcode.Column)){dt$CellsBarcode =dt[,setCellsBarcode.Column]}else{stop("setCellsBarcode.Column must be set")}
+      if(!is.null(setSamplesID.Column)){dt$SamplesID =dt[,setSamplesID.Column]}
+      if(!is.null(setPatientID.Column)){dt$PatientsID =dt[,setPatientID.Column]}}
 
     if(type != "Patients"){type2 = "Samples annotation"}else{type2 = "Patients clinical data"}
     if(!ExpressionMatrixIdColumn%in%colnames(object)){stop(paste(ExpressionMatrixIdColumn, "is not in",type2, "object colnames."))}

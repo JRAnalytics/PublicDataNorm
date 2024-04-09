@@ -40,6 +40,7 @@ CleaningData = function(Metadata = NULL,
 
     SamAnnotRaw = which(attributes(Metadata)$Data.Type=="SamplesAnnot" & attributes(Metadata)$Cleaned == "No")
     ClinicRaw = which(attributes(Metadata)$Data.Type=="Clinic" & attributes(Metadata)$Cleaned == "No")
+
     if(length(SamAnnotRaw)!=0){
 
 
@@ -64,8 +65,8 @@ CleaningData = function(Metadata = NULL,
     }
   }
 
-
-    if(is.null(PatientsAnnotToClean) & attributes(Metadata)$Omics.type!="Single.Cell" ){
+ if(!all(is.null(PatientsExportname),is.null(PatientsLexic),is.null(PatientsAnnotToClean))){
+    if(is.null(PatientsAnnotToClean) & attributes(Metadata)$Omics.type!="Single.Cell"   ){
 
       RP = which(attributes(Metadata)$Data.Type=="Clinic" &attributes(Metadata)$Cleaned=="No")
       message("Creating a Patient clinical table from Samples annotation")
@@ -115,61 +116,32 @@ CleaningData = function(Metadata = NULL,
 
       if(length(SamAnnotRaw)!=0){
 
-       SID =  Metadata[[SamAnnotRaw[1]]]$SamplesID
+        Metadata <- CleaningClinic(Metadata = Metadata,
+                                   Lexic = PatientsLexic,
+                                   type = "Patients",
+                                   ClinicToClean = PatientsAnnotToClean,
+                                   exportname = PatientsExportname,
+                                   FilterPatients =  FilterSP,
+                                   FilterSamples = F,
+                                   force.replace = force.replace )
 
-       if(is.null( Metadata[[SamAnnotRaw[1]]]$PatientsID)){message(paste("No PatientsID column found in", names(Metadata)[SamAnnotRaw[1]], "\nCleaning may be sub optimal."))}
-
-        PID =  Metadata[[ClinicRaw[1]]]$PatientsID
-
-        if(is.null( Metadata[[ClinicRaw[1]]]$SamplesID)){message(paste("No SamplesID column found in", names(Metadata)[ClinicRaw[1]], "\nCleaning may be sub optimal."))}
-
-          if(length(which(PID%in%SID))==length(SID)){
-            message("All PatientsID are found as SamplesID")
-            PatientsLexic <- AddKeyLexic(lexic = PatientsLexic, key ="SamplesID"  ,value = "SamplesID" )
-
-            Metadata[[ClinicRaw[1]]]$SamplesID =  Metadata[[ClinicRaw[1]]]$PatientsID
-            PatientsLexic <- AddKeyLexic(lexic = PatientsLexic, key ="SamplesID"  ,value = "SamplesID" )
-
-          } else {
-
-            if(length(which(PID%in%SID))<length(SID)){
-              message("Not all PatientsID are found as SamplesID")
-              Metadata[[ClinicRaw[1]]]= Metadata[[ClinicRaw[1]]][which(PID%in%SID),]
-
-              Metadata[[ClinicRaw[1]]]$SamplesID =  Metadata[[ClinicRaw[1]]]$PatientsID
-              PatientsLexic <- AddKeyLexic(lexic = PatientsLexic, key ="SamplesID"  ,value = "SamplesID" )}
+        if(keep.all.column==T){
+          Metadata <- CleaningClinic(Metadata = Metadata,
+                                     Lexic = PatientsLexic,
+                                     type = "Patients",
+                                     ClinicToClean = PatientsAnnotToClean,
+                                     exportname = paste0(PatientsExportname,".fullCol"),
+                                     FilterPatients =FilterSP,
+                                     FilterSamples = F,
+                                     force.replace = force.replace,
+                                     keep.all.column =keep.all.column )}
 
 
 
-           else {
-
-            if(length(which(PID%in%SID))==0){
-              message(paste("No PatientsID are found as SamplesID. Try setting 'PatientID' in", names(Metadata)[ClinicRaw[1]]))
 
 
-            }
 
-        }}
 
-    Metadata <- CleaningClinic(Metadata = Metadata,
-                               Lexic = PatientsLexic,
-                               type = "Patients",
-                               ClinicToClean = PatientsAnnotToClean,
-                               exportname = PatientsExportname,
-                               FilterPatients =  FilterSP,
-                               FilterSamples = F,
-                               force.replace = force.replace )
-
-    if(keep.all.column==T){
-      Metadata <- CleaningClinic(Metadata = Metadata,
-                                 Lexic = PatientsLexic,
-                                 type = "Patients",
-                                 ClinicToClean = PatientsAnnotToClean,
-                                 exportname = paste0(PatientsExportname,".fullCol"),
-                                 FilterPatients =FilterSP,
-                                 FilterSamples = F,
-                                 force.replace = force.replace,
-                                 keep.all.column =keep.all.column )}
       } else {
 
 
@@ -179,7 +151,7 @@ CleaningData = function(Metadata = NULL,
                                    type = "Patients",
                                    ClinicToClean = PatientsAnnotToClean,
                                    exportname = PatientsExportname,
-                                   FilterPatients =  T,
+                                   FilterPatients =  FilterSP,
                                    FilterSamples = F,
                                    force.replace = force.replace )
 
@@ -206,7 +178,7 @@ CleaningData = function(Metadata = NULL,
         }
 
 
-  }}
+  }}}
 
 if(FilterGenes == T){
 

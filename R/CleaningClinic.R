@@ -300,6 +300,10 @@ CleaningClinic <- function(Metadata = NULL,
       clcl$PatientsID <- clcl$SamplesID
     }
 
+
+
+
+
     if(length(which(duplicated(clcl$PatientsID)))==0) {
 
 
@@ -307,6 +311,55 @@ CleaningClinic <- function(Metadata = NULL,
       clinic2 <- as.data.frame(clinic2)
       clinic2[clinic2==""] <- NA
       clinic2[clinic2=="NA"] <- NA
+
+
+      NBS <- which(attributes(Metadata)$Data.Type=="SamplesAnnot" & attributes(Metadata)$Cleaned == "No")
+
+      if(length(NBS)>0){
+
+        psID =  clinic2$SamplesID[which(clinic2$SamplesID %in% Metadata[[NBS]]$SamplesID)]
+        SID = Metadata[[NBS]]$SamplesID
+        PID = clinic2$PatientsID[which(clinic2$PatientsID %in% Metadata[[NBS]][,"PatientsID"])]
+
+        if(length(psID) <= length(SID)){
+          if(length(psID)>length(PID)) {
+            message("More concordance by SamplesID than PatientsID")
+            message("Checking Clinical data and Samples Annotation concordance by SamplesID")
+            suma = summary(clinic2$SamplesID %in% Metadata[[NBS]]$SamplesID)
+            print(suma)
+
+            message("selecting common SamplesID with Samples Annotation")
+            Scom = which(clinic2$SamplesID %in% Metadata[[NBS]]$SamplesID)
+            clinic2 = clinic2[Scom,]
+
+          } else {
+
+            message("Checking Clinical data and Samples Annotation concordance by PatientsID.")
+            NBS = NBS[1]
+            suma = summary(clinic2$PatientsID %in% Metadata[[NBS]][,"PatientsID"])
+            print(suma)
+
+            message("selecting common PatientsID with Samples Annotation")
+            Pcom = which(clinic2$PatientsID %in% Metadata[[NBS]][,"PatientsID"])
+            clinic2 = clinic2[Pcom,]
+
+
+
+            }
+
+        } else {
+
+          message("Checking Clinical data and Samples Annotation concordance by PatientsID.")
+          NBS = NBS[1]
+          suma = summary(clinic2$PatientsID %in% Metadata[[NBS]][,"PatientsID"])
+          print(suma)
+
+          message("selecting common PatientsID with Samples Annotation")
+          Pcom = which(clinic2$PatientsID %in% Metadata[[NBS]][,"PatientsID"])
+          clinic2 = clinic2[Pcom,]
+
+          }
+      }
 
 
       if(FilterSamples ==T){stop("Data type is not 'Patients',you can't substet it by PatientsID. Try FilterSamples = T.")}
@@ -397,6 +450,57 @@ CleaningClinic <- function(Metadata = NULL,
       cl_rolled <-  cl_rolled[,c("PatientsID", cc)]
       cl_rolled[cl_rolled==""] <- NA
       cl_rolled[cl_rolled=="NA"] <- NA
+
+      NBS <- which(attributes(Metadata)$Data.Type=="SamplesAnnot" & attributes(Metadata)$Cleaned == "No")
+
+      if(length(NBS)>0){
+
+
+        psID =  cl_rolled$SamplesID[which(cl_rolled$SamplesID %in% Metadata[[NBS]]$SamplesID)]
+        SID = Metadata[[NBS]]$SamplesID
+        PID = cl_rolled$PatientsID[which(cl_rolled$PatientsID %in% Metadata[[NBS]][,"PatientsID"])]
+
+        if(length(psID) <= length(SID)){
+          if(length(psID)>length(PID)) {
+            message("More concordance by SamplesID than PatientsID")
+            message("Checking Clinical data and Samples Annotation concordance by SamplesID")
+            suma = summary(cl_rolled$SamplesID %in% Metadata[[NBS]]$SamplesID)
+            print(suma)
+
+            message("selecting common SamplesID with Samples Annotation")
+            Scom = which(cl_rolled$SamplesID %in% Metadata[[NBS]]$SamplesID)
+            cl_rolled = cl_rolled[Scom,]
+
+          } else {
+
+            message("Checking Clinical data and Samples Annotation concordance by PatientsID.")
+            NBS = NBS[1]
+            suma = summary(cl_rolled$PatientsID %in% Metadata[[NBS]][,"PatientsID"])
+            print(suma)
+
+            message("selecting common PatientsID with Samples Annotation")
+            Pcom = which(cl_rolled$PatientsID %in% Metadata[[NBS]][,"PatientsID"])
+            cl_rolled = cl_rolled[Pcom,]
+
+
+
+          }
+
+        } else {
+
+          message("Checking Clinical data and Samples Annotation concordance by PatientsID.")
+          NBS = NBS[1]
+          suma = summary(cl_rolled$PatientsID %in% Metadata[[NBS]][,"PatientsID"])
+          print(suma)
+
+          message("selecting common PatientsID with Samples Annotation")
+          Pcom = which(cl_rolled$PatientsID %in% Metadata[[NBS]][,"PatientsID"])
+          cl_rolled = cl_rolled[Pcom,]
+
+        }
+
+      }
+
 
 
       if(FilterPatients==T){

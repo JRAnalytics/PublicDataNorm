@@ -5,7 +5,9 @@
 #' @param type c("Samples", "Patients") To specify if clinical data refers to samples or patients data. Importat if mutliple samples for one patient.
 #' @param mergeToClinic default NULL. name of loaded clinical data in Metadata. Merge the newly added clinical data to a already loaded data clinic with existing clincial data : full_join by rownames.
 #' @param ClinicFile name file of interest in path directory, could be multiple names. c("a.csv","b.csv")
-#' @param setID.Column a character string : column to fetch colnames from Count matrix.
+#' @param setSamplesID.Column a character string : column to fetch SamplesID from Count matrix.
+#' @param setPatientID.Column a character string : column to fetch PatientsID from Count matrix.
+#' @param setCellsBarcode.Column a character string : column to fetch CellBarcode from Count matrix.
 #' @param mergeBy colname using for merging clinical data.
 #' @param Export  TRUE or FALSE. If data to be Exported, set T.
 #' @param join c("left_join", "full_join")
@@ -19,7 +21,9 @@
 #' @examples "none"
 AddClinicFromFile <- function(Metadata,
                               ClinicFile = NULL,
-                              setID.Column = NULL,
+                              setSamplesID.Column = NULL,
+                              setPatientID.Column=NULL,
+                              setCellsBarcode.Column=NULL,
                               name= NULL,
                               type = c("Samples", "Patients", "Cells"),
                               force.replace=F,
@@ -82,11 +86,21 @@ AddClinicFromFile <- function(Metadata,
           rownames(dt) <-    dt[,1]}
         }
 
-          if(!is.null(setID.Column)){
-          if(type=="Samples"){ dt$SamplesID =dt[,setID.Column]}
-          if(type=="Patients"){dt$PatientsID =dt[,setID.Column]}
-          if(type=="Cells"){dt$CellsBarcode =dt[,setID.Column]}
-          }
+          if(type=="Samples"){
+           if(!is.null(setSamplesID.Column)){dt$SamplesID =dt[,setSamplesID.Column]
+            if(!is.null(setPatientID.Column)){
+              dt$PatientsID =dt[,setPatientID.Column]}else {stop("setPatientID.Column must be set")}}else{stop("setSamplesID.Column must be set")}}
+
+          if(type=="Patients"){
+            if(!is.null(setPatientID.Column)){
+              dt$PatientsID =dt[,setPatientID.Column]}else{stop("setPatientID.Column must be set")}
+                if(!is.null(setPatientID.Column)){ dt$SamplesID =dt[,setSamplesID.Column]}}
+
+
+          if(type=="Cells"){
+            if(!is.null(setCellsBarcode.Column)){dt$CellsBarcode =dt[,setCellsBarcode.Column]}else{stop("setCellsBarcode.Column must be set")}
+            if(!is.null(setSamplesID.Column)){dt$SamplesID =dt[,setSamplesID.Column]}
+              if(!is.null(setPatientID.Column)){dt$PatientsID =dt[,setPatientID.Column]}}
 
 
 
@@ -153,10 +167,21 @@ AddClinicFromFile <- function(Metadata,
         dt <- dt %>% purrr::reduce(left_join, by=mergeBy)
       }
 
-      if(!is.null(setID.Column)){
-        if(type=="Samples"){ dt$SamplesID =dt[,setID.Column]}
-        if(type=="Patients"){dt$PatientsID =dt[,setID.Column]}
-        if(type=="Cells"){dt$CellsBarcode =dt[,setID.Column]}}
+      if(type=="Samples"){
+        if(!is.null(setSamplesID.Column)){dt$SamplesID =dt[,setSamplesID.Column]
+        if(!is.null(setPatientID.Column)){
+          dt$PatientsID =dt[,setPatientID.Column]}else {stop("setPatientID.Column must be set")}}else{stop("setSamplesID.Column must be set")}}
+
+      if(type=="Patients"){
+        if(!is.null(setPatientID.Column)){
+          dt$PatientsID =dt[,setPatientID.Column]}else{stop("setPatientID.Column must be set")}
+        if(!is.null(setPatientID.Column)){ dt$SamplesID =dt[,setSamplesID.Column]}}
+
+
+      if(type=="Cells"){
+        if(!is.null(setCellsBarcode.Column)){dt$CellsBarcode =dt[,setCellsBarcode.Column]}else{stop("setCellsBarcode.Column must be set")}
+        if(!is.null(setSamplesID.Column)){dt$SamplesID =dt[,setSamplesID.Column]}
+        if(!is.null(setPatientID.Column)){dt$PatientsID =dt[,setPatientID.Column]}}
 
       Metadata[[mergeToClinic]] <- dt
 
