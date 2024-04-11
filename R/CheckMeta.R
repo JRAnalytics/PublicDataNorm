@@ -38,7 +38,8 @@ CheckMeta <- function(Metadata) {
   if(attributes(Metadata)$Omics.type=="Single.Cell"){
     if("Clinic" %in%attributes(Metadata)$Data.Type){ c <- which(attributes(Metadata)$Data.Type=="Clinic")}
     if("SamplesAnnot" %in%attributes(Metadata)$Data.Type & !"Clinic" %in%attributes(Metadata)$Data.Type){
-      c <- which(attributes(Metadata)$Data.Type=="SamplesAnnot") }
+      s <- which(attributes(Metadata)$Data.Type=="SamplesAnnot")
+      c=s}
 
   }
 
