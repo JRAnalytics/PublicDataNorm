@@ -52,20 +52,20 @@ AddClinicFromObject  <- function(Metadata,
     if(type=="Cells"){ExpressionMatrixIdColumn = "CellsBarcode"}
 
     if(type=="Samples"){
-      if(!is.null(setSamplesID.Column)){dt$SamplesID =dt[,setSamplesID.Column]
+      if(!is.null(setSamplesID.Column)){object$SamplesID = object[,setSamplesID.Column]
       if(!is.null(setPatientID.Column)){
-        dt$PatientsID =dt[,setPatientID.Column]}else {stop("setPatientID.Column must be set")}}else{stop("setSamplesID.Column must be set")}}
+        object$PatientsID =object[,setPatientID.Column]}else {stop("setPatientID.Column must be set")}}else{stop("setSamplesID.Column must be set")}}
 
     if(type=="Patients"){
       if(!is.null(setPatientID.Column)){
-        dt$PatientsID =dt[,setPatientID.Column]}else{stop("setPatientID.Column must be set")}
-      if(!is.null(setPatientID.Column)){ dt$SamplesID =dt[,setSamplesID.Column]}}
+        object$PatientsID =object[,setPatientID.Column]}else{stop("setPatientID.Column must be set")}
+      if(!is.null(setPatientID.Column)){ object$SamplesID =object[,setSamplesID.Column]}}
 
 
     if(type=="Cells"){
-      if(!is.null(setCellsBarcode.Column)){dt$CellsBarcode =dt[,setCellsBarcode.Column]}else{stop("setCellsBarcode.Column must be set")}
-      if(!is.null(setSamplesID.Column)){dt$SamplesID =dt[,setSamplesID.Column]}
-      if(!is.null(setPatientID.Column)){dt$PatientsID =dt[,setPatientID.Column]}}
+      if(!is.null(setCellsBarcode.Column)){object$CellsBarcode =object[,setCellsBarcode.Column]}else{stop("setCellsBarcode.Column must be set")}
+      if(!is.null(setSamplesID.Column)){object$SamplesID =object[,setSamplesID.Column]}
+      if(!is.null(setPatientID.Column)){object$PatientsID =object[,setPatientID.Column]}}
 
     if(type != "Patients"){type2 = "Samples annotation"}else{type2 = "Patients clinical data"}
     if(!ExpressionMatrixIdColumn%in%colnames(object)){stop(paste(ExpressionMatrixIdColumn, "is not in",type2, "object colnames."))}
