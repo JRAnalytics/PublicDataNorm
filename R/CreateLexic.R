@@ -33,9 +33,16 @@ CreateLexic <- function(Dataset=NULL, type = c("SamplesLexic","PatientsLexic")){
     names(x) <- sapply(x, `[[`, 1)
     PL<- lapply(x, `[`, -1)
 
+    attr(PL, "Lexic") = "Yes"
+    attr(PL, "Name") = "PatientsLexic"
+
     return(PL)} else {    PL <- scan(paste(list.files.path$Processes,"PatientLexic.txt",sep = "/"), what="", sep="\n")%>%strsplit("[[:space:]]+")
     names(PL) <- sapply(PL, `[[`, 1)
     PL<- lapply(PL, `[`, -1)
+
+    attr(PL, "Lexic") = "Yes"
+    attr(PL, "Name") = "PatientsLexic"
+
      return(PL)  }}
 
   if(type=="SamplesLexic"){
@@ -48,6 +55,9 @@ CreateLexic <- function(Dataset=NULL, type = c("SamplesLexic","PatientsLexic")){
       names(x) <- sapply(x, `[[`, 1)
       SL<- lapply(x, `[`, -1)
 
+      attr(SL, "Lexic") = "Yes"
+      attr(SL, "Name") = "SamplesLexic"
+
       return(SL)
 
 
@@ -56,7 +66,8 @@ CreateLexic <- function(Dataset=NULL, type = c("SamplesLexic","PatientsLexic")){
       SL <- scan(paste(list.files.path$Processes,"SamplesLexic.txt",sep = "/"), what="", sep="\n")%>%strsplit("[[:space:]]+")
       names(SL) <- sapply(SL, `[[`, 1)
       SL<- lapply(SL, `[`, -1)
-
+      attr(SL, "Lexic") = "Yes"
+      attr(SL, "Name") = "SC.SamplesLexic"
       return(SL)
       }
 
@@ -70,7 +81,8 @@ CreateLexic <- function(Dataset=NULL, type = c("SamplesLexic","PatientsLexic")){
       x <- scan(paste0(list.files.path$Project.Processes, "/",project,"SC.SamplesLexic.txt"), what="", sep="\n")%>%strsplit("[[:space:]]+")
       names(x) <- sapply(x, `[[`, 1)
       SL<- lapply(x, `[`, -1)
-
+      attr(SL, "Lexic") = "Yes"
+      attr(SL, "Name") = "SC.SamplesLexic"
       return(SL)
 
 
@@ -85,7 +97,8 @@ CreateLexic <- function(Dataset=NULL, type = c("SamplesLexic","PatientsLexic")){
       SL <- scan(paste(list.files.path$Processes,"SC.SamplesLexic.txt",sep = "/"), what="", sep="\n")%>%strsplit("[[:space:]]+")
       names(SL) <- sapply(SL, `[[`, 1)
       SL<- lapply(SL, `[`, -1)}
-
+      attr(SL, "Lexic") = "Yes"
+      attr(SL, "Name") = "SC.SamplesLexic"
       return(SL)
     }
 
