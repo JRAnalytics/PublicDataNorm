@@ -62,6 +62,21 @@ ExportTSV <- function (Metadata){
   }
 
 
+
+  PatientLexic = lapply(ls(envir=.GlobalEnv), get)[lapply(lapply(ls(envir=.GlobalEnv), get), attr, "Lexic") == "Yes" & lapply(lapply(ls(envir=.GlobalEnv), get), attr, "Name")=="PatientsLexic" ][[1]]
+
+  if(attributes(Metadata)$Omics.type=="Single.Cell"){
+
+    SamplesLexic = lapply(ls(envir=.GlobalEnv), get)[lapply(lapply(ls(envir=.GlobalEnv), get), attr, "Lexic") == "Yes" & lapply(lapply(ls(envir=.GlobalEnv), get), attr, "Name")=="SC.SamplesLexic" ][[1]]
+
+  }else{
+    SamplesLexic = lapply(ls(envir=.GlobalEnv), get)[lapply(lapply(ls(envir=.GlobalEnv), get), attr, "Lexic") == "Yes" & lapply(lapply(ls(envir=.GlobalEnv), get), attr, "Name")=="SamplesLexic" ][[1]]
+
+    }
+
+
+
+
   if(exists("PatientLexic", mode= "any" )) {
     count <- count+1
     message("-------------------------------------------------")

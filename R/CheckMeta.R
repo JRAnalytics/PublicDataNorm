@@ -33,61 +33,57 @@ CheckMeta <- function(Metadata) {
   if(length(c2)>0){c=c2}
   if(length(s2)>0){s=s2}
 
+    if(length(s)!=0){
+    if(attributes(Metadata)$Data.Type[s[1]]=="SamplesAnnot"){sID <- Metadata[[s[1]]][,"SamplesID"] }}
+  if(length(c)!=0){
+    if(attributes(Metadata)$Data.Type[c[1]]=="Clinic"){pID <- Metadata[[c[1]]][,"PatientsID"] }}
+
   }
+
+
+
+
 
   if(attributes(Metadata)$Omics.type=="Single.Cell"){
-    if("Clinic" %in%attributes(Metadata)$Data.Type){ c <- which(attributes(Metadata)$Data.Type=="Clinic")}
-    if("SamplesAnnot" %in%attributes(Metadata)$Data.Type & !"Clinic" %in%attributes(Metadata)$Data.Type){
-      s <- which(attributes(Metadata)$Data.Type=="SamplesAnnot")
-      c=s}
+
+    c= NULL
+    if("Clinic" %in%attributes(Metadata)$Data.Type){
+      c <- which(attributes(Metadata)$Data.Type=="Clinic" & attributes(Metadata)$Cleaned=="No")
+      c2 <- which(attributes(Metadata)$Data.Type=="Clinic" & attributes(Metadata)$Cleaned=="Yes")
+      pID <- Metadata[[c[1]]][,"PatientsID"]
+      sID = Metadata[[c[1]]][,"SamplesID"]
+    }
+
+    if(is.null(c)){stop("A Patients' Clinical data must be loaded. Set type = 'Patients'")}
+      if(length(c2)>0){c=c2}
+
+
+
+    if("SamplesAnnot" %in%attributes(Metadata)$Data.Type ){
+      s <- which(attributes(Metadata)$Data.Type=="SamplesAnnot" & attributes(Metadata)$Cleaned=="No")
+      s2 <- which(attributes(Metadata)$Data.Type=="SamplesAnnot" & attributes(Metadata)$Cleaned=="Yes")
+      if(length(s2)>0){s=s2}
+
+      sID <- Metadata[[s[1]]][,"SamplesID"]
+      pID <- Metadata[[s[1]]][,"PatientsID"]}
+
+
+    if("CellsAnnot" %in%attributes(Metadata)$Data.Type){
+      cellannot <- which(attributes(Metadata)$Data.Type=="CellsAnnot" & attributes(Metadata)$Cleaned=="No")
+      cellannot2 <- which(attributes(Metadata)$Data.Type=="CellsAnnot" & attributes(Metadata)$Cleaned=="Yes")
+
+      if(length(cellannot2)>0){cellannot=cellannot2}
+
+      cellID <- Metadata[[cellannot[1]]][,"CellsBarcode"]
+
+      }
+
+
+
+
+
 
   }
-
-
-  if(length(s)!=0){
-  if(attributes(Metadata)$Data.Type[s[1]]=="SamplesAnnot"){sID <- Metadata[[s[1]]][,"SamplesID"] }}
-  if(length(c)!=0){
-  if(attributes(Metadata)$Data.Type[c[1]]=="Clinic"){pID <- Metadata[[c[1]]][,"PatientsID"] }}
-
-
-
-  if(attributes(Metadata)$Data.Type[c[1]]=="Clinic" & attributes(Metadata)$Omics.type=="Single.Cell"){
-    cellannot = which(attributes(Metadata)$Data.Type=="CellsAnnot"& attributes(Metadata)$Cleaned=="No")
-    cellannot2 = which(attributes(Metadata)$Data.Type=="CellsAnnot"& attributes(Metadata)$Cleaned=="Yes")
-    if("Clinic" %in%attributes(Metadata)$Data.Type){ c <- which(attributes(Metadata)$Data.Type=="Clinic"  & attributes(Metadata)$Cleaned=="No")
-    c2 <- which(attributes(Metadata)$Data.Type=="Clinic"  & attributes(Metadata)$Cleaned=="Yes")
-
-    cellID <- Metadata[[cellannot[1]]][,"CellsBarcode"]
-    if(length(c2>0)){     pID <- Metadata[[c2[1]]][,"PatientsID"];c=c2} else {     pID <- Metadata[[c[1]]][,"PatientsID"]}
-    if(length(cellannot2>0)){ cellID <- Metadata[[cellannot2[1]]][,"CellsBarcode"];cellannot=cellannot2} else {   cellID <- Metadata[[cellannot[1]]][,"CellsBarcode"]}
-    }
-
-    if("SamplesAnnot" %in%attributes(Metadata)$Data.Type){ c <- which(attributes(Metadata)$Data.Type=="Clinic"  & attributes(Metadata)$Cleaned=="No")
-    c2 <- which(attributes(Metadata)$Data.Type=="SamplesAnnot"  & attributes(Metadata)$Cleaned=="Yes")
-
-    cellID <- Metadata[[cellannot[1]]][,"CellsBarcode"]
-    if(length(c2>0)){     sID <- Metadata[[c2[1]]][,"SamplesID"];c=c2} else {     sID <- Metadata[[c[1]]][,"SamplesID"]}
-    if(length(cellannot2>0)){ cellID <- Metadata[[cellannot2[1]]][,"CellsBarcode"];cellannot=cellannot2} else {   cellID <- Metadata[[cellannot[1]]][,"CellsBarcode"]}
-    }
-
-    }
-
-
-
-  if(attributes(Metadata)$Data.Type[c[1]]=="SamplesAnnot" & attributes(Metadata)$Omics.type=="Single.Cell" & !"Clinic" %in% attributes(Metadata)$Data.Type){
-    cellannot = which(attributes(Metadata)$Data.Type=="CellsAnnot"& attributes(Metadata)$Cleaned=="No")
-    cellannot2 = which(attributes(Metadata)$Data.Type=="CellsAnnot"& attributes(Metadata)$Cleaned=="Yes")
-    c <- which(attributes(Metadata)$Data.Type=="SamplesAnnot"  & attributes(Metadata)$Cleaned=="No")
-    c2 <- which(attributes(Metadata)$Data.Type=="SamplesAnnot"  & attributes(Metadata)$Cleaned=="Yes")
-
-    cellID <- Metadata[[cellannot[1]]][,"CellsBarcode"]
-    if(length(c2>0)){     sID <- Metadata[[c2[1]]][,"SamplesID"]} else {     sID <- Metadata[[c[1]]][,"SamplesID"]}
-    if(length(cellannot2>0)){ cellID <- Metadata[[cellannot2[1]]][,"CellsBarcode"]} else {   cellID <- Metadata[[cellannot[1]]][,"CellsBarcode"]}
-
-
-
-
-    }
 
 
 
@@ -225,9 +221,11 @@ if(length(c>0)){
 
   ccc = which(attributes(Metadata)$Cleaned=="Yes"& attributes(Metadata)$Data.Type!="geneAnnot")
 
-  if(length(ccc)>0){  message(paste("Checking Common Samples from", names(Metadata)[s2[1]] ,"in other Cleaned Samples or Patients annotations data."))
+  if(attributes(Metadata)$Omics.type=="Single.Cell"){pp = c; s = c}else{ pp = s}
+
+  if(length(ccc)>0){  message(paste("Checking Common Samples from", names(Metadata)[pp[1]] ,"in other Cleaned Samples or Patients annotations data."))
     }else {
-  message(paste("Checking Common Samples from", names(Metadata)[s[1]] ,"in other Samples or Patients annotations data."))}
+  message(paste("Checking Common Samples from", names(Metadata)[pp[1]] ,"in other Samples or Patients annotations data."))}
   message("-------------------------")
 
 
@@ -250,7 +248,7 @@ if(length(c>0)){
 
     if(attributes(Metadata)$Omics.type=="Single.Cell"){
 
-      message(paste("Patients from Single.Cell data:", names(Metadata)[i]))
+      message(paste("Patients from Single.Cell data'", names(Metadata)[i],"', in Cells annotation object"))
       tot=0
       for (z in rownames(Metadata[[i]])) {
         t = summary(str_detect(pattern = paste0(z,"_"), cellID))["TRUE"][1]
@@ -268,11 +266,11 @@ if(length(c>0)){
 
 
 
-     p =  which(attributes(Metadata)$Data.Type=="SamplesAnnot" & attributes(Metadata)$Export=="No")
+     p =  which(attributes(Metadata)$Data.Type=="SamplesAnnot" & attributes(Metadata)$Cleaned=="No")
 
      if(length(p)>0){
 
-      message(paste("Samples from Single.Cell data:", names(Metadata)[p]))
+      message(paste("Samples from Single.Cell data '", names(Metadata)[p],"',  in Cells annotation object"))
 
        tot=0
        for (z in rownames(Metadata[[p]])) {
@@ -296,7 +294,7 @@ if(length(c>0)){
 
      if(length(mm)>0){
 
-       message(paste("Samples from Single.Cell data:", names(Metadata)[mm]))
+       message(paste("Samples from Single.Cell data '", names(Metadata)[i],"', in count matrix"))
 
        tot=0
        for (z in sID) {
@@ -315,7 +313,8 @@ if(length(c>0)){
      }
 
     }
-  }}
+}
+  }
 
 
 
