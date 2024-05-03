@@ -88,7 +88,7 @@ CheckMeta <- function(Metadata) {
 
 
 
-  for (i in m){
+
 
 
 if(attributes(Metadata)$Omics.type!="Single.Cell"){
@@ -102,13 +102,13 @@ if(attributes(Metadata)$Omics.type!="Single.Cell"){
   message("-------------------------")
 
 
-
+  for (i in m){
 
     if(all(sID %in% colnames(Metadata[[i]]))==T) {   message(paste(MetaDataN[i]), " colnames : PASS") } else {
       message(paste(MetaDataN[i]), " colnames : FAIL")
       if(summary(sID %in% colnames(Metadata[[i]]))["TRUE"]==ncol(Metadata[[i]]) ){message(paste("All samples from", MetaDataN[i],"are found in Samples or clinical annotation file."))}
       message(paste("Samples not found in ", MetaDataN[i]," : "), paste0(na.omit(sID[!sID%in%colnames(Metadata[[i]])]),collapse = "; "))}
-}
+}}
 
 
     if(attributes(Metadata)$Omics.type=="Single.Cell"){
@@ -121,6 +121,7 @@ if(attributes(Metadata)$Omics.type!="Single.Cell"){
       message("-------------------------")
 
 
+      for (i in m){
       if(all(cellID %in% colnames(Metadata[[i]]))==T) {   message(paste("All Cells barcodes in",MetaDataN[i], "colnames : PASS")) } else {
 
           message(paste(MetaDataN[i]), " colnames : FAIL")
@@ -133,9 +134,9 @@ if(attributes(Metadata)$Omics.type!="Single.Cell"){
           message(paste("Cells barcodes not found in ", MetaDataN[i]," : "), paste0(mismatch,collapse = "; "),ext)}
 
 
-    }
+    }}
 
-  }
+
 
   if(!is.na(g)){
   message("-------------------------")
@@ -217,15 +218,16 @@ if(attributes(Metadata)$Omics.type!="Single.Cell"){
 
 
   message("-------------------------")
-if(length(c>0)){
+
+if(length(c)>0){
 
   ccc = which(attributes(Metadata)$Cleaned=="Yes"& attributes(Metadata)$Data.Type!="geneAnnot")
 
   if(attributes(Metadata)$Omics.type=="Single.Cell"){pp = c; s = c}else{ pp = s}
 
-  if(length(ccc)>0){  message(paste("Checking Common Samples from", names(Metadata)[pp[1]] ,"in other Cleaned Samples or Patients annotations data."))
+  if(length(ccc)>0){  message(paste("Checking Common Patients from", names(Metadata)[pp[1]] ,"in other Cleaned Samples or Patients annotations data."))
     }else {
-  message(paste("Checking Common Samples from", names(Metadata)[pp[1]] ,"in other Samples or Patients annotations data."))}
+  message(paste("Checking Common Patients from", names(Metadata)[pp[1]] ,"in other Samples or Patients annotations data."))}
   message("-------------------------")
 
 
@@ -233,12 +235,13 @@ if(length(c>0)){
 
     if(attributes(Metadata)$Omics.type!="Single.Cell"){
 
-      psID =  Metadata[[i]][,"SamplesID"]
 
-      if(length(which(psID %in% as.matrix(Metadata[[s]])))==length(sID)){message(paste(MetaDataN[i]), " : PASS") }
-      if(length(which(psID %in% as.matrix(Metadata[[s]])))<length(sID)){
+      ppID =  unique(Metadata[[c[1]]][,"PatientsID"])
+
+      if(length(which(ppID %in% as.matrix(Metadata[[s[1]]])))==length(pID)){message(paste(MetaDataN[i]), " : PASS") }
+      if(length(which(ppID %in% as.matrix(Metadata[[s[1]]])))<length(pID)){
         message(paste(MetaDataN[i]), " : FAIL")
-        message(paste("SamplesID not found in ", MetaDataN[i]," : "), paste0(na.omit(sID[!sID%in%psID]),collapse = "; "))
+        message(paste("PatientsID not found in ", MetaDataN[i]," : "), paste0(na.omit(pID[!pID%in%ppID]),collapse = "; "))
         }
 
 
