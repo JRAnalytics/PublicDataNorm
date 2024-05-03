@@ -178,7 +178,9 @@ CleaningData = function(Metadata = NULL,
         }
 
 
-  }}}
+    }
+      }
+   }
 
 if(FilterGenes == T){
 

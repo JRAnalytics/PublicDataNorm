@@ -1,6 +1,6 @@
 #' CreateLexic function to prepare constant colnames to find in clinical data from lexiue .txt
 #'
-#' @param Dataset file path to find lexique of colnames
+#' @param Metadata file path to find lexique of colnames
 #' @param type default F. If MetaObject is made of Single.Cell sequencing data, set to T.
 #' @importFrom data.table fread
 #' @import dplyr
@@ -10,18 +10,18 @@
 #'
 #' @examples "none"
 
-CreateLexic <- function(Dataset=NULL, type = c("SamplesLexic","PatientsLexic")){
+CreateLexic <- function(Metadata=NULL, type = c("SamplesLexic","PatientsLexic")){
 
 
-  if(is.null(Dataset)){stop("Dataset is null.")}
-  if(!is.list(Dataset)){stop("Dataset must be a list created from CreateDataset() function.")}
-  if(is.null(attributes(Dataset)$File.path) | is.null(attributes(Dataset)$Project)){stop("No attributes found in dataset. Create one with CreateDataset()")}
-  if(is.null(attributes(Dataset)$Omics.type)){stop("No Omics.type attributes found in dataset. Firstly add ExpressionMatrix using AddExpressionMatrixRNAseq/Ma/SC functions.")}
+  if(is.null(Metadata)){stop("Metadata is null.")}
+  if(!is.list(Metadata)){stop("Metadata must be a list created from CreateMetadata() function.")}
+  if(is.null(attributes(Metadata)$File.path) | is.null(attributes(Metadata)$Project)){stop("No attributes found in Metadata. Create one with CreateMetadata()")}
+  if(is.null(attributes(Metadata)$Omics.type)){stop("No Omics.type attributes found in Metadata. Firstly add ExpressionMatrix using AddExpressionMatrixRNAseq/Ma/SC functions.")}
   if(!type%in%c("SamplesLexic","PatientsLexic")){stop("Type must be SamplesLexic or PatientsLexic.")}
-   list.files.path = attributes(Dataset)$File.path
-   project =   attributes(Dataset)$Project
+   list.files.path = attributes(Metadata)$File.path
+   project =  attributes(Metadata)$Project
    SC.Lexic=F
-   if(attributes(Dataset)$Omics.type=="Single.Cell"){SC.Lexic=T}
+   if(attributes(Metadata)$Omics.type=="Single.Cell"){SC.Lexic=T}
 
 
 
@@ -67,7 +67,7 @@ CreateLexic <- function(Dataset=NULL, type = c("SamplesLexic","PatientsLexic")){
       names(SL) <- sapply(SL, `[[`, 1)
       SL<- lapply(SL, `[`, -1)
       attr(SL, "Lexic") = "Yes"
-      attr(SL, "Name") = "SC.SamplesLexic"
+      attr(SL, "Name") = "SamplesLexic"
       return(SL)
       }
 

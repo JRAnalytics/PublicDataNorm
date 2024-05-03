@@ -307,6 +307,10 @@ CleaningClinic <- function(Metadata = NULL,
     if(length(which(duplicated(clcl$PatientsID)))==0) {
 
 
+      if(!"SamplesID" %in%colnames(clcl) ){
+        clcl$SamplesID = NA
+      }
+
       clinic2 <-  clcl[,c("PatientsID", cc)]
       clinic2 <- as.data.frame(clinic2)
       clinic2[clinic2==""] <- NA
@@ -317,7 +321,11 @@ CleaningClinic <- function(Metadata = NULL,
 
       if(length(NBS)>0){
 
-        psID =  clinic2$SamplesID[which(clinic2$SamplesID %in% Metadata[[NBS]]$SamplesID)]
+        if(all(is.na(clinic2$SamplesID))){} else {  psID =  clinic2$SamplesID[which(clinic2$SamplesID %in% Metadata[[NBS]]$SamplesID)]
+
+
+
+
         SID = Metadata[[NBS]]$SamplesID
         PID = clinic2$PatientsID[which(clinic2$PatientsID %in% Metadata[[NBS]][,"PatientsID"])]
 
@@ -359,13 +367,15 @@ CleaningClinic <- function(Metadata = NULL,
           clinic2 = clinic2[Pcom,]
 
           }
-      }
+      }}
 
 
       if(FilterSamples ==T){stop("Data type is not 'Patients',you can't substet it by PatientsID. Try FilterSamples = T.")}
       if(FilterPatients==T){
 
       if(attributes(Metadata)$Omics.type != "Single.Cell"){
+
+        if(!all(is.na(clinic2$SamplesID))){
         message("Selecting only Patient present in both Count and clinical data.")
 
         zz = which(attributes(Metadata)$Data.Type=="Count")[1]
@@ -381,7 +391,8 @@ CleaningClinic <- function(Metadata = NULL,
 
         # Récupérer les index de position correspondants
         indices <- which(est_present)
-        clinic2 <- clinic2[indices,]
+        clinic2 <- clinic2[indices,] } else { message("No filtering doable.")}
+
       }else {
 
         zz = which(attributes(Metadata)$Data.Type=="Count")[1]
