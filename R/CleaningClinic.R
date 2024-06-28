@@ -3,7 +3,7 @@
 #' @param Metadata Metadata object
 #' @param ClinicToClean a character string of name of clinical data to clean.
 #' @param exportname name to apply in Metadata object list
-#' @param type "c("Samples", "Patients") for building clean clinical data from raw clinical data.
+#' @param type "c("Samples", "Patients", "Cells) for building clean clinical data from raw clinical data.
 #' @param Lexic Lexic to use for cleaning. Created from CreateLexic function .
 #' @param FilterSamples default F, if T, keep only retrieved samples in SamplesAnnotation file
 #' @param FilterPatients default F, if T, keep only retrieved patients in Count SamplesAnnotation file
@@ -662,7 +662,7 @@ CleaningClinic <- function(Metadata = NULL,
 
 
   } else{
-    stop("Choose type = c('Samples', 'Patients')")}
+    stop("Choose type = c('Samples', 'Patients', 'Cells')")}
 
 
 

@@ -4,10 +4,13 @@
 \alias{CreateLexic}
 \title{CreateLexic function to prepare constant colnames to find in clinical data from lexiue .txt}
 \usage{
-CreateLexic(Dataset = NULL, type = c("SamplesLexic", "PatientsLexic"))
+CreateLexic(
+  Metadata = NULL,
+  type = c("SamplesLexic", "PatientsLexic", "CellsLexic")
+)
 }
 \arguments{
-\item{Dataset}{file path to find lexique of colnames}
+\item{Metadata}{file path to find lexique of colnames}
 
 \item{type}{default F. If MetaObject is made of Single.Cell sequencing data, set to T.}
 }

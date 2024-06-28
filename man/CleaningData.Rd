@@ -11,6 +11,7 @@ CleaningData(
   PatientsExportname = NULL,
   SamplesLexic = NULL,
   SamplesAnnotToClean = NULL,
+  CellsLexic = NULL,
   SamplesExportname = NULL,
   FilterSP = F,
   force.replace = F,

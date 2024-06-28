@@ -7,7 +7,9 @@
 AddClinicFromFile(
   Metadata,
   ClinicFile = NULL,
-  setID.Column = NULL,
+  setSamplesID.Column = NULL,
+  setPatientID.Column = NULL,
+  setCellsBarcode.Column = NULL,
   name = NULL,
   type = c("Samples", "Patients", "Cells"),
   force.replace = F,
@@ -22,7 +24,11 @@ AddClinicFromFile(
 
 \item{ClinicFile}{name file of interest in path directory, could be multiple names. c("a.csv","b.csv")}
 
-\item{setID.Column}{a character string : column to fetch colnames from Count matrix.}
+\item{setSamplesID.Column}{a character string : column to fetch SamplesID from Count matrix.}
+
+\item{setPatientID.Column}{a character string : column to fetch PatientsID from Count matrix.}
+
+\item{setCellsBarcode.Column}{a character string : column to fetch CellBarcode from Count matrix.}
 
 \item{name}{if loca=True, names to apply in Metadata object slot}
 

@@ -7,7 +7,9 @@
 AddClinicFromObject(
   Metadata,
   object,
-  setID.Column = NULL,
+  setSamplesID.Column = NULL,
+  setPatientID.Column = NULL,
+  setCellsBarcode.Column = NULL,
   name,
   type = c("Samples", "Patients", "Cells"),
   Export = T,
@@ -19,7 +21,11 @@ AddClinicFromObject(
 
 \item{object}{an object to add}
 
-\item{setID.Column}{a character string : column to fetch colnames from Count matrix.}
+\item{setSamplesID.Column}{a character string : column to fetch SamplesID from Count matrix.}
+
+\item{setPatientID.Column}{a character string : column to fetch PatientsID from Count matrix.}
+
+\item{setCellsBarcode.Column}{a character string : column to fetch CellBarcode from Count matrix.}
 
 \item{name}{name to apply in Metadata object list}
 
