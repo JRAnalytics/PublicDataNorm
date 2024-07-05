@@ -216,7 +216,7 @@ if(FilterGenes == T){
 
   if(attributes(Metadata)$Omics.type=="Single.Cell"){
 
-    if(is.null(SamplesLexic)){stop("You can set SamplesLexic with a Lexic for Cells Annotation cleaning.")}
+    if(is.null(CellsLexic)){stop("No CellsLexic was specified.")}
     if("CellsAnnot"%in%attributes(Metadata)$Data.Type & !is.null(CellsLexic)){
 
       CellAnnotRaw = which(attributes(Metadata)$Data.Type=="CellsAnnot" & attributes(Metadata)$Cleaned == "No")
@@ -288,7 +288,7 @@ if(FilterGenes == T){
                                  ClinicToClean = names(Metadata)[SampleAnnotRaw],
                                  exportname = PatientsExportname,
                                  FilterPatients =FilterSP,
-                                 FilterSamples = FilterSP,
+                                 FilterSamples = F,
                                  CleanFromOtherType = T,
                                  force.replace = force.replace,
                                  keep.all.column =F )
@@ -384,8 +384,8 @@ if(FilterGenes == T){
                                  Lexic = SamplesLexic,
                                  type = "Samples",
                                  ClinicToClean = names(Metadata)[ClinicRaw],
-                                 exportname = PatientsExportname,
-                                 FilterPatients =FilterSP,
+                                 exportname = SamplesExportname,
+                                 FilterPatients =F,
                                  FilterSamples = FilterSP,
                                  CleanFromOtherType = T,
                                  force.replace = force.replace,
@@ -399,8 +399,8 @@ if(FilterGenes == T){
                                    Lexic = SamplesLexic,
                                    type = "Samples",
                                    ClinicToClean = names(Metadata)[ClinicRaw],
-                                   exportname = paste0(PatientsExportname,".Full"),
-                                   FilterPatients =FilterSP,
+                                   exportname = paste0(SamplesExportname,".Full"),
+                                   FilterPatients =F,
                                    FilterSamples = FilterSP,
                                    CleanFromOtherType = T,
                                    force.replace = force.replace,

@@ -143,7 +143,7 @@ CleaningClinic <- function(Metadata = NULL,
           substrings <- clinic2$SamplesID
           names(substrings) = substrings
           for(z in substrings){
-            if("TRUE" %in% str_detect(pattern = paste0(z,"_"), colnames(Metadata[[zz]]))){substrings[z] = T }else { substrings[z] = F}
+            if("TRUE" %in% str_detect(pattern = paste0(z,"-"), colnames(Metadata[[zz]]))){substrings[z] = T }else { substrings[z] = F}
           }
           clinic2 <- clinic2[which(substrings==T),]
 
@@ -400,7 +400,7 @@ CleaningClinic <- function(Metadata = NULL,
         substrings <- clinic2$PatientsID
         names(substrings) = substrings
         for(z in substrings){
-        if("TRUE" %in% str_detect(pattern = paste0(z,"_"), colnames(Metadata[[zz]]))){substrings[z] = T }else { substrings[z] = F}
+        if("TRUE" %in% str_detect(pattern = paste0(z,"-"), colnames(Metadata[[zz]]))){substrings[z] = T }else { substrings[z] = F}
           }
         clinic2 <- clinic2[which(substrings==T),]
 
@@ -516,7 +516,7 @@ CleaningClinic <- function(Metadata = NULL,
 
       if(FilterPatients==T){
         message("Selecting only Patient present in both Count and clinical data.")
-
+        if(attributes(Metadata)$Omics.type != "Single.Cell"){
         zz = which(attributes(Metadata)$Data.Type=="Count")[1]
 
         # Diviser chaque élément de la colonne en un vecteur de sous-chaînes
@@ -530,7 +530,24 @@ CleaningClinic <- function(Metadata = NULL,
 
         # Récupérer les index de position correspondants
         indices <- which(est_present)
-        cl_rolled <- cl_rolled[indices,]
+        cl_rolled <- cl_rolled[indices,]}
+        else {
+
+          zz = which(attributes(Metadata)$Data.Type=="Count")[1]
+
+          substrings <- cl_rolled$PatientsID
+          names(substrings) = substrings
+          for(z in substrings){
+            if("TRUE" %in% str_detect(pattern = paste0(z,"-"), colnames(Metadata[[zz]]))){substrings[z] = T }else { substrings[z] = F}
+          }
+          cl_rolled <- cl_rolled[which(substrings==T),]
+
+        }
+
+
+
+
+
       }
 
 

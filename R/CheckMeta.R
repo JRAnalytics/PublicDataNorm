@@ -260,7 +260,7 @@ mm =  which(attributes(Metadata)$Data.Type=="Count")
       message(paste0("PatientsID from '", names(Metadata)[i],"', in CellsAnnotation object"))
       tot=0
       for (z in unique(Metadata[[i]][,"PatientsID"])) {
-        t = summary(str_detect(pattern = paste0(z,"-"), cellID))["TRUE"][1]
+        t = summary(str_detect(pattern = paste0('[a-zA-Z]',z,"-"), cellID))["TRUE"][1]
 
         if(is.na(as.numeric(t))){ t = 0}
 
@@ -284,7 +284,7 @@ mm =  which(attributes(Metadata)$Data.Type=="Count")
 
           tot=0
           for (z in Metadata[[i]][,"SamplesID"]) {
-            t = summary(str_detect(pattern = paste0(z), cellID))["TRUE"][1]
+            t = summary(str_detect(pattern = paste0(z,"-"), cellID))["TRUE"][1]
 
             if(is.na(as.numeric(t))){ t = 0}
 
