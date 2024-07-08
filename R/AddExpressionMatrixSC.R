@@ -101,7 +101,7 @@ AddExpressionMatrixSC <- function(Metadata=NULL,
 
 
     if(is.null(colnames(dt))){
-      message(paste(ExpressionMatrix,"has no colnames. A Cell.csv file may be associated in raw data directory."))}
+      message(paste(ExpressionMatrix,"has no colnames. A Cell.csv file may be associated in raw data directory."))} else {  colnames(dt) = gsub("_","-", colnames(dt))}
 
 
     if(!"CellsAnnot" %in% attributes(Metadata)){
@@ -130,8 +130,10 @@ AddExpressionMatrixSC <- function(Metadata=NULL,
         if(inherits(setID.cellAnnotColumn,"character")){
         if(!setID.cellAnnotColumn %in%colnames(Cells) ){stop(paste(setID.cellAnnotColumn, "is not found in colnames of Cell.File"))}
         Cells$CellsBarcode = Cells[,setID.cellAnnotColumn]
+        Cells$CellsBarcode = gsub("_","-", Cells$CellsBarcode)
         colnames(dt) = Cells$CellsBarcode}
         if(inherits(setID.cellAnnotColumn,"numeric")){Cells$CellsBarcode = Cells[,setID.cellAnnotColumn]
+        Cells$CellsBarcode = gsub("_","-", Cells$CellsBarcode)
         colnames(dt) = Cells$CellsBarcode}
 
 

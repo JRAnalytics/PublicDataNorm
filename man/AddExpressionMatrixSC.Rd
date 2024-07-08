@@ -8,6 +8,7 @@ AddExpressionMatrixSC(
   Metadata = NULL,
   Cell.file = NULL,
   Genes.file = NULL,
+  setID.cellAnnotColumn = NULL,
   name,
   ExpressionMatrix = NULL,
   force.replace = F
@@ -19,6 +20,8 @@ AddExpressionMatrixSC(
 \item{Cell.file}{an object or a character string name of single cell cell annotation file specific to expression matrix. Not mandatory.}
 
 \item{Genes.file}{an object or a character string name of single cell gene annotation file specific to expression matrix. Not mandatory.}
+
+\item{setID.cellAnnotColumn}{a character string or numeric : column in CellAnnot to fetch colnames from Count matrix.}
 
 \item{name}{if loca=True, names to apply in Metadata object slot}
 

@@ -48,14 +48,18 @@ CheckMeta <- function(Metadata) {
 
     c= NULL
     if("Clinic" %in%attributes(Metadata)$Data.Type){
+
       c <- which(attributes(Metadata)$Data.Type=="Clinic" & attributes(Metadata)$Cleaned=="No")
       c2 <- which(attributes(Metadata)$Data.Type=="Clinic" & attributes(Metadata)$Cleaned=="Yes")
-      pID <- Metadata[[c[1]]][,"PatientsID"]
-      sID = Metadata[[c[1]]][,"SamplesID"]
+
+      if(is.null(c)){stop("A Patients' Clinical data must be loaded. Set type = 'Patients'")}
+      if(length(c2)>0){c=c2}
+
+      PpID <- unique(Metadata[[c[1]]][,"PatientsID"])
+      PsID = Metadata[[c[1]]][,"SamplesID"]
+      PsID = unique(unlist(strsplit(PsID, ";")))
     }
 
-    if(is.null(c)){stop("A Patients' Clinical data must be loaded. Set type = 'Patients'")}
-      if(length(c2)>0){c=c2}
 
 
 
@@ -64,8 +68,9 @@ CheckMeta <- function(Metadata) {
       s2 <- which(attributes(Metadata)$Data.Type=="SamplesAnnot" & attributes(Metadata)$Cleaned=="Yes")
       if(length(s2)>0){s=s2}
 
-      sID <- Metadata[[s[1]]][,"SamplesID"]
-      pID <- Metadata[[s[1]]][,"PatientsID"]}
+      SsID <- unique(Metadata[[s[1]]][,"SamplesID"])
+      SpID <- unique(Metadata[[s[1]]][,"PatientsID"])
+      }
 
 
     if("CellsAnnot" %in%attributes(Metadata)$Data.Type){
@@ -104,9 +109,9 @@ if(attributes(Metadata)$Omics.type!="Single.Cell"){
 
   for (i in m){
 
-    if(all(sID %in% colnames(Metadata[[i]]))==T) {   message(paste(MetaDataN[i]), " colnames : PASS") } else {
+    if(all(PsID %in% colnames(Metadata[[i]]))==T) {   message(paste(MetaDataN[i]), " colnames : PASS") } else {
       message(paste(MetaDataN[i]), " colnames : FAIL")
-      if(summary(sID %in% colnames(Metadata[[i]]))["TRUE"]==ncol(Metadata[[i]]) ){message(paste("All samples from", MetaDataN[i],"are found in Samples or clinical annotation file."))}
+      if(summary(PsID %in% colnames(Metadata[[i]]))["TRUE"]==ncol(Metadata[[i]]) ){message(paste("All samples from", MetaDataN[i],"are found in Samples or clinical annotation file."))}
       message(paste("Samples not found in ", MetaDataN[i]," : "), paste0(na.omit(sID[!sID%in%colnames(Metadata[[i]])]),collapse = "; "))}
 }}
 
@@ -134,7 +139,8 @@ if(attributes(Metadata)$Omics.type!="Single.Cell"){
           message(paste("Cells barcodes not found in ", MetaDataN[i]," : "), paste0(mismatch,collapse = "; "),ext)}
 
 
-    }}
+      }
+      }
 
 
 
@@ -219,105 +225,97 @@ if(attributes(Metadata)$Omics.type!="Single.Cell"){
 
   message("-------------------------")
 
-if(length(c)>0){
 
-  ccc = which(attributes(Metadata)$Cleaned=="Yes"& attributes(Metadata)$Data.Type!="geneAnnot")
+if(length(c)>0){ccc = which(attributes(Metadata)$Cleaned=="Yes"& attributes(Metadata)$Data.Type!="geneAnnot")}
+mm =  which(attributes(Metadata)$Data.Type=="Count")
 
-  if(attributes(Metadata)$Omics.type=="Single.Cell"){pp = c; s = c}else{ pp = s}
 
-  if(length(ccc)>0){  message(paste("Checking Common Patients from", names(Metadata)[pp[1]] ,"in other Cleaned Samples or Patients annotations data."))
+  if(length(ccc)>0){  message(paste("Checking Common Patients from", names(Metadata)[c[1]] ,"in other Cleaned Samples or Patients annotations data."))
     }else {
-  message(paste("Checking Common Patients from", names(Metadata)[pp[1]] ,"in other Samples or Patients annotations data."))}
+  message(paste("Checking Common Patients from", names(Metadata)[c[1]] ,"in other Samples or Patients annotations data."))}
   message("-------------------------")
 
 
-  for (i in c(c,s[-1])){
+
+
+
 
     if(attributes(Metadata)$Omics.type!="Single.Cell"){
+      for (i in c(c[-1],s)){
+      target = unique(Metadata[[i[1]]][,"PatientsID"])
 
-
-      ppID =  unique(Metadata[[c[1]]][,"PatientsID"])
-
-      if(length(which(ppID %in% as.matrix(Metadata[[s[1]]])))==length(pID)){message(paste(MetaDataN[i]), " : PASS") }
-      if(length(which(ppID %in% as.matrix(Metadata[[s[1]]])))<length(pID)){
+      if(length(which(PpID %in% as.matrix(Metadata[[i[1]]])))==length(PpID)){message(paste(MetaDataN[i]), " : PASS") }
+      if(length(which(PpID %in% as.matrix(Metadata[[i[1]]])))<length(PpID)){
         message(paste(MetaDataN[i]), " : FAIL")
-        message(paste("PatientsID not found in ", MetaDataN[i]," : "), paste0(na.omit(pID[!pID%in%ppID]),collapse = "; "))
+        message(paste("PatientsID not found in ", MetaDataN[i]," : "), paste0(na.omit(PpID[!PpID%in%target]),collapse = "; "))
         }
 
 
-      }
-    }
+      }}
+
 
 
     if(attributes(Metadata)$Omics.type=="Single.Cell"){
-
-      message(paste("Patients from Single.Cell data'", names(Metadata)[i],"', in Cells annotation object"))
+      for (i in c(c,s)){
+      message(paste0("PatientsID from '", names(Metadata)[i],"', in CellsAnnotation object"))
       tot=0
-      for (z in rownames(Metadata[[i]])) {
-        t = summary(str_detect(pattern = paste0(z,"_"), cellID))["TRUE"][1]
+      for (z in unique(Metadata[[i]][,"PatientsID"])) {
+        t = summary(str_detect(pattern = paste0('[a-zA-Z]',z,"-"), cellID))["TRUE"][1]
 
         if(is.na(as.numeric(t))){ t = 0}
 
         tot=tot+as.numeric(t)
 
 
-      message(c(z," N= ",as.numeric(t)))
 
       }
-      message("Total = " , tot, "\n Are all cells barcode associated to Patients found in clinical data ? ", tot/length(cellID)==1)
-      message("-------------------------")
+      message("Total = " , tot,"/",length(cellID), "\n Passed Checkpoint? ", tot/length(cellID)==1)
+      message("-------------------------")}
+
+
+      if(length(ccc)>0){ p =  which(attributes(Metadata)$Data.Type=="SamplesAnnot" & attributes(Metadata)$Cleaned=="Yes")}else{
+        p =  which(attributes(Metadata)$Data.Type=="SamplesAnnot" & attributes(Metadata)$Cleaned=="No")
+      }
+
+      if(length(p)>0){
+
+        for (i in p){
+          message(paste0("SamplesID from '", names(Metadata)[i],"', in CellsAnnotation object :"))
+
+          tot=0
+          for (z in Metadata[[i]][,"SamplesID"]) {
+            t = summary(str_detect(pattern = paste0(z,"-"), cellID))["TRUE"][1]
+
+            if(is.na(as.numeric(t))){ t = 0}
+
+            tot=tot+as.numeric(t)
+
+
+          }
+          message("Total = " , tot, "/",length(cellID), "\n Passed Checkpoint? ", tot/length(cellID)==1)
+          message("-------------------------")
+        }
+      }
 
 
 
-     p =  which(attributes(Metadata)$Data.Type=="SamplesAnnot" & attributes(Metadata)$Cleaned=="No")
 
-     if(length(p)>0){
-
-      message(paste("Samples from Single.Cell data '", names(Metadata)[p],"',  in Cells annotation object"))
-
-       tot=0
-       for (z in rownames(Metadata[[p]])) {
-         t = summary(str_detect(pattern = paste0(z,"_"), cellID))["TRUE"][1]
-
-         if(is.na(as.numeric(t))){ t = 0}
-
-         tot=tot+as.numeric(t)
-
-
-         message(c(z," N= ",as.numeric(t)))
-
-       }
-       message("Total = " , tot, "\nAre all Cells barcode associated to Samples in SamplesAnnot ? ", tot/length(cellID)==1)
-       message("-------------------------")
-     }
+      }
 
 
 
-     mm =  which(attributes(Metadata)$Data.Type=="Count")
-
-     if(length(mm)>0){
-
-       message(paste("Samples from Single.Cell data '", names(Metadata)[i],"', in count matrix"))
-
-       tot=0
-       for (z in sID) {
-         t = summary(str_detect(pattern = paste0(z,"_"), colnames(Metadata[[mm]])))["TRUE"][1]
-
-         if(is.na(as.numeric(t))){ t = 0}
-
-         tot=tot+as.numeric(t)
 
 
-         message(c(z," N= ",as.numeric(t)))
 
-       }
-       message("Total = " , tot, "\nAre all cells barcode found in Matrix count ? ", tot/length(cellID)==1)
-       message("-------------------------")
-     }
 
-    }
+
+
+
+
+
+
 }
-  }
+
 
 
 

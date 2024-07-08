@@ -9,7 +9,7 @@ CleaningClinic(
   ClinicToClean = NULL,
   Lexic = NULL,
   exportname = NULL,
-  type = c("Samples", "Patients"),
+  type = c("Samples", "Patients", "Cells"),
   FilterSamples = F,
   FilterPatients = F,
   CleanFromOtherType = F,
@@ -26,7 +26,7 @@ CleaningClinic(
 
 \item{exportname}{name to apply in Metadata object list}
 
-\item{type}{"c("Samples", "Patients") for building clean clinical data from raw clinical data.}
+\item{type}{"c("Samples", "Patients", "Cells) for building clean clinical data from raw clinical data.}
 
 \item{FilterSamples}{default F, if T, keep only retrieved samples in SamplesAnnotation file}
 

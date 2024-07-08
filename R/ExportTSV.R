@@ -38,6 +38,7 @@ ExportTSV <- function (Metadata){
 
     Vnumber <- max(na.omit(as.numeric(str_extract(version,"([0-9]+).*$"))))+1
 
+    if(Vnumber =="-Inf"){Vnumber=1}
 
   } else {
     Vnumber = 1
@@ -66,12 +67,13 @@ ExportTSV <- function (Metadata){
 
   if(attributes(Metadata)$Omics.type=="Single.Cell"){
 
-    SamplesLexic = lapply(ls(envir=.GlobalEnv), get)[lapply(lapply(ls(envir=.GlobalEnv), get), attr, "Lexic") == "Yes" & lapply(lapply(ls(envir=.GlobalEnv), get), attr, "Name")=="SC.SamplesLexic" ][[1]]
+    CellsLexic = lapply(ls(envir=.GlobalEnv), get)[lapply(lapply(ls(envir=.GlobalEnv), get), attr, "Lexic") == "Yes" & lapply(lapply(ls(envir=.GlobalEnv), get), attr, "Name")=="CellsLexic" ][[1]]
 
-  }else{
+  }
+
     SamplesLexic = lapply(ls(envir=.GlobalEnv), get)[lapply(lapply(ls(envir=.GlobalEnv), get), attr, "Lexic") == "Yes" & lapply(lapply(ls(envir=.GlobalEnv), get), attr, "Name")=="SamplesLexic" ][[1]]
 
-    }
+
 
 
 
@@ -104,6 +106,21 @@ ExportTSV <- function (Metadata){
     SamplesLexic <- lapply(SamplesLexic, function(x) {c(x[1],x)}) #Mandatory to duplicated listName in the listed values.
     lapply(SamplesLexic, write, paste0(list.files.path$Project.Processes,"/",project,".SamplesLexic.txt"), append=TRUE, ncolumns=1000 ) #write a ".txt" file without listNames
   }
+
+if(exists("CellsLexic", mode= "any" )) {
+  count <- count+1
+  message("-------------------------------------------------")
+  message(paste("Exporting", count, "/", object,"object: ","CellsLexic"))
+
+  if (file.exists(paste0(list.files.path$Project.Processes,"/",project,".CellsLexic.txt"))) {
+    #Delete file if it exists
+    file.remove(paste0(list.files.path$Project.Processes,"/",project,".CellsLexic.txt"))
+  }
+
+  CellsLexic <- lapply(CellsLexic, function(x) {c(x[1],x)}) #Mandatory to duplicated listName in the listed values.
+  lapply(CellsLexic, write, paste0(list.files.path$Project.Processes,"/",project,".CellsLexic.txt"), append=TRUE, ncolumns=1000 ) #write a ".txt" file without listNames
+}
+
 
 
   NB.Samples.Patients.pheno <-   which(c(attributes(Metadata)$Data.Type=="Clinic" |attributes(Metadata)$Data.Type=="SamplesAnnot" ) & attributes(Metadata)$Export=="Yes" )
@@ -169,7 +186,7 @@ ExportTSV <- function (Metadata){
 
           if(!"geneAnnot"%in%attributes(Metadata)$Data.Type){
             message("No geneAnnot file found. Exporting geneAnnot from count matrix.")
-            filename.genes <- paste0(Verifiedpath(Metadata),"/",project,".",names(Metadata)[j],".GenesAnnot.V1.tsv")
+            filename.genes <- paste0(Verifiedpath(Metadata),"/",project,".",names(Metadata)[j],".GenesAnnot.V1.genes.tsv")
             write.table(rownames(Metadata[[j]]),row.names = F ,col.names = F ,file = filename.genes, sep = "\t")
             count = count+1
             message("-------------------------------------------------")
@@ -178,7 +195,7 @@ ExportTSV <- function (Metadata){
 
           if(!"CellsAnnot"%in%attributes(Metadata)$Data.Type){
             message("No CellsAnnot file found. Exporting CellsAnnot from count matrix.")
-            filename.cells <- paste0(Verifiedpath(Metadata),"/",project,".CellsAnnot", "V1.tsv")
+            filename.cells <- paste0(Verifiedpath(Metadata),"/",project,".CellsAnnot", "V1.barcodes.tsv")
             write.table(data.frame("Cells"= colnames(Metadata[[j]])),row.names = F ,file = filename.cells, sep = "\t")
             count = count+1
             message("-------------------------------------------------")
@@ -186,11 +203,12 @@ ExportTSV <- function (Metadata){
 
               kk = which(attributes(Metadata)$Data.Type%in%"CellsAnnot"& attributes(Metadata)$Export=="Yes")
               if(length(kk)>0){
-                filename.cells <- paste0(Verifiedpath(Metadata),"/",project,".",names(Metadata)[kk], ".V1.tsv")
-                write.table(Metadata[[kk]],row.names = F ,file = filename.cells, sep = "\t")
+                for (i in kk){
+                filename.cells <- paste0(Verifiedpath(Metadata),"/",project,".",names(Metadata)[i], ".V1.barcodes.tsv")
+                write.table(Metadata[[i]],row.names = F ,file = filename.cells, sep = "\t")
                 count = count+1
                 message("-------------------------------------------------")
-                message(paste("Exporting", count, "/", object,"object: ","CellsAnnot", "file"))}
+                message(paste("Exporting", count, "/", object,"object: ","CellsAnnot", "file"))}}
 
             }}} else { #Vnumber ==1
 
@@ -206,15 +224,15 @@ ExportTSV <- function (Metadata){
 
                 filename <- paste0(Verifiedpath(Metadata),"/",project,".",names(Metadata)[j],".V",Vnumber,".mtx")
 
-                if(!class(Metadata[[j]])[1]=="dgTMatrix"){Metadata[[j]] = as.matrix(Metadata[[j]]) }
-                writeMM(Matrix(as.matrix(Metadata[[j]]), sparse = T),file = filename)
+                if(!class(Metadata[[j]])[1]=="dgTMatrix"){Metadata[[j]] = Matrix(as.matrix(Metadata[[j]]), sparse = T) }
+                writeMM(Metadata[[j]],file = filename)
                 message(paste("Compressing"))
                 R.utils::gzip(filename, destname=sprintf("%s.gz", filename), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)
                 gc()
 
                 if(!"geneAnnot"%in%attributes(Metadata)$Data.Type){
                   message("No geneAnnot file found. Exporting geneAnnot from count matrix.")
-                  filename.genes <- paste0(Verifiedpath(Metadata),"/",project,".",names(Metadata)[j],".GenesAnnot",".V",Vnumber,".tsv")
+                  filename.genes <- paste0(Verifiedpath(Metadata),"/",project,".",names(Metadata)[j],".GenesAnnot",".V",Vnumber,"genes.tsv")
                   count = count+1
                   message("-------------------------------------------------")
                   message(paste("Exporting", count, "/", object,"object: ","geneAnnot", "file"))
@@ -224,21 +242,22 @@ ExportTSV <- function (Metadata){
 
                 if(!"CellsAnnot"%in%attributes(Metadata)$Data.Type){
                   message("No CellsAnnot file found. Exporting CellsAnnot from count matrix.")
-                  filename.cells <- paste0(Verifiedpath(Metadata),"/",project,".CellsAnnot",".V",Vnumber,".tsv")
+                  filename.cells <- paste0(Verifiedpath(Metadata),"/",project,".CellsAnnot",".V",Vnumber,"barcodes.tsv")
                   count = count+1
                   message("-------------------------------------------------")
                   message(paste("Exporting", count, "/", object,"object: ","CellsAnnot", "file"))
 
                   write.table(data.frame("Cells"= colnames(Metadata[[j]])),row.names = F ,file = filename.cells, sep = "\t")} else {
 
-                    filename.cells <- paste0(Verifiedpath(Metadata),"/",project,".CellsAnnot",".V",Vnumber,".tsv")
+                    filename.cells <- paste0(Verifiedpath(Metadata),"/",project,".CellsAnnot",".V",Vnumber,"barcodes.tsv")
                     kk = which(attributes(Metadata)$Data.Type%in%"CellsAnnot"& attributes(Metadata)$Export=="Yes")
                     if(length(kk)>0){
+                      for (i in kk){
                       count = count+1
                       message("-------------------------------------------------")
-                      message(paste("Exporting", count, "/", object,"object: ","CellsAnnot", "file"))
+                      message(paste("Exporting", count, "/", object,"object: ",names(Metadata)[[i]], "file"))
 
-                      write.table(Metadata[[kk]],row.names = F ,file = filename.cells, sep = "\t")}
+                      write.table(Metadata[[i]],row.names = F ,file = filename.cells, sep = "\t")}}
 
                   }
 
@@ -268,17 +287,21 @@ ExportTSV <- function (Metadata){
       z <- Metadata[[j]]
 
       if(Vnumber==1){
-
-        filename <- paste0(Verifiedpath(Metadata),"/",project,".",names(Metadata)[j],".V1.tsv")
-        write.table(z,row.names = F ,file = filename, sep = "\t")
+        if(attributes(Metadata)$Omics.type=="Single.Cell") {
+        filename <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(Metadata)[j],".V1.genes.tsv")}else{
+          filename <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(Metadata)[j],".V1.tsv")
+        }
+        write.table(z,row.names = F ,file = filename, sep = ",")
         message(paste("Compressing"))
         R.utils::gzip(filename, destname=sprintf("%s.gz", filename), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)
       } else { #Vnumber==1
 
 
-
-        filename <- paste0(Verifiedpath(Metadata),"/",project,".",names(Metadata)[j],".V",Vnumber,".tsv")
-        write.table(z,row.names = F ,file = filename, sep = "\t")
+        if(attributes(Metadata)$Omics.type=="Single.Cell") {
+          filename <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(Metadata)[j],".V",Vnumber,"genes.tsv")
+        }else{
+        filename <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(Metadata)[j],".V",Vnumber,".tsv")}
+        write.table(z,row.names = F ,file = filename, sep = ",")
         message(paste("Compressing"))
         R.utils::gzip(filename, destname=sprintf("%s.gz", filename), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)
 
