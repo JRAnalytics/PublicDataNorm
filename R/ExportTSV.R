@@ -8,7 +8,7 @@
 #' @import R.utils
 #' @import Matrix
 #' @examples "non"
-ExportTSV <- function (Metadata ,encoding){
+ExportTSV <- function (Metadata ,encoding = "UTF-8"){
 
 
 
@@ -35,7 +35,7 @@ ExportTSV <- function (Metadata ,encoding){
     filepath <- rownames(df)
     filename <-  unlist(lapply(str_split(filepath,paste0(project,"/")),"[[",2))
 
-    version <- na.omit(str_extract(filename,"V[0-9]*"))
+    version <- na.omit(str_extract(filename,"V[0-9]"))
 
     Vnumber <- max(na.omit(as.numeric(str_extract(version,"([0-9]+).*$"))))+1
 
