@@ -35,7 +35,7 @@ CreateLexic <- function(Metadata=NULL, type = c("SamplesLexic","PatientsLexic","
     attr(PL, "Lexic") = "Yes"
     attr(PL, "Name") = "PatientsLexic"
 
-    return(PL)} else {    PL <- scan(paste(list.files.path$Processes,"PatientLexic.txt",sep = "/"), what="", sep="\n")%>%strsplit("[[:space:]]+")
+    return(PL)} else {    PL <- scan(paste(Refpath(Metadata),"PatientLexic.txt",sep = "/"), what="", sep="\n")%>%strsplit("[[:space:]]+")
     names(PL) <- sapply(PL, `[[`, 1)
     PL<- lapply(PL, `[`, -1)
 
@@ -62,7 +62,7 @@ CreateLexic <- function(Metadata=NULL, type = c("SamplesLexic","PatientsLexic","
 
     } else {
 
-      SL <- scan(paste(list.files.path$Processes,"SamplesLexic.txt",sep = "/"), what="", sep="\n")%>%strsplit("[[:space:]]+")
+      SL <- scan(paste(Refpath(Metadata),"SamplesLexic.txt",sep = "/"), what="", sep="\n")%>%strsplit("[[:space:]]+")
       names(SL) <- sapply(SL, `[[`, 1)
       SL<- lapply(SL, `[`, -1)
       attr(SL, "Lexic") = "Yes"
@@ -96,7 +96,7 @@ CreateLexic <- function(Metadata=NULL, type = c("SamplesLexic","PatientsLexic","
            SL<- lapply(SL, `[`, -1)
 
          } else {
-           SL <- scan(paste(list.files.path$Processes,"CellsLexic.txt",sep = "/"), what="", sep="\n")%>%strsplit("[[:space:]]+")
+           SL <- scan(paste(Refpath(Metadata),"CellsLexic.txt",sep = "/"), what="", sep="\n")%>%strsplit("[[:space:]]+")
            names(SL) <- sapply(SL, `[[`, 1)
            SL<- lapply(SL, `[`, -1)}
          attr(SL, "Lexic") = "Yes"

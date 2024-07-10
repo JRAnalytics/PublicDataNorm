@@ -1,13 +1,14 @@
 #' ExportTSV Export Metadata inside object into ".tsv" files
 #'
 #' @param Metadata a Metadata  data files
+#' @param encoding see file encoding section "UTF-8" or "latin1"
 #' @return ".tsv" files into working directory
 #' @export
 #' @import utils
 #' @import R.utils
 #' @import Matrix
 #' @examples "non"
-ExportTSV <- function (Metadata){
+ExportTSV <- function (Metadata ,encoding){
 
 
 
@@ -137,12 +138,12 @@ if(exists("CellsLexic", mode= "any" )) {
 
       if(Vnumber==1){
         filename <- paste0(Verifiedpath(Metadata),"/",project,".",names(Metadata)[j],".V1",".tsv")
-        write.table(z,row.names = F ,file = filename, sep = "\t")
+        write.table(z,row.names = F ,file = filename, sep = "\t", fileEncoding = encoding)
 
       } else {
 
         filename <- paste0(Verifiedpath(Metadata),"/",project,".",names(Metadata)[j],".V", Vnumber,".tsv")
-        write.table(z,row.names = F ,file = filename, sep = "\t")
+        write.table(z,row.names = F ,file = filename, sep = "\t", fileEncoding = encoding)
       }
 
 
