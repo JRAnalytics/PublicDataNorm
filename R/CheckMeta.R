@@ -26,9 +26,9 @@ CheckMeta <- function(Metadata) {
   if(attributes(Metadata)$Omics.type!="Single.Cell"){
   c <- which(attributes(Metadata)$Data.Type=="Clinic" & attributes(Metadata)$Cleaned=="No")
   c2 <- which(attributes(Metadata)$Data.Type=="Clinic" & attributes(Metadata)$Cleaned=="Yes")
-
-  if(length(c)==0){stop("A Patients' Clinical data must be loaded.")}
   if(length(c2)>0){c=c2}
+  if(length(c)==0){stop("A Patients' Clinical data must be loaded.")}
+
   PpID <- unique(Metadata[[c[1]]][,"PatientsID"])
   PsID = Metadata[[c[1]]][,"SamplesID"]
   PsID = unique(unlist(strsplit(PsID, ";")))
@@ -61,9 +61,9 @@ CheckMeta <- function(Metadata) {
 
       c <- which(attributes(Metadata)$Data.Type=="Clinic" & attributes(Metadata)$Cleaned=="No")
       c2 <- which(attributes(Metadata)$Data.Type=="Clinic" & attributes(Metadata)$Cleaned=="Yes")
-
-      if(length(c)==0){stop("A Patients' Clinical data must be loaded")}
       if(length(c2)>0){c=c2}
+      if(length(c)==0){stop("A Patients' Clinical data must be loaded")}
+
 
       PpID <- unique(Metadata[[c[1]]][,"PatientsID"])
       PsID = Metadata[[c[1]]][,"SamplesID"]
@@ -119,12 +119,21 @@ if(attributes(Metadata)$Omics.type!="Single.Cell"){
 
   for (i in m){
 
-    if(length(s)>0){
+    if(length(s)>0 & length(c)<1 | length(C)>0 & length(s)>0 ){
     if(all(SsID %in% colnames(Metadata[[i]]))==T) {   message(paste(MetaDataN[i]), " colnames : PASS") } else {
       message(paste(MetaDataN[i]), " colnames : FAIL")
       if(summary(PsID %in% colnames(Metadata[[i]]))["TRUE"]==ncol(Metadata[[i]]) ){message(paste("All samples from", MetaDataN[i],"are found in Samples or clinical annotation file."))}
       message(paste("Samples not found in ", MetaDataN[i]," : "), paste0(na.omit(SsID[!SsID%in%colnames(Metadata[[i]])]),collapse = "; "))}
-}}}
+    }
+    if(length(C)>0 & length(s)<1  ){
+      if(all(PsID %in% colnames(Metadata[[i]]))==T) {   message(paste(MetaDataN[i]), " colnames : PASS") } else {
+        message(paste(MetaDataN[i]), " colnames : FAIL")
+        if(summary(PsID %in% colnames(Metadata[[i]]))["TRUE"]==ncol(Metadata[[i]]) ){message(paste("All samples from", MetaDataN[i],"are found in Samples or clinical annotation file."))}
+        message(paste("Samples not found in ", MetaDataN[i]," : "), paste0(na.omit(PsID[!PsID%in%colnames(Metadata[[i]])]),collapse = "; "))}
+    }
+
+    }
+  }
 
 
     if(attributes(Metadata)$Omics.type=="Single.Cell"){
@@ -271,7 +280,7 @@ mm =  which(attributes(Metadata)$Data.Type=="Count")
       message(paste0("PatientsID from '", names(Metadata)[i],"', in CellsAnnotation object"))
       tot=0
       for (z in unique(Metadata[[i]][,"PatientsID"])) {
-        if(str_detect(pattern = paste0('[a-zA-Z]'),z)){ pattern = paste0(z,"-")}else {  paste0('[a-zA-Z]',z,"-")}
+        if(str_detect(pattern = paste0('[a-zA-Z]'),z)){ pattern = paste0(z,"-")}else {pattern=  paste0('[a-zA-Z]',z,"-")}
         t = summary(str_detect(pattern = pattern, cellID))["TRUE"][1]
 
         if(is.na(as.numeric(t))){ t = 0}
@@ -309,7 +318,6 @@ mm =  which(attributes(Metadata)$Data.Type=="Count")
           message("-------------------------")
         }
       }
-
 
 
 
