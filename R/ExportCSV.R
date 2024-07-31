@@ -33,7 +33,7 @@ ExportCSV <- function (Metadata){
     filepath <- rownames(df)
     filename <-  unlist(lapply(str_split(filepath,paste0(project,"/")),"[[",2))
 
-    version <- na.omit(str_extract(filename,"V[0-9]*"))
+    version <- na.omit(str_extract(filename,"V[0-9]"))
 
     Vnumber <- max(na.omit(as.numeric(str_extract(version,"([0-9]+).*$"))))+1
 

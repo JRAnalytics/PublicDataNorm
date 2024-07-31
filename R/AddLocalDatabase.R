@@ -192,7 +192,7 @@ AddLocalDatabase <- function(Metadata,
       df <- file.info(list.files(attributes(Metadata)$File.path$Project.VerifiedDataset, full.names = T))
       df$Filenames <- unlist(lapply(str_split(rownames(df),paste0(project,"/")),"[[",2))
       filename2 <- unlist(lapply(str_split( df$Filenames ,".csv"),"[[",1))
-      version <- unique(str_extract(filename2,"V[0-9]*"))
+      version <- unique(str_extract(filename2,"V[0-9]"))
 
     }
 
