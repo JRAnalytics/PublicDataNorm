@@ -26,6 +26,7 @@ CheckMeta <- function(Metadata) {
   if(attributes(Metadata)$Omics.type!="Single.Cell"){
   c <- which(attributes(Metadata)$Data.Type=="Clinic" & attributes(Metadata)$Cleaned=="No")
   c2 <- which(attributes(Metadata)$Data.Type=="Clinic" & attributes(Metadata)$Cleaned=="Yes")
+
   if(length(c2)>0){c=c2}
   if(length(c)==0){stop("A Patients' Clinical data must be loaded.")}
 
@@ -37,6 +38,7 @@ CheckMeta <- function(Metadata) {
   s <- which(attributes(Metadata)$Data.Type=="SamplesAnnot" & attributes(Metadata)$Cleaned=="No")
   s2 <- which(attributes(Metadata)$Data.Type=="SamplesAnnot" & attributes(Metadata)$Cleaned=="Yes")
 
+  if(is_empty(s)){  s = NULL}
 
   if(length(s2)>0){s=s2}
 
@@ -76,11 +78,14 @@ CheckMeta <- function(Metadata) {
     if("SamplesAnnot" %in%attributes(Metadata)$Data.Type ){
       s <- which(attributes(Metadata)$Data.Type=="SamplesAnnot" & attributes(Metadata)$Cleaned=="No")
       s2 <- which(attributes(Metadata)$Data.Type=="SamplesAnnot" & attributes(Metadata)$Cleaned=="Yes")
+
+
+
       if(length(s2)>0){s=s2}
 
       SsID <- unique(Metadata[[s[1]]][,"SamplesID"])
       SpID <- unique(Metadata[[s[1]]][,"PatientsID"])
-      }
+      }else{s=NULL}
 
 
     if("CellsAnnot" %in%attributes(Metadata)$Data.Type){
