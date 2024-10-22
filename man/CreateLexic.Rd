@@ -12,7 +12,7 @@ CreateLexic(
 \arguments{
 \item{Metadata}{file path to find lexique of colnames}
 
-\item{type}{default F. If MetaObject is made of Single.Cell sequencing data, set to T.}
+\item{type}{c("SamplesLexic","PatientsLexic","CellsLexic")}
 }
 \value{
 a list

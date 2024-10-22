@@ -4,10 +4,12 @@
 \alias{ExportTSV}
 \title{ExportTSV Export Metadata inside object into ".tsv" files}
 \usage{
-ExportTSV(Metadata)
+ExportTSV(Metadata, encoding = "UTF-8")
 }
 \arguments{
 \item{Metadata}{a Metadata  data files}
+
+\item{encoding}{see file encoding section "UTF-8" or "latin1"}
 }
 \value{
 ".tsv" files into working directory

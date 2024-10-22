@@ -8,11 +8,12 @@ Description: Take public data : RNAseq raw and /or normalized, patient clinical 
 License: GPL-3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 LazyData: true
 Suggests: 
     knitr,
-    rmarkdown
+    rmarkdown,
+    testthat (>= 3.0.0)
 VignetteBuilder: knitr
 Imports: 
     AnnotationDbi,
@@ -36,3 +37,4 @@ Imports:
     utils,
     matrixStats,
     readr
+Config/testthat/edition: 3

@@ -124,13 +124,13 @@ if(attributes(Metadata)$Omics.type!="Single.Cell"){
 
   for (i in m){
 
-    if(length(s)>0 & length(c)<1 | length(C)>0 & length(s)>0 ){
+    if(length(s)>0 & length(c)<1 | length(c)>0 & length(s)>0 ){
     if(all(SsID %in% colnames(Metadata[[i]]))==T) {   message(paste(MetaDataN[i]), " colnames : PASS") } else {
       message(paste(MetaDataN[i]), " colnames : FAIL")
       if(summary(PsID %in% colnames(Metadata[[i]]))["TRUE"]==ncol(Metadata[[i]]) ){message(paste("All samples from", MetaDataN[i],"are found in Samples or clinical annotation file."))}
       message(paste("Samples not found in ", MetaDataN[i]," : "), paste0(na.omit(SsID[!SsID%in%colnames(Metadata[[i]])]),collapse = "; "))}
     }
-    if(length(C)>0 & length(s)<1  ){
+    if(length(c)>0 & length(s)<1  ){
       if(all(PsID %in% colnames(Metadata[[i]]))==T) {   message(paste(MetaDataN[i]), " colnames : PASS") } else {
         message(paste(MetaDataN[i]), " colnames : FAIL")
         if(summary(PsID %in% colnames(Metadata[[i]]))["TRUE"]==ncol(Metadata[[i]]) ){message(paste("All samples from", MetaDataN[i],"are found in Samples or clinical annotation file."))}

@@ -48,6 +48,8 @@ CleaningClinic <- function(Metadata = NULL,
 
 
     if(type=="Samples"){
+      message("------------------------")
+      message("Samples annotation cleaning")
 
     NBS <- which(attributes(Metadata)$Data.Type=="SamplesAnnot" & attributes(Metadata)$Cleaned == "No")
 
@@ -76,27 +78,54 @@ CleaningClinic <- function(Metadata = NULL,
     LexicClinic <- lapply(LexicClinic, toupper)
 
     colnames(clinic) <-gsub("[.]", "_",colnames(clinic))
+    colnames(clinic) <-gsub(" ", "_",colnames(clinic))
+    colnames(clinic) <-gsub("[:]", "_",colnames(clinic))
+    colnames(clinic) <-gsub("[(]", "",colnames(clinic))
+    colnames(clinic) <-gsub("[)]", "",colnames(clinic))
+    colnames(clinic) <-gsub("[,]", "",colnames(clinic))
     LexicClinic <-  lapply(LexicClinic,function(x) gsub("[.]", "_",x))
+    LexicClinic <-  lapply(LexicClinic,function(x) gsub("[:]", "_",x))
+    LexicClinic <-  lapply(LexicClinic,function(x) gsub(" ", "_",x))
+    LexicClinic <-  lapply(LexicClinic,function(x) gsub("[(]", "",x))
+    LexicClinic <-  lapply(LexicClinic,function(x) gsub("[)]", "",x))
+    LexicClinic <-  lapply(LexicClinic,function(x) gsub("[,]", "",x))
 
     if(file.exists(paste0(Processpath(Metadata),"/Samples.CleanedProcess.txt"))){ file.remove(paste0(Processpath(Metadata),"/Samples.CleanedProcess.txt"))}
 
     cat("Samples.CleanedProcess" , file=paste0(Processpath(Metadata),"/Samples.CleanedProcess.txt"),sep="\n",append = T)
     cat("Raw.Clinic colnames Origin,Clean.Called" , file=paste0(Processpath(Metadata),"/Samples.CleanedProcess.txt"),sep="\n",append = T)
-    for (i in 1:ncol(clinic)) {
+
+
+
+
+ for (i in 1:ncol(clinic)) {
       pat <- toupper(colnames(clinic)[i])
       col <- grep(paste("\\b",pat, "\\b",sep=""), LexicClinic)
 
 
+    #      if(length(col)==0){ col <- grep(pat, LexicClinic)}
 
       cat(paste(pat,",", names(LexicClinic)[col]) , file=paste0(Processpath(Metadata),"/Samples.CleanedProcess.txt"),sep="\n",append = T)
 
-
       if(!length(col)==0){
 
-        clcl[,col] <- clinic[,i]
+
+
+        substrings <-   na.omit(clcl[,col])
+        retrivedcols = na.omit(colnames(clcl)[apply(clcl,1, function(x)  x %in% substrings  )])
+
+        if(all(is.na(clcl[,col] ))){
+          clcl[,col] <- clinic[,i]} else {message(paste(names(LexicClinic)[col],
+                                                        " already entered previously.\nCheck logs ('SampleLog()') and modify Lexic to match your need.\n"))}
+
+        if(length(retrivedcols)>1){
+          message(paste(colnames(clcl)[col], "values are duplicated in a previous column:" ,
+                        retrivedcols[retrivedcols!=colnames(clcl)[col]],"\n"))
+        }
 
       }
     }
+
 
     cc <- names(LexicClinic)
     cc <- cc[!cc%in%("SamplesID")]
@@ -245,6 +274,9 @@ CleaningClinic <- function(Metadata = NULL,
 
   } else if(type=="Patients")
   {
+    message("------------------------")
+    message("Patients clinic cleaning")
+
 
     NBP <- which(attributes(Metadata)$Data.Type=="Clinic" & attributes(Metadata)$Cleaned == "No")
 
@@ -272,22 +304,48 @@ CleaningClinic <- function(Metadata = NULL,
     LexicClinic <- lapply(LexicClinic, toupper)
 
     colnames(clinic) <-gsub("[.]", "_",colnames(clinic))
+    colnames(clinic) <-gsub(" ", "_",colnames(clinic))
+    colnames(clinic) <-gsub("[:]", "_",colnames(clinic))
+    colnames(clinic) <-gsub("[(]", "",colnames(clinic))
+    colnames(clinic) <-gsub("[)]", "",colnames(clinic))
+    colnames(clinic) <-gsub("[,]", "",colnames(clinic))
     LexicClinic <-  lapply(LexicClinic,function(x) gsub("[.]", "_",x))
+    LexicClinic <-  lapply(LexicClinic,function(x) gsub("[:]", "_",x))
+    LexicClinic <-  lapply(LexicClinic,function(x) gsub(" ", "_",x))
+    LexicClinic <-  lapply(LexicClinic,function(x) gsub("[(]", "",x))
+    LexicClinic <-  lapply(LexicClinic,function(x) gsub("[)]", "",x))
+    LexicClinic <-  lapply(LexicClinic,function(x) gsub("[,]", "",x))
 
     if(file.exists(paste0(Processpath(Metadata),"/Patients.CleanedProcess.txt"))){ file.remove(paste0(Processpath(Metadata),"/Patients.CleanedProcess.txt"))}
 
     cat("Patients.CleanedProcess" , file=paste0(Processpath(Metadata),"/Patients.CleanedProcess.txt"),sep="\n",append = T)
     cat("Raw.Clinic colnames Origin,Clean.Called" , file=paste0(Processpath(Metadata),"/Patients.CleanedProcess.txt"),sep="\n",append = T)
 
+
     for (i in 1:ncol(clinic)) {
       pat <- toupper(colnames(clinic)[i])
       col <- grep(paste("\\b",pat, "\\b",sep=""), LexicClinic)
+
+
+    #      if(length(col)==0){ col <- grep(pat, LexicClinic)}
 
       cat(paste(pat,",", names(LexicClinic)[col]) , file=paste0(Processpath(Metadata),"/Patients.CleanedProcess.txt"),sep="\n",append = T)
 
       if(!length(col)==0){
 
-        clcl[,col] <- clinic[,i]
+
+
+        substrings <-   na.omit(clcl[,col])
+        retrivedcols = na.omit(colnames(clcl)[apply(clcl,1, function(x)  x %in% substrings  )])
+
+        if(all(is.na(clcl[,col] ))){
+          clcl[,col] <- clinic[,i]} else {message(paste(names(LexicClinic)[col],
+                                                        " already entered previously.\nCheck logs ('PatientLog()') and modify Lexic to match your need.\n"))}
+
+        if(length(retrivedcols)>1){
+          message(paste(colnames(clcl)[col], "values are duplicated in a previous column:" ,
+                        retrivedcols[retrivedcols!=colnames(clcl)[col]],"\n"))
+        }
 
       }
     }
@@ -586,6 +644,8 @@ CleaningClinic <- function(Metadata = NULL,
 
   } else if(type == "Cells"){
 
+    message("------------------------")
+    message("Cells annotation cleaning")
     clinic <- as.data.frame(Metadata[[ClinicToClean]])
 
 
@@ -606,7 +666,17 @@ CleaningClinic <- function(Metadata = NULL,
     LexicClinic <- lapply(LexicClinic, toupper)
 
     colnames(clinic) <-gsub("[.]", "_",colnames(clinic))
+    colnames(clinic) <-gsub(" ", "_",colnames(clinic))
+    colnames(clinic) <-gsub("[:]", "_",colnames(clinic))
+    colnames(clinic) <-gsub("[(]", "",colnames(clinic))
+    colnames(clinic) <-gsub("[)]", "",colnames(clinic))
+    colnames(clinic) <-gsub("[,]", "",colnames(clinic))
     LexicClinic <-  lapply(LexicClinic,function(x) gsub("[.]", "_",x))
+    LexicClinic <-  lapply(LexicClinic,function(x) gsub("[:]", "_",x))
+    LexicClinic <-  lapply(LexicClinic,function(x) gsub(" ", "_",x))
+    LexicClinic <-  lapply(LexicClinic,function(x) gsub("[(]", "",x))
+    LexicClinic <-  lapply(LexicClinic,function(x) gsub("[)]", "",x))
+    LexicClinic <-  lapply(LexicClinic,function(x) gsub("[,]", "",x))
 
     if(file.exists(paste0(Processpath(Metadata),"/CellAnnotation.CleanedProcess.txt"))){ file.remove(paste0(Processpath(Metadata),"/CellAnnotation.CleanedProcess.txt"))}
 
@@ -614,17 +684,35 @@ CleaningClinic <- function(Metadata = NULL,
     cat("Raw.CellAnnotation colnames Origin,Clean.Called" , file=paste0(Processpath(Metadata),"/CellAnnotation.CleanedProcess.txt"),sep="\n",append = T)
 
     for (i in 1:ncol(clinic)) {
+
       pat <- toupper(colnames(clinic)[i])
       col <- grep(paste("\\b",pat, "\\b",sep=""), LexicClinic)
+
+
+    #      if(length(col)==0){ col <- grep(pat, LexicClinic)}
 
       cat(paste(pat,",", names(LexicClinic)[col]) , file=paste0(Processpath(Metadata),"/CellAnnotation.CleanedProcess.txt"),sep="\n",append = T)
 
       if(!length(col)==0){
 
-        clcl[,col] <- clinic[,i]
+
+
+        substrings <-   na.omit(clcl[,col])
+        retrivedcols = na.omit(colnames(clcl)[apply(clcl,1, function(x)  x %in% substrings  )])
+
+        if(all(is.na(clcl[,col] ))){
+          clcl[,col] <- clinic[,i]} else {message(paste(names(LexicClinic)[col],
+                                                        " already entered previously.\nCheck logs ('CellLog()') and modify Lexic to match your need.\n"))}
+
+        if(length(retrivedcols)>1){
+          message(paste(colnames(clcl)[col], "values are duplicated in a previous column:" ,
+                        retrivedcols[retrivedcols!=colnames(clcl)[col]],"\n"))
+        }
 
       }
-    }
+
+      }
+
 
     clcl$CellsBarcode = clinic$CellsBarcode
     cc <- names(LexicClinic)
