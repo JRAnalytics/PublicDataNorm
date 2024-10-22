@@ -32,6 +32,8 @@ CleaningData(
 
 \item{SamplesAnnotToClean}{a character string of name of Samples annotation data to clean.}
 
+\item{CellsLexic}{Lexic to use for cleaning. Created from CreateLexic function.}
+
 \item{SamplesExportname}{name to apply in Metadata object list}
 
 \item{FilterSP}{default F, if T, keep only retrieved samples in SamplesAnnotation file}
