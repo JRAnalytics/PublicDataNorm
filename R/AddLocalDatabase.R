@@ -121,6 +121,9 @@ AddLocalDatabase <- function(Metadata,
   if(!is.na(NBS)){
   met <- length(which(str_detect(toupper(Metadata[[NBS[1]]]$SamplePathologicalState),"MET")))}else{met = 0}
 
+  NBC = which(attributes(Metadata)$Data.Type=="CellsAnnot" & attributes(Metadata)$Cleaned=="Yes")
+
+  if(attributes(Metadata)$Omics.type=="Single.Cell"){N.cells = nrow(Metadata[[NBC[1]]])}else{N.cells = NA}
 
 
   dt <- data.frame("Project" = project,
@@ -131,6 +134,7 @@ AddLocalDatabase <- function(Metadata,
                    "N.TumoralSamples" = tumor,
                    "N.NormalSamples" = normal,
                    "N.Metastasis" = met,
+                   "N.Cells" = N.cells,
                    "Overall.Survival" = OSinfo ,
                    "Progression.Free.Survival" = PFSinfo,
                    "Treatment.Information" = TTTinfo,
