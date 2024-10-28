@@ -299,8 +299,8 @@ if(exists("CellsLexic", mode= "any" )) {
 
       if(Vnumber==1){
         if(attributes(Metadata)$Omics.type=="Single.Cell") {
-        filename <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(Metadata)[j],".V1.features.tsv")
-        R.utils::gzip(filename, destname=sprintf("%s.gz", filename), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)}else{
+        filename <- paste0(Verifiedpath(Metadata),"/","V1.features.tsv")
+    }else{
           filename <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(Metadata)[j],".V1.tsv")
         }
         write.table(z,row.names = F ,file = filename, sep = ",")
@@ -311,7 +311,6 @@ if(exists("CellsLexic", mode= "any" )) {
 
         if(attributes(Metadata)$Omics.type=="Single.Cell") {
           filename <- paste0(list.files.path$Project.VerifiedDataset,"/","V",Vnumber,".features.tsv")
-          R.utils::gzip(filename, destname=sprintf("%s.gz", filename), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)
         }else{
         filename <- paste0(list.files.path$Project.VerifiedDataset,"/",project,".",names(Metadata)[j],".V",Vnumber,".tsv")}
         write.table(z,row.names = F ,file = filename, sep = ",")
