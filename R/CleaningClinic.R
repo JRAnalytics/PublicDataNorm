@@ -83,12 +83,14 @@ CleaningClinic <- function(Metadata = NULL,
     colnames(clinic) <-gsub("[(]", "",colnames(clinic))
     colnames(clinic) <-gsub("[)]", "",colnames(clinic))
     colnames(clinic) <-gsub("[,]", "",colnames(clinic))
+    colnames(clinic) = gsub("[[:punct:]]","-", colnames(clinic))
     LexicClinic <-  lapply(LexicClinic,function(x) gsub("[.]", "_",x))
     LexicClinic <-  lapply(LexicClinic,function(x) gsub("[:]", "_",x))
     LexicClinic <-  lapply(LexicClinic,function(x) gsub(" ", "_",x))
     LexicClinic <-  lapply(LexicClinic,function(x) gsub("[(]", "",x))
     LexicClinic <-  lapply(LexicClinic,function(x) gsub("[)]", "",x))
     LexicClinic <-  lapply(LexicClinic,function(x) gsub("[,]", "",x))
+    LexicClinic = lapply(LexicClinic,function(x) gsub("[[:punct:]]","-",x))
 
     if(file.exists(paste0(Processpath(Metadata),"/Samples.CleanedProcess.txt"))){ file.remove(paste0(Processpath(Metadata),"/Samples.CleanedProcess.txt"))}
 
@@ -309,12 +311,14 @@ CleaningClinic <- function(Metadata = NULL,
     colnames(clinic) <-gsub("[(]", "",colnames(clinic))
     colnames(clinic) <-gsub("[)]", "",colnames(clinic))
     colnames(clinic) <-gsub("[,]", "",colnames(clinic))
+    colnames(clinic) = gsub("[[:punct:]]","-", colnames(clinic))
     LexicClinic <-  lapply(LexicClinic,function(x) gsub("[.]", "_",x))
     LexicClinic <-  lapply(LexicClinic,function(x) gsub("[:]", "_",x))
     LexicClinic <-  lapply(LexicClinic,function(x) gsub(" ", "_",x))
     LexicClinic <-  lapply(LexicClinic,function(x) gsub("[(]", "",x))
     LexicClinic <-  lapply(LexicClinic,function(x) gsub("[)]", "",x))
     LexicClinic <-  lapply(LexicClinic,function(x) gsub("[,]", "",x))
+    LexicClinic = lapply(LexicClinic,function(x) gsub("[[:punct:]]","-",x))
 
     if(file.exists(paste0(Processpath(Metadata),"/Patients.CleanedProcess.txt"))){ file.remove(paste0(Processpath(Metadata),"/Patients.CleanedProcess.txt"))}
 

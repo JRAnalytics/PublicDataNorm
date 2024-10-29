@@ -100,7 +100,12 @@ AddClinicFromFile <- function(Metadata,
           if(type=="Cells"){
             if(!is.null(setCellsBarcode.Column)){dt$CellsBarcode =dt[,setCellsBarcode.Column]}else{stop("setCellsBarcode.Column must be set")}
             if(!is.null(setSamplesID.Column)){dt$SamplesID =dt[,setSamplesID.Column]}
-              if(!is.null(setPatientID.Column)){dt$PatientsID =dt[,setPatientID.Column]}}
+              if(!is.null(setPatientID.Column)){dt$PatientsID =dt[,setPatientID.Column]}
+
+            dt$CellsBarcode = gsub("[[:punct:]]","-",  dt$CellsBarcode)
+
+
+            }
 
 
 
