@@ -130,10 +130,10 @@ AddExpressionMatrixSC <- function(Metadata=NULL,
         if(inherits(setID.cellAnnotColumn,"character")){
         if(!setID.cellAnnotColumn %in%colnames(Cells) ){stop(paste(setID.cellAnnotColumn, "is not found in colnames of Cell.File"))}
         Cells$CellsBarcode = Cells[,setID.cellAnnotColumn]
-        Cells$CellsBarcode = gsub("_","-", Cells$CellsBarcode)
+        Cells$CellsBarcode = gsub("[[:punct:]]","-", Cells$CellsBarcode)
         colnames(dt) = Cells$CellsBarcode}
         if(inherits(setID.cellAnnotColumn,"numeric")){Cells$CellsBarcode = Cells[,setID.cellAnnotColumn]
-        Cells$CellsBarcode = gsub("_","-", Cells$CellsBarcode)
+        Cells$CellsBarcode = gsub("[[:punct:]]","-", Cells$CellsBarcode)
         colnames(dt) = Cells$CellsBarcode}
 
 

@@ -285,8 +285,11 @@ mm =  which(attributes(Metadata)$Data.Type=="Count")
       message(paste0("PatientsID from '", names(Metadata)[i],"', in CellsAnnotation object"))
       tot=0
       for (z in unique(Metadata[[i]][,"PatientsID"])) {
+
+        z = gsub("[[:punct:]]","-",z)
+
         if(str_detect(pattern = paste0('[a-zA-Z]'),z)){ pattern = paste0(z,"-")}else {pattern=  paste0('[a-zA-Z]',z,"-")}
-        t = summary(str_detect(pattern = pattern, cellID))["TRUE"][1]
+        t = summary(str_detect(pattern = paste0(pattern,"\\b"), cellID))["TRUE"][1]
 
         if(is.na(as.numeric(t))){ t = 0}
 
@@ -310,8 +313,12 @@ mm =  which(attributes(Metadata)$Data.Type=="Count")
 
           tot=0
           for (z in Metadata[[i]][,"SamplesID"]) {
+
+            z = gsub("[[:punct:]]","-",z)
+
             if(str_detect(pattern = paste0('[a-zA-Z]'),z)){ pattern = paste0(z,"-")}else {  paste0('[a-zA-Z]',z,"-")}
-            t = summary(str_detect(pattern = pattern, cellID))["TRUE"][1]
+
+            t = summary(str_detect(pattern = paste0(pattern,"\\b"), cellID))["TRUE"][1]
 
             if(is.na(as.numeric(t))){ t = 0}
 

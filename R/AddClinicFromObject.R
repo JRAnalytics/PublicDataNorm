@@ -65,7 +65,9 @@ AddClinicFromObject  <- function(Metadata,
     if(type=="Cells"){
       if(!is.null(setCellsBarcode.Column)){object$CellsBarcode =object[,setCellsBarcode.Column]}else{stop("setCellsBarcode.Column must be set")}
       if(!is.null(setSamplesID.Column)){object$SamplesID =object[,setSamplesID.Column]}
-      if(!is.null(setPatientID.Column)){object$PatientsID =object[,setPatientID.Column]}}
+      if(!is.null(setPatientID.Column)){object$PatientsID =object[,setPatientID.Column]}
+      dt$CellsBarcode = gsub("[[:punct:]]","-",  dt$CellsBarcode)
+    }
 
     if(type != "Patients"){type2 = "Samples annotation"}else{type2 = "Patients clinical data"}
     if(!ExpressionMatrixIdColumn%in%colnames(object)){stop(paste(ExpressionMatrixIdColumn, "is not in",type2, "object colnames."))}
