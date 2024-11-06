@@ -163,9 +163,9 @@ if(FilterGenes == T){
 
       if(length(pp)>0){
         clinic = Metadata[[pp]]
-        for (z in clinic$PatientsID){
+        for (z in clinic$patientsID){
 
-          Metadata$Cells.Annotation$PatientsID=ifelse(str_detect(pattern = paste0(z), cellID),z,Metadata$Cells.Annotation$PatientsID)
+          Metadata$Cells.Annotation$patientsID=ifelse(str_detect(pattern = paste0(z), cellID),z,Metadata$Cells.Annotation$patientsID)
         }
 
       }
@@ -188,8 +188,8 @@ if(FilterGenes == T){
 
       if(length(pp)>0){
         clinic = Metadata[[pp]]
-        for (z in clinic$PatientsID){
-          Metadata$Cells.Annotation.Full$PatientsID=ifelse(str_detect(pattern = paste0(z), cellID),z,Metadata$Cells.Annotation.Full$PatientsID)
+        for (z in clinic$patientsID){
+          Metadata$Cells.Annotation.Full$patientsID=ifelse(str_detect(pattern = paste0(z), cellID),z,Metadata$Cells.Annotation.Full$patientsID)
         }
 
       }

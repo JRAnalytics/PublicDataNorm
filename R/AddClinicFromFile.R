@@ -45,8 +45,8 @@ AddClinicFromFile <- function(Metadata,
 
 
 
-  if(type=="Samples"){ExpressionMatrixIdColumn = "SamplesID"}
-  if(type=="Patients"){ExpressionMatrixIdColumn = "PatientsID"}
+  if(type=="Samples"){ExpressionMatrixIdColumn = "samplesID"}
+  if(type=="Patients"){ExpressionMatrixIdColumn = "patientsID"}
   if(type=="Cells"){ExpressionMatrixIdColumn = "CellsBarcode"}
 
 
@@ -87,20 +87,20 @@ AddClinicFromFile <- function(Metadata,
         }
 
           if(type=="Samples"){
-           if(!is.null(setSamplesID.Column)){dt$SamplesID =dt[,setSamplesID.Column]
+           if(!is.null(setSamplesID.Column)){dt$samplesID =dt[,setSamplesID.Column]
             if(!is.null(setPatientID.Column)){
-              dt$PatientsID =dt[,setPatientID.Column]}else {stop("setPatientID.Column must be set")}}else{stop("setSamplesID.Column must be set")}}
+              dt$patientsID =dt[,setPatientID.Column]}else {stop("setPatientID.Column must be set")}}else{stop("setSamplesID.Column must be set")}}
 
           if(type=="Patients"){
             if(!is.null(setPatientID.Column)){
-              dt$PatientsID =dt[,setPatientID.Column]}else{stop("setPatientID.Column must be set")}
-                if(!is.null(setPatientID.Column)){ dt$SamplesID =dt[,setSamplesID.Column]}}
+              dt$patientsID =dt[,setPatientID.Column]}else{stop("setPatientID.Column must be set")}
+                if(!is.null(setPatientID.Column)){ dt$samplesID =dt[,setSamplesID.Column]}}
 
 
           if(type=="Cells"){
             if(!is.null(setCellsBarcode.Column)){dt$CellsBarcode =dt[,setCellsBarcode.Column]}else{stop("setCellsBarcode.Column must be set")}
-            if(!is.null(setSamplesID.Column)){dt$SamplesID =dt[,setSamplesID.Column]}
-              if(!is.null(setPatientID.Column)){dt$PatientsID =dt[,setPatientID.Column]}
+            if(!is.null(setSamplesID.Column)){dt$samplesID =dt[,setSamplesID.Column]}
+              if(!is.null(setPatientID.Column)){dt$patientsID =dt[,setPatientID.Column]}
 
             dt$CellsBarcode = gsub("[[:punct:]]","-",  dt$CellsBarcode)
 
@@ -173,20 +173,20 @@ AddClinicFromFile <- function(Metadata,
       }
 
       if(type=="Samples"){
-        if(!is.null(setSamplesID.Column)){dt$SamplesID =dt[,setSamplesID.Column]
+        if(!is.null(setSamplesID.Column)){dt$samplesID =dt[,setSamplesID.Column]
         if(!is.null(setPatientID.Column)){
-          dt$PatientsID =dt[,setPatientID.Column]}else {stop("setPatientID.Column must be set")}}else{stop("setSamplesID.Column must be set")}}
+          dt$patientsID =dt[,setPatientID.Column]}else {stop("setPatientID.Column must be set")}}else{stop("setSamplesID.Column must be set")}}
 
       if(type=="Patients"){
         if(!is.null(setPatientID.Column)){
-          dt$PatientsID =dt[,setPatientID.Column]}else{stop("setPatientID.Column must be set")}
-        if(!is.null(setPatientID.Column)){ dt$SamplesID =dt[,setSamplesID.Column]}}
+          dt$patientsID =dt[,setPatientID.Column]}else{stop("setPatientID.Column must be set")}
+        if(!is.null(setPatientID.Column)){ dt$samplesID =dt[,setSamplesID.Column]}}
 
 
       if(type=="Cells"){
         if(!is.null(setCellsBarcode.Column)){dt$CellsBarcode =dt[,setCellsBarcode.Column]}else{stop("setCellsBarcode.Column must be set")}
-        if(!is.null(setSamplesID.Column)){dt$SamplesID =dt[,setSamplesID.Column]}
-        if(!is.null(setPatientID.Column)){dt$PatientsID =dt[,setPatientID.Column]}}
+        if(!is.null(setSamplesID.Column)){dt$samplesID =dt[,setSamplesID.Column]}
+        if(!is.null(setPatientID.Column)){dt$patientsID =dt[,setPatientID.Column]}}
 
       Metadata[[mergeToClinic]] <- dt
 

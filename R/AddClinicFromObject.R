@@ -47,26 +47,26 @@ AddClinicFromObject  <- function(Metadata,
 
     l <- length(Metadata)
 
-    if(type=="Samples"){ExpressionMatrixIdColumn = "SamplesID"}
-    if(type=="Patients"){ExpressionMatrixIdColumn = "PatientsID"}
+    if(type=="Samples"){ExpressionMatrixIdColumn = "samplesID"}
+    if(type=="Patients"){ExpressionMatrixIdColumn = "patientsID"}
     if(type=="Cells"){ExpressionMatrixIdColumn = "CellsBarcode"}
 
     if(type=="Samples"){
-      if(!is.null(setSamplesID.Column)){object$SamplesID = object[,setSamplesID.Column]
+      if(!is.null(setSamplesID.Column)){object$samplesID = object[,setSamplesID.Column]
       if(!is.null(setPatientID.Column)){
-        object$PatientsID =object[,setPatientID.Column]}else {stop("setPatientID.Column must be set")}}else{stop("setSamplesID.Column must be set")}}
+        object$patientsID =object[,setPatientID.Column]}else {stop("setPatientID.Column must be set")}}else{stop("setSamplesID.Column must be set")}}
 
     if(type=="Patients"){
       if(!is.null(setPatientID.Column)){
-        object$PatientsID =object[,setPatientID.Column]}else{stop("setPatientID.Column must be set")}
-      if(!is.null(setPatientID.Column)){ object$SamplesID =object[,setSamplesID.Column]}}
+        object$patientsID =object[,setPatientID.Column]}else{stop("setPatientID.Column must be set")}
+      if(!is.null(setPatientID.Column)){ object$samplesID =object[,setSamplesID.Column]}}
 
 
     if(type=="Cells"){
       if(!is.null(setCellsBarcode.Column)){object$CellsBarcode =object[,setCellsBarcode.Column]}else{stop("setCellsBarcode.Column must be set")}
-      if(!is.null(setSamplesID.Column)){object$SamplesID =object[,setSamplesID.Column]}
-      if(!is.null(setPatientID.Column)){object$PatientsID =object[,setPatientID.Column]}
-      dt$CellsBarcode = gsub("[[:punct:]]","-",  dt$CellsBarcode)
+      if(!is.null(setSamplesID.Column)){object$samplesID =object[,setSamplesID.Column]}
+      if(!is.null(setPatientID.Column)){object$patientsID =object[,setPatientID.Column]}
+      object$CellsBarcode = gsub("[[:punct:]]","-",  object$CellsBarcode)
     }
 
     if(type != "Patients"){type2 = "Samples annotation"}else{type2 = "Patients clinical data"}
