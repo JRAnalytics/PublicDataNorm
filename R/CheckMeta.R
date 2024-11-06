@@ -30,8 +30,8 @@ CheckMeta <- function(Metadata) {
   if(length(c2)>0){c=c2}
   if(length(c)==0){stop("A Patients' Clinical data must be loaded.")}
 
-  PpID <- unique(Metadata[[c[1]]][,"PatientsID"])
-  PsID = Metadata[[c[1]]][,"SamplesID"]
+  PpID <- unique(Metadata[[c[1]]][,"patientsID"])
+  PsID = Metadata[[c[1]]][,"samplesID"]
   PsID = unique(unlist(strsplit(PsID, ";")))
 
 
@@ -42,13 +42,13 @@ CheckMeta <- function(Metadata) {
 
   if(length(s2)>0){s=s2}
 
-  SsID <- unique(Metadata[[s[1]]][,"SamplesID"])
-  SpID <- unique(Metadata[[s[1]]][,"PatientsID"])
+  SsID <- unique(Metadata[[s[1]]][,"samplesID"])
+  SpID <- unique(Metadata[[s[1]]][,"patientsID"])
 
     if(length(s)!=0){
-    if(attributes(Metadata)$Data.Type[s[1]]=="SamplesAnnot"){sID <- Metadata[[s[1]]][,"SamplesID"] }}
+    if(attributes(Metadata)$Data.Type[s[1]]=="SamplesAnnot"){sID <- Metadata[[s[1]]][,"samplesID"] }}
   if(length(c)!=0){
-    if(attributes(Metadata)$Data.Type[c[1]]=="Clinic"){pID <- Metadata[[c[1]]][,"PatientsID"] }}
+    if(attributes(Metadata)$Data.Type[c[1]]=="Clinic"){pID <- Metadata[[c[1]]][,"patientsID"] }}
 
   }
 
@@ -67,8 +67,8 @@ CheckMeta <- function(Metadata) {
       if(length(c)==0){stop("A Patients' Clinical data must be loaded")}
 
 
-      PpID <- unique(Metadata[[c[1]]][,"PatientsID"])
-      PsID = Metadata[[c[1]]][,"SamplesID"]
+      PpID <- unique(Metadata[[c[1]]][,"patientsID"])
+      PsID = Metadata[[c[1]]][,"samplesID"]
       PsID = unique(unlist(strsplit(PsID, ";")))
     }
 
@@ -83,8 +83,8 @@ CheckMeta <- function(Metadata) {
 
       if(length(s2)>0){s=s2}
 
-      SsID <- unique(Metadata[[s[1]]][,"SamplesID"])
-      SpID <- unique(Metadata[[s[1]]][,"PatientsID"])
+      SsID <- unique(Metadata[[s[1]]][,"samplesID"])
+      SpID <- unique(Metadata[[s[1]]][,"patientsID"])
       }else{s=NULL}
 
 
@@ -116,8 +116,8 @@ if(attributes(Metadata)$Omics.type!="Single.Cell"){
 
   ccc = which(attributes(Metadata)$Cleaned=="Yes"& attributes(Metadata)$Data.Type!="geneAnnot")
 
-  if(length(ccc)>0){  message(paste("Checking SamplesID in Cleaned Metadata sub-objects from", names(Metadata)[s2[1]]))}else {
-    message(paste("Checking SamplesID in Metadata sub-objects from", names(Metadata)[s[1]])) }
+  if(length(ccc)>0){  message(paste("Checking samplesID in Cleaned Metadata sub-objects from", names(Metadata)[s2[1]]))}else {
+    message(paste("Checking samplesID in Metadata sub-objects from", names(Metadata)[s[1]])) }
 
   message("-------------------------")
 
@@ -267,12 +267,12 @@ mm =  which(attributes(Metadata)$Data.Type=="Count")
 
     if(attributes(Metadata)$Omics.type!="Single.Cell"){
       for (i in c(c[-1],s)){
-      target = unique(Metadata[[i[1]]][,"PatientsID"])
+      target = unique(Metadata[[i[1]]][,"patientsID"])
 
       if(length(which(PpID %in% as.matrix(Metadata[[i[1]]])))==length(PpID)){message(paste(MetaDataN[i]), " : PASS") }
       if(length(which(PpID %in% as.matrix(Metadata[[i[1]]])))<length(PpID)){
         message(paste(MetaDataN[i]), " : FAIL")
-        message(paste("PatientsID not found in ", MetaDataN[i]," : "), paste0(na.omit(PpID[!PpID%in%target]),collapse = "; "))
+        message(paste("patientsID not found in ", MetaDataN[i]," : "), paste0(na.omit(PpID[!PpID%in%target]),collapse = "; "))
         }
 
 
@@ -282,9 +282,9 @@ mm =  which(attributes(Metadata)$Data.Type=="Count")
 
     if(attributes(Metadata)$Omics.type=="Single.Cell"){
       for (i in c(c,s)){
-      message(paste0("PatientsID from '", names(Metadata)[i],"', in CellsAnnotation object"))
+      message(paste0("patientsID from '", names(Metadata)[i],"', in CellsAnnotation object"))
       tot=0
-      for (z in unique(Metadata[[i]][,"PatientsID"])) {
+      for (z in unique(Metadata[[i]][,"patientsID"])) {
 
         z = gsub("[[:punct:]]","-",z)
 
@@ -309,10 +309,10 @@ mm =  which(attributes(Metadata)$Data.Type=="Count")
       if(length(p)>0){
 
         for (i in p){
-          message(paste0("SamplesID from '", names(Metadata)[i],"', in CellsAnnotation object :"))
+          message(paste0("samplesID from '", names(Metadata)[i],"', in CellsAnnotation object :"))
 
           tot=0
-          for (z in Metadata[[i]][,"SamplesID"]) {
+          for (z in Metadata[[i]][,"samplesID"]) {
 
             z = gsub("[[:punct:]]","-",z)
 

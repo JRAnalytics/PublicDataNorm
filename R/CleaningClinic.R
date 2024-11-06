@@ -130,16 +130,16 @@ CleaningClinic <- function(Metadata = NULL,
 
 
     cc <- names(LexicClinic)
-    cc <- cc[!cc%in%("SamplesID")]
+    cc <- cc[!cc%in%("samplesID")]
 
-    if(all(is.na(clcl$SamplesID))){
+    if(all(is.na(clcl$samplesID))){
       message("No SamplesID found in raw clinical data. Using PatientID instead")
-      clcl$SamplesID <- clcl$PatientsID
+      clcl$samplesID <- clcl$patientsID
     }
 
-    if(length(which(duplicated(clcl$SamplesID)))==0) {
+    if(length(which(duplicated(clcl$samplesID)))==0) {
 
-      clinic2 <-  clcl[,c("SamplesID", cc)]
+      clinic2 <-  clcl[,c("samplesID", cc)]
 
       clinic2 <- as.data.frame(clinic2)
       clinic2[clinic2==""] <- NA
@@ -157,12 +157,12 @@ CleaningClinic <- function(Metadata = NULL,
           zz = which(attributes(Metadata)$Data.Type=="Count")[1]
 
         # Diviser chaque élément de la colonne en un vecteur de sous-chaînes
-        substrings <- clinic2$SamplesID
+        substrings <- clinic2$samplesID
         # Vérifier si chaque valeur du vecteur est présente dans chaque vecteur de sous-chaînes
         est_present <- sapply(substrings, function(x) any(colnames(Metadata[[zz]]) %in% x))
 
         if(all(est_present==F)){
-          substrings <- clinic2$PatientsID
+          substrings <- clinic2$patientsID
           est_present <- sapply(substrings, function(x) any(colnames(Metadata[[zz]]) %in% x))}
 
         # Récupérer les index de position correspondants
@@ -171,7 +171,7 @@ CleaningClinic <- function(Metadata = NULL,
         } else {
 
           zz = which(attributes(Metadata)$Data.Type=="Count")[1]
-          substrings <- clinic2$SamplesID
+          substrings <- clinic2$samplesID
           names(substrings) = substrings
           for(z in substrings){
             if("TRUE" %in% str_detect(pattern = paste0(z,"-"), colnames(Metadata[[zz]]))){substrings[z] = T }else { substrings[z] = F}
@@ -181,7 +181,7 @@ CleaningClinic <- function(Metadata = NULL,
 
         }}
 
-      rownames(clinic2) = clinic2$SamplesID
+      rownames(clinic2) = clinic2$samplesID
 
       if(exportname%in%names(Metadata)){
         if(force.replace==F){stop("set force.replace==T to subset object.")}
@@ -215,13 +215,13 @@ CleaningClinic <- function(Metadata = NULL,
       cl_rolled <- clcl %>%
 
         # create groups by name
-        group_by(SamplesID) %>%
+        group_by(samplesID) %>%
 
         dplyr::summarise(across(everything(), ~paste0(unique(na.omit(.x)), collapse = ";")))
       cl_rolled <- as.data.frame(cl_rolled)
 
 
-      cl_rolled <-  cl_rolled[,c("SamplesID", cc)]
+      cl_rolled <-  cl_rolled[,c("samplesID", cc)]
 
       cl_rolled[cl_rolled==""] <- NA
       cl_rolled[cl_rolled=="NA"] <- NA
@@ -239,19 +239,19 @@ CleaningClinic <- function(Metadata = NULL,
           zz = which(attributes(Metadata)$Data.Type=="Count")[1]
 
           # Diviser chaque élément de la colonne en un vecteur de sous-chaînes
-          substrings <- cl_rolled$SamplesID
+          substrings <- cl_rolled$samplesID
           # Vérifier si chaque valeur du vecteur est présente dans chaque vecteur de sous-chaînes
           est_present <- sapply(substrings, function(x) any(colnames(Metadata[[zz]]) %in% x))
 
           if(all(est_present==F)){
-            substrings <- cl_rolled$PatientsID
+            substrings <- cl_rolled$patientsID
             est_present <- sapply(substrings, function(x) any(colnames(Metadata[[zz]]) %in% x))}
 
           # Récupérer les index de position correspondants
           indices <- which(est_present)
           cl_rolled <- cl_rolled[indices,]
         }
-        rownames(cl_rolled) = cl_rolled$SamplesID
+        rownames(cl_rolled) = cl_rolled$samplesID
 
         Metadata[[exportname]] <- cl_rolled
 
@@ -355,25 +355,25 @@ CleaningClinic <- function(Metadata = NULL,
     }
 
     cc <- names(LexicClinic)
-    cc <- cc[!cc%in%("PatientsID")]
+    cc <- cc[!cc%in%("patientsID")]
 
-    if(all(is.na(clcl$PatientsID))){
+    if(all(is.na(clcl$patientsID))){
       message("No PatientsID found in raw clinical data. Using SamplesID instead")
-      clcl$PatientsID <- clcl$SamplesID
+      clcl$patientsID <- clcl$samplesID
     }
 
 
 
 
 
-    if(length(which(duplicated(clcl$PatientsID)))==0) {
+    if(length(which(duplicated(clcl$patientsID)))==0) {
 
 
-      if(!"SamplesID" %in%colnames(clcl) ){
-        clcl$SamplesID = NA
+      if(!"samplesID" %in%colnames(clcl) ){
+        clcl$samplesID = NA
       }
 
-      clinic2 <-  clcl[,c("PatientsID", cc)]
+      clinic2 <-  clcl[,c("patientsID", cc)]
       clinic2 <- as.data.frame(clinic2)
       clinic2[clinic2==""] <- NA
       clinic2[clinic2=="NA"] <- NA
@@ -383,34 +383,34 @@ CleaningClinic <- function(Metadata = NULL,
 
       if(length(NBS)>0){
 
-        if(all(is.na(clinic2$SamplesID))){} else {  psID =  clinic2$SamplesID[which(clinic2$SamplesID %in% Metadata[[NBS]]$SamplesID)]
+        if(all(is.na(clinic2$samplesID))){} else {  psID =  clinic2$samplesID[which(clinic2$samplesID %in% Metadata[[NBS]]$samplesID)]
 
 
 
 
-        SID = Metadata[[NBS]]$SamplesID
-        PID = clinic2$PatientsID[which(clinic2$PatientsID %in% Metadata[[NBS]][,"PatientsID"])]
+        SID = Metadata[[NBS]]$samplesID
+        PID = clinic2$patientsID[which(clinic2$patientsID %in% Metadata[[NBS]][,"patientsID"])]
 
         if(length(psID) <= length(SID)){
           if(length(psID)>length(PID)) {
             message("More concordance by SamplesID than PatientsID")
             message("Checking Clinical data and Samples Annotation concordance by SamplesID")
-            suma = summary(clinic2$SamplesID %in% Metadata[[NBS]]$SamplesID)
+            suma = summary(clinic2$samplesID %in% Metadata[[NBS]]$samplesID)
             print(suma)
 
             message("selecting common SamplesID with Samples Annotation")
-            Scom = which(clinic2$SamplesID %in% Metadata[[NBS]]$SamplesID)
+            Scom = which(clinic2$samplesID %in% Metadata[[NBS]]$samplesID)
             clinic2 = clinic2[Scom,]
 
           } else {
 
             message("Checking Clinical data and Samples Annotation concordance by PatientsID.")
             NBS = NBS[1]
-            suma = summary(clinic2$PatientsID %in% Metadata[[NBS]][,"PatientsID"])
+            suma = summary(clinic2$patientsID %in% Metadata[[NBS]][,"patientsID"])
             print(suma)
 
             message("selecting common PatientsID with Samples Annotation")
-            Pcom = which(clinic2$PatientsID %in% Metadata[[NBS]][,"PatientsID"])
+            Pcom = which(clinic2$patientsID %in% Metadata[[NBS]][,"patientsID"])
             clinic2 = clinic2[Pcom,]
 
 
@@ -421,11 +421,11 @@ CleaningClinic <- function(Metadata = NULL,
 
           message("Checking Clinical data and Samples Annotation concordance by PatientsID.")
           NBS = NBS[1]
-          suma = summary(clinic2$PatientsID %in% Metadata[[NBS]][,"PatientsID"])
+          suma = summary(clinic2$patientsID %in% Metadata[[NBS]][,"patientsID"])
           print(suma)
 
           message("selecting common PatientsID with Samples Annotation")
-          Pcom = which(clinic2$PatientsID %in% Metadata[[NBS]][,"PatientsID"])
+          Pcom = which(clinic2$patientsID %in% Metadata[[NBS]][,"patientsID"])
           clinic2 = clinic2[Pcom,]
 
           }
@@ -437,18 +437,18 @@ CleaningClinic <- function(Metadata = NULL,
 
       if(attributes(Metadata)$Omics.type != "Single.Cell"){
 
-        if(!all(is.na(clinic2$SamplesID))){
+        if(!all(is.na(clinic2$samplesID))){
         message("Selecting only Patient present in both Count and clinical data.")
 
         zz = which(attributes(Metadata)$Data.Type=="Count")[1]
 
         # Diviser chaque élément de la colonne en un vecteur de sous-chaînes
-        substrings <- clinic2$PatientsID
+        substrings <- clinic2$patientsID
         # Vérifier si chaque valeur du vecteur est présente dans chaque vecteur de sous-chaînes
         est_present <- sapply(substrings, function(x) any(colnames(Metadata[[zz]]) %in% x))
 
         if(all(est_present==F)){
-        substrings <- clinic2$SamplesID
+        substrings <- clinic2$samplesID
         est_present <- sapply(substrings, function(x) any(colnames(Metadata[[zz]]) %in% x))}
 
         # Récupérer les index de position correspondants
@@ -459,7 +459,7 @@ CleaningClinic <- function(Metadata = NULL,
 
         zz = which(attributes(Metadata)$Data.Type=="Count")[1]
 
-        substrings <- clinic2$PatientsID
+        substrings <- clinic2$patientsID
         names(substrings) = substrings
         for(z in substrings){
         if("TRUE" %in% str_detect(pattern = paste0(z,"-"), colnames(Metadata[[zz]]))){substrings[z] = T }else { substrings[z] = F}
@@ -472,7 +472,7 @@ CleaningClinic <- function(Metadata = NULL,
 
         }
 
-      rownames(clinic2) = clinic2$PatientsID
+      rownames(clinic2) = clinic2$patientsID
 
 
 
@@ -508,11 +508,11 @@ CleaningClinic <- function(Metadata = NULL,
       cl_rolled <- clcl %>%
 
         # create groups by name
-        group_by(PatientsID) %>%
+        group_by(patientsID) %>%
 
         dplyr::summarise(across(everything(), ~paste0(unique(na.omit(.x)), collapse = ";")))
 
-      isNA <- which(is.na( cl_rolled$PatientsID))
+      isNA <- which(is.na( cl_rolled$patientsID))
 
       if(length(isNA)>0){ cl_rolled <- as.data.frame(cl_rolled[-isNA,])  }
 
@@ -520,7 +520,7 @@ CleaningClinic <- function(Metadata = NULL,
 
 
 
-      cl_rolled <-  cl_rolled[,c("PatientsID", cc)]
+      cl_rolled <-  cl_rolled[,c("patientsID", cc)]
       cl_rolled[cl_rolled==""] <- NA
       cl_rolled[cl_rolled=="NA"] <- NA
 
@@ -529,30 +529,30 @@ CleaningClinic <- function(Metadata = NULL,
       if(length(NBS)>0){
 
 
-        psID =  cl_rolled$SamplesID[which(cl_rolled$SamplesID %in% Metadata[[NBS]]$SamplesID)]
-        SID = Metadata[[NBS]]$SamplesID
-        PID = cl_rolled$PatientsID[which(cl_rolled$PatientsID %in% Metadata[[NBS]][,"PatientsID"])]
+        psID =  cl_rolled$samplesID[which(cl_rolled$samplesID %in% Metadata[[NBS]]$samplesID)]
+        SID = Metadata[[NBS]]$samplesID
+        PID = cl_rolled$patientsID[which(cl_rolled$patientsID %in% Metadata[[NBS]][,"patientsID"])]
 
         if(length(psID) <= length(SID)){
           if(length(psID)>length(PID)) {
             message("More concordance by SamplesID than PatientsID")
             message("Checking Clinical data and Samples Annotation concordance by SamplesID")
-            suma = summary(cl_rolled$SamplesID %in% Metadata[[NBS]]$SamplesID)
+            suma = summary(cl_rolled$samplesID %in% Metadata[[NBS]]$samplesID)
             print(suma)
 
             message("selecting common SamplesID with Samples Annotation")
-            Scom = which(cl_rolled$SamplesID %in% Metadata[[NBS]]$SamplesID)
+            Scom = which(cl_rolled$samplesID %in% Metadata[[NBS]]$samplesID)
             cl_rolled = cl_rolled[Scom,]
 
           } else {
 
             message("Checking Clinical data and Samples Annotation concordance by PatientsID.")
             NBS = NBS[1]
-            suma = summary(cl_rolled$PatientsID %in% Metadata[[NBS]][,"PatientsID"])
+            suma = summary(cl_rolled$patientsID %in% Metadata[[NBS]][,"patientsID"])
             print(suma)
 
             message("selecting common PatientsID with Samples Annotation")
-            Pcom = which(cl_rolled$PatientsID %in% Metadata[[NBS]][,"PatientsID"])
+            Pcom = which(cl_rolled$patientsID %in% Metadata[[NBS]][,"patientsID"])
             cl_rolled = cl_rolled[Pcom,]
 
 
@@ -563,11 +563,11 @@ CleaningClinic <- function(Metadata = NULL,
 
           message("Checking Clinical data and Samples Annotation concordance by PatientsID.")
           NBS = NBS[1]
-          suma = summary(cl_rolled$PatientsID %in% Metadata[[NBS]][,"PatientsID"])
+          suma = summary(cl_rolled$patientsID %in% Metadata[[NBS]][,"patientsID"])
           print(suma)
 
           message("selecting common PatientsID with Samples Annotation")
-          Pcom = which(cl_rolled$PatientsID %in% Metadata[[NBS]][,"PatientsID"])
+          Pcom = which(cl_rolled$patientsID %in% Metadata[[NBS]][,"patientsID"])
           cl_rolled = cl_rolled[Pcom,]
 
         }
@@ -582,12 +582,12 @@ CleaningClinic <- function(Metadata = NULL,
         zz = which(attributes(Metadata)$Data.Type=="Count")[1]
 
         # Diviser chaque élément de la colonne en un vecteur de sous-chaînes
-        substrings <- cl_rolled$PatientsID
+        substrings <- cl_rolled$patientsID
         # Vérifier si chaque valeur du vecteur est présente dans chaque vecteur de sous-chaînes
         est_present <- sapply(substrings, function(x) any(colnames(Metadata[[zz]]) %in% x))
 
         if(all(est_present==F)){
-          substrings <- cl_rolled$SamplesID
+          substrings <- cl_rolled$samplesID
           est_present <- sapply(substrings, function(x) any(colnames(Metadata[[zz]]) %in% x))}
 
         # Récupérer les index de position correspondants
@@ -597,7 +597,7 @@ CleaningClinic <- function(Metadata = NULL,
 
           zz = which(attributes(Metadata)$Data.Type=="Count")[1]
 
-          substrings <- cl_rolled$PatientsID
+          substrings <- cl_rolled$patientsID
           names(substrings) = substrings
           for(z in substrings){
             if("TRUE" %in% str_detect(pattern = paste0(z,"-"), colnames(Metadata[[zz]]))){substrings[z] = T }else { substrings[z] = F}
@@ -613,7 +613,7 @@ CleaningClinic <- function(Metadata = NULL,
       }
 
 
-      rownames(cl_rolled) = cl_rolled$PatientsID
+      rownames(cl_rolled) = cl_rolled$patientsID
 
       if(exportname%in%names(Metadata)){
         if(force.replace==F){stop("set force.replace==T to subset object.")}

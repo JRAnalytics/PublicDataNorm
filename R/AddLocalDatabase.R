@@ -59,26 +59,26 @@ AddLocalDatabase <- function(Metadata,
 
 
   if(!is.na(NBS)){
-  if(all(is.na(Metadata[[NBS[1]]]$SamplePathologicalState))){tumor <- nrow(Metadata[[NBS[1]]]) } else {
-    tumor <- length(which(str_detect(toupper(Metadata[[NBS[1]]]$SamplePathologicalState),"TUM|PRIMARY|CARCINO")))
-    if(tumor==0 & !all(is.na(Metadata[[NBS[1]]]$SamplePathologicalState))) {
+  if(all(is.na(Metadata[[NBS[1]]]$samplePathologicalState))){tumor <- nrow(Metadata[[NBS[1]]]) } else {
+    tumor <- length(which(str_detect(toupper(Metadata[[NBS[1]]]$samplePathologicalState),"TUM|PRIMARY|CARCINO")))
+    if(tumor==0 & !all(is.na(Metadata[[NBS[1]]]$samplePathologicalState))) {
 
-      normal <- length(which(str_detect(toupper(Metadata[[NBS[1]]]$SamplePathologicalState),"NORM|HEAL")))
-      met <- length(which(str_detect(toupper(Metadata[[NBS[1]]]$SamplePathologicalState),"MET")))
-      na <- length(which(is.na(Metadata[[NBS[1]]]$SamplePathologicalState)))
+      normal <- length(which(str_detect(toupper(Metadata[[NBS[1]]]$samplePathologicalState),"NORM|HEAL")))
+      met <- length(which(str_detect(toupper(Metadata[[NBS[1]]]$samplePathologicalState),"MET")))
+      na <- length(which(is.na(Metadata[[NBS[1]]]$samplePathologicalState)))
       tumor = nrow(Metadata[[NBS[1]]])-normal-met-na
     }
 
   }
 
-  if(all(is.na(Metadata[[NBS[1]]]$SamplePathologicalState))){normal <- 0 } else {
-    normal<- length(which(str_detect(toupper(Metadata[[NBS[1]]]$SamplePathologicalState),"NORM|HEAL")))
+  if(all(is.na(Metadata[[NBS[1]]]$samplePathologicalState))){normal <- 0 } else {
+    normal<- length(which(str_detect(toupper(Metadata[[NBS[1]]]$samplePathologicalState),"NORM|HEAL")))
 
-    if(normal==0 & !all(is.na(Metadata[[NBS[1]]]$SamplePathologicalState))) {
+    if(normal==0 & !all(is.na(Metadata[[NBS[1]]]$samplePathologicalState))) {
 
 
-      met <- length(which(str_detect(toupper(Metadata[[NBS[1]]]$SamplePathologicalState),"MET")))
-      na <- length(which(is.na(Metadata[[NBS[1]]]$SamplePathologicalState)))
+      met <- length(which(str_detect(toupper(Metadata[[NBS[1]]]$samplePathologicalState),"MET")))
+      na <- length(which(is.na(Metadata[[NBS[1]]]$samplePathologicalState)))
       normal = nrow(Metadata[[NBS[1]]])-tumor-met-na
     }
   }}else {
@@ -96,9 +96,9 @@ AddLocalDatabase <- function(Metadata,
 
   if(!is.na(NBS)){
 
-    if(!is.null(Metadata[[NBS[1]]][,"HadTreatment"])) {
+    if(!is.null(Metadata[[NBS[1]]][,"hadTreatment"])) {
 
-      TTT <- length(which(str_detect(toupper(Metadata[[NBS[1]]][,"HadTreatment"]),"YES|OUI|TRUE|1")))
+      TTT <- length(which(str_detect(toupper(Metadata[[NBS[1]]][,"hadTreatment"]),"YES|OUI|TRUE|1")))
 
     } else { TTT <- 0   }
 
@@ -119,7 +119,7 @@ AddLocalDatabase <- function(Metadata,
     PFSinfo <- "No" }
 
   if(!is.na(NBS)){
-  met <- length(which(str_detect(toupper(Metadata[[NBS[1]]]$SamplePathologicalState),"MET")))}else{met = 0}
+  met <- length(which(str_detect(toupper(Metadata[[NBS[1]]]$samplePathologicalState),"MET")))}else{met = 0}
 
   NBC = which(attributes(Metadata)$Data.Type=="CellsAnnot" & attributes(Metadata)$Cleaned=="Yes")
 

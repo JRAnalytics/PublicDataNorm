@@ -6,6 +6,9 @@
 \usage{
 SampleLog(Metadata)
 }
+\arguments{
+\item{Metadata}{A metadata object}
+}
 \value{
 logs
 }
