@@ -55,14 +55,14 @@ CleaningData = function(Metadata = NULL,
                              force.replace = force.replace )
 
   if(keep.all.column==T){
-    Metadata <- CleaningClinic(Metadata = Metadata,
+    Metadata <-suppressMessages( CleaningClinic(Metadata = Metadata,
                                Lexic = SamplesLexic,
                                type = "Samples",
                                ClinicToClean = SamplesAnnotToClean,
-                               exportname = paste0(SamplesExportname,".fullCol"),
+                               exportname = paste0(SamplesExportname,".fullColCol"),
                                FilterSamples =  FilterSP,
                                force.replace = force.replace,
-                               keep.all.column =keep.all.column )}
+                               keep.all.column =keep.all.column ))}
 
     }
   }
@@ -90,16 +90,16 @@ CleaningData = function(Metadata = NULL,
 
 
       if(keep.all.column==T){
-      Metadata <- CleaningClinic(Metadata = Metadata,
+      Metadata <- suppressMessages(CleaningClinic(Metadata = Metadata,
                                  Lexic = PatientsLexic,
                                  type = "Patients",
                                  ClinicToClean = SamplesAnnotToClean,
-                                 exportname = paste0(PatientsExportname,".fullCol"),
+                                 exportname = paste0(PatientsExportname,".fullColCol"),
                                  FilterPatients =  FilterSP,
                                  FilterSamples = F,
                                  force.replace = force.replace,
                                  CleanFromOtherType = T,
-                                 keep.all.column = T)
+                                 keep.all.column = T))
 
       }
 
@@ -107,7 +107,46 @@ CleaningData = function(Metadata = NULL,
 
 
 
-      } else{}
+    } else{
+
+      if(!is.null(PatientsAnnotToClean) & attributes(Metadata)$Omics.type!="Single.Cell"   ){
+
+        if(is.null(PatientsExportname)){stop("Specify PatientsExportname.")}
+        if(is.null(PatientsLexic)){stop("PatientsLexic is mandatory.")}
+
+              Metadata <- CleaningClinic(Metadata = Metadata,
+                                 Lexic = PatientsLexic,
+                                 type = "Patients",
+                                 ClinicToClean = PatientsAnnotToClean,
+                                 exportname = PatientsExportname,
+                                 FilterPatients =  FilterSP,
+                                 FilterSamples = F,
+                                 force.replace = force.replace,
+                                 CleanFromOtherType = T)
+
+
+
+      if(keep.all.column==T){
+      Metadata <- suppressMessages(CleaningClinic(Metadata = Metadata,
+                                 Lexic = PatientsLexic,
+                                 type = "Patients",
+                                 ClinicToClean = PatientsAnnotToClean,
+                                 exportname = paste0(PatientsExportname,".fullColCol"),
+                                 FilterPatients =  FilterSP,
+                                 FilterSamples = F,
+                                 force.replace = force.replace,
+                                 CleanFromOtherType = T,
+                                 keep.all.column = T))
+
+      }
+
+
+
+
+      }
+
+
+      }
    }
 
 if(FilterGenes == T){
@@ -172,16 +211,16 @@ if(FilterGenes == T){
 
 
       if(keep.all.column==T){
-      Metadata <- CleaningClinic(Metadata = Metadata,
+      Metadata <- suppressMessages(CleaningClinic(Metadata = Metadata,
                                  Lexic = CellsLexic,
                                  type = "Cells",
                                  ClinicToClean = names(Metadata)[CellAnnotRaw],
-                                 exportname = "Cells.Annotation.Full",
+                                 exportname = "Cells.Annotation.fullCol",
                                  FilterPatients =FilterSP,
                                  FilterSamples = F,
                                  CleanFromOtherType = F,
                                  force.replace = force.replace,
-                                 keep.all.column =keep.all.column )
+                                 keep.all.column =keep.all.column ))
 
 
       cellID = Metadata$Cells.Annotation$CellsBarcode
@@ -189,7 +228,7 @@ if(FilterGenes == T){
       if(length(pp)>0){
         clinic = Metadata[[pp]]
         for (z in clinic$patientsID){
-          Metadata$Cells.Annotation.Full$patientsID=ifelse(str_detect(pattern = paste0(z), cellID),z,Metadata$Cells.Annotation.Full$patientsID)
+          Metadata$Cells.Annotation.fullCol$patientsID=ifelse(str_detect(pattern = paste0(z), cellID),z,Metadata$Cells.Annotation.fullCol$patientsID)
         }
 
       }
@@ -223,16 +262,16 @@ if(FilterGenes == T){
 
       if(keep.all.column==T){
 
-        Metadata <- CleaningClinic(Metadata = Metadata,
+        Metadata <- suppressMessages(CleaningClinic(Metadata = Metadata,
                                    Lexic = PatientsLexic,
                                    type = "Patients",
                                    ClinicToClean = names(Metadata)[SampleAnnotRaw],
-                                   exportname = paste0(PatientsExportname,".Full"),
+                                   exportname = paste0(PatientsExportname,".fullCol"),
                                    FilterPatients =FilterSP,
                                    FilterSamples = F,
                                    CleanFromOtherType = T,
                                    force.replace = force.replace,
-                                   keep.all.column =T )}
+                                   keep.all.column =T ))}
       }# Patient annot absent
 
 
@@ -253,16 +292,16 @@ if(FilterGenes == T){
 
       if(keep.all.column==T){
 
-        Metadata <- CleaningClinic(Metadata = Metadata,
+        Metadata <- suppressMessages(CleaningClinic(Metadata = Metadata,
                                    Lexic = PatientsLexic,
                                    type = "Patients",
                                    ClinicToClean = names(Metadata)[ClinicRaw],
-                                   exportname = paste0(PatientsExportname,".Full"),
+                                   exportname = paste0(PatientsExportname,".fullCol"),
                                    FilterPatients =FilterSP,
                                    FilterSamples = F,
                                    CleanFromOtherType = F,
                                    force.replace = force.replace,
-                                   keep.all.column =T )
+                                   keep.all.column =T ))
 
 
 
@@ -287,16 +326,16 @@ if(FilterGenes == T){
                                  keep.all.column =F )
 
       if(keep.all.column==T){
-        Metadata <- CleaningClinic(Metadata = Metadata,
+        Metadata <- suppressMessages(CleaningClinic(Metadata = Metadata,
                                    Lexic = SamplesLexic,
                                    type = "Samples",
                                    ClinicToClean = names(Metadata)[SampleAnnotRaw],
-                                   exportname = paste0(SamplesExportname,".Full"),
+                                   exportname = paste0(SamplesExportname,".fullCol"),
                                    FilterPatients =F,
                                    FilterSamples = FilterSP,
                                    CleanFromOtherType = F,
                                    force.replace = force.replace,
-                                   keep.all.column =T )
+                                   keep.all.column =T ))
 
       }
 
@@ -321,16 +360,17 @@ if(FilterGenes == T){
 
       if(keep.all.column==T){
 
-        Metadata <- CleaningClinic(Metadata = Metadata,
+        Metadata <- suppressMessages(CleaningClinic(Metadata = Metadata,
                                    Lexic = SamplesLexic,
                                    type = "Samples",
                                    ClinicToClean = names(Metadata)[ClinicRaw],
-                                   exportname = paste0(SamplesExportname,".Full"),
+                                   exportname = paste0(SamplesExportname,".fullCol"),
                                    FilterPatients =F,
                                    FilterSamples = FilterSP,
                                    CleanFromOtherType = T,
                                    force.replace = force.replace,
-                                   keep.all.column =T )}
+                                   keep.all.column =T ))
+                                   }
     }    # Sample annot Absent
 
     }

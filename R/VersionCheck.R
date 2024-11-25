@@ -1,8 +1,6 @@
 #' VersionCheck : Asks DataBaseSumary.txt file for the oldest project's version.
-#'
 #' @param Metadata the Metaobject of the project
 #' @param path file path to DataBaseSumary.txt
-#'
 #' @return Return a Versionned metadata object
 #' @export
 #'
