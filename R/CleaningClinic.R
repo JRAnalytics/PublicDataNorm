@@ -9,7 +9,7 @@
 #' @param FilterPatients default F, if T, keep only retrieved patients in Count SamplesAnnotation file
 #' @param CleanFromOtherType If TRUE, Force a cleaning method from Samples.clinical data into Patient.clinical data and vice versa.
 #' @param force.replace set as F. T : replace an already object with the same name
-#' @param keep.all.column default F, if T, copy all column from clinic.
+#' @param keep.all.column default T, copy all column from clinic, else only column from Lexic are built.
 #' @importFrom utils menu
 #' @import dplyr
 #' @return a data frame of Samples pheno or patients clinical data. If Sample ID and Patients ID are the sames, so Samples.pheno and Patient_clinic are the same data frame
@@ -25,7 +25,7 @@ CleaningClinic <- function(Metadata = NULL,
                            FilterPatients = F,
                            CleanFromOtherType = F,
                            force.replace = F,
-                           keep.all.column = F){
+                           keep.all.column = T){
 
 
 
@@ -100,6 +100,7 @@ CleaningClinic <- function(Metadata = NULL,
 
 
 
+
  for (i in 1:ncol(clinic)) {
       pat <- toupper(colnames(clinic)[i])
       col <- grep(paste("\\b",pat, "\\b",sep=""), LexicClinic)
@@ -112,13 +113,12 @@ CleaningClinic <- function(Metadata = NULL,
       if(!length(col)==0){
 
 
-
         substrings <-   na.omit(clcl[,col])
         retrivedcols = na.omit(colnames(clcl)[apply(clcl,1, function(x)  x %in% substrings  )])
 
         if(all(is.na(clcl[,col] ))){
           clcl[,col] <- clinic[,i]} else {message(paste(names(LexicClinic)[col],
-                                                        " already entered previously.\nCheck logs ('SampleLog()') and modify Lexic to match your need.\n"))}
+                                                        " already entered previously.\nCheck logs ('SampleLog()') and modify Lexic to match your needs.\n"))}
 
         if(length(retrivedcols)>1){
           message(paste(colnames(clcl)[col], "values are duplicated in a previous column:" ,

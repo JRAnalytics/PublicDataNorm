@@ -10,7 +10,7 @@
 #' @param CellsLexic Lexic to use for cleaning. Created from CreateLexic function.
 #' @param FilterSP default F, if T, keep only retrieved samples in SamplesAnnotation file
 #' @param force.replace set as F. T : replace an already object with the same name
-#' @param keep.all.column default F, if T, copy all column from clinic.
+#' @param keep.all.column default T, copy all column from clinic, else only column from Lexics are built.
 #' @param FilterGenes Filter for genes found in geneannotation file and rownames of matrices.
 #' @importFrom utils menu
 #' @import dplyr
@@ -28,7 +28,7 @@ CleaningData = function(Metadata = NULL,
                         SamplesExportname = NULL,
                         FilterSP =  F,
                         force.replace = F,
-                        keep.all.column = F,
+                        keep.all.column = T,
                         FilterGenes = F){
 
 
@@ -54,15 +54,7 @@ CleaningData = function(Metadata = NULL,
                              FilterSamples =  FilterSP,
                              force.replace = force.replace )
 
-  if(keep.all.column==T){
-    Metadata <-suppressMessages( CleaningClinic(Metadata = Metadata,
-                               Lexic = SamplesLexic,
-                               type = "Samples",
-                               ClinicToClean = SamplesAnnotToClean,
-                               exportname = paste0(SamplesExportname,".fullColCol"),
-                               FilterSamples =  FilterSP,
-                               force.replace = force.replace,
-                               keep.all.column =keep.all.column ))}
+
 
     }
   }
@@ -89,20 +81,6 @@ CleaningData = function(Metadata = NULL,
 
 
 
-      if(keep.all.column==T){
-      Metadata <- suppressMessages(CleaningClinic(Metadata = Metadata,
-                                 Lexic = PatientsLexic,
-                                 type = "Patients",
-                                 ClinicToClean = SamplesAnnotToClean,
-                                 exportname = paste0(PatientsExportname,".fullColCol"),
-                                 FilterPatients =  FilterSP,
-                                 FilterSamples = F,
-                                 force.replace = force.replace,
-                                 CleanFromOtherType = T,
-                                 keep.all.column = T))
-
-      }
-
 
 
 
@@ -123,22 +101,6 @@ CleaningData = function(Metadata = NULL,
                                  FilterSamples = F,
                                  force.replace = force.replace,
                                  CleanFromOtherType = T)
-
-
-
-      if(keep.all.column==T){
-      Metadata <- suppressMessages(CleaningClinic(Metadata = Metadata,
-                                 Lexic = PatientsLexic,
-                                 type = "Patients",
-                                 ClinicToClean = PatientsAnnotToClean,
-                                 exportname = paste0(PatientsExportname,".fullColCol"),
-                                 FilterPatients =  FilterSP,
-                                 FilterSamples = F,
-                                 force.replace = force.replace,
-                                 CleanFromOtherType = T,
-                                 keep.all.column = T))
-
-      }
 
 
 
@@ -210,32 +172,6 @@ if(FilterGenes == T){
       }
 
 
-      if(keep.all.column==T){
-      Metadata <- suppressMessages(CleaningClinic(Metadata = Metadata,
-                                 Lexic = CellsLexic,
-                                 type = "Cells",
-                                 ClinicToClean = names(Metadata)[CellAnnotRaw],
-                                 exportname = "Cells.Annotation.fullCol",
-                                 FilterPatients =FilterSP,
-                                 FilterSamples = F,
-                                 CleanFromOtherType = F,
-                                 force.replace = force.replace,
-                                 keep.all.column =keep.all.column ))
-
-
-      cellID = Metadata$Cells.Annotation$CellsBarcode
-
-      if(length(pp)>0){
-        clinic = Metadata[[pp]]
-        for (z in clinic$patientsID){
-          Metadata$Cells.Annotation.fullCol$patientsID=ifelse(str_detect(pattern = paste0(z), cellID),z,Metadata$Cells.Annotation.fullCol$patientsID)
-        }
-
-      }
-
-
-
-      }
 
 
     } # CellAnnotRaw present
@@ -259,19 +195,6 @@ if(FilterGenes == T){
                                  keep.all.column =F )
 
 
-
-      if(keep.all.column==T){
-
-        Metadata <- suppressMessages(CleaningClinic(Metadata = Metadata,
-                                   Lexic = PatientsLexic,
-                                   type = "Patients",
-                                   ClinicToClean = names(Metadata)[SampleAnnotRaw],
-                                   exportname = paste0(PatientsExportname,".fullCol"),
-                                   FilterPatients =FilterSP,
-                                   FilterSamples = F,
-                                   CleanFromOtherType = T,
-                                   force.replace = force.replace,
-                                   keep.all.column =T ))}
       }# Patient annot absent
 
 
@@ -290,22 +213,6 @@ if(FilterGenes == T){
                                  force.replace = force.replace,
                                  keep.all.column =F )
 
-      if(keep.all.column==T){
-
-        Metadata <- suppressMessages(CleaningClinic(Metadata = Metadata,
-                                   Lexic = PatientsLexic,
-                                   type = "Patients",
-                                   ClinicToClean = names(Metadata)[ClinicRaw],
-                                   exportname = paste0(PatientsExportname,".fullCol"),
-                                   FilterPatients =FilterSP,
-                                   FilterSamples = F,
-                                   CleanFromOtherType = F,
-                                   force.replace = force.replace,
-                                   keep.all.column =T ))
-
-
-
-      }
 
     }# Patient annot Present
 
@@ -325,19 +232,6 @@ if(FilterGenes == T){
                                  force.replace = force.replace,
                                  keep.all.column =F )
 
-      if(keep.all.column==T){
-        Metadata <- suppressMessages(CleaningClinic(Metadata = Metadata,
-                                   Lexic = SamplesLexic,
-                                   type = "Samples",
-                                   ClinicToClean = names(Metadata)[SampleAnnotRaw],
-                                   exportname = paste0(SamplesExportname,".fullCol"),
-                                   FilterPatients =F,
-                                   FilterSamples = FilterSP,
-                                   CleanFromOtherType = F,
-                                   force.replace = force.replace,
-                                   keep.all.column =T ))
-
-      }
 
     }    # Sample annot Present
 
@@ -358,19 +252,6 @@ if(FilterGenes == T){
 
 
 
-      if(keep.all.column==T){
-
-        Metadata <- suppressMessages(CleaningClinic(Metadata = Metadata,
-                                   Lexic = SamplesLexic,
-                                   type = "Samples",
-                                   ClinicToClean = names(Metadata)[ClinicRaw],
-                                   exportname = paste0(SamplesExportname,".fullCol"),
-                                   FilterPatients =F,
-                                   FilterSamples = FilterSP,
-                                   CleanFromOtherType = T,
-                                   force.replace = force.replace,
-                                   keep.all.column =T ))
-                                   }
     }    # Sample annot Absent
 
     }
