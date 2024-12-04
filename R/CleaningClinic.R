@@ -398,9 +398,7 @@ CleaningClinic <- function(Metadata = NULL,
             suma = summary(clinic2$samplesID %in% Metadata[[NBS]]$samplesID)
             print(suma)
 
-            message("selecting common SamplesID with Samples Annotation")
-            Scom = which(clinic2$samplesID %in% Metadata[[NBS]]$samplesID)
-            clinic2 = clinic2[Scom,]
+            message(paste("Keeping all patientsID in", exportname))
 
           } else {
 
@@ -409,9 +407,8 @@ CleaningClinic <- function(Metadata = NULL,
             suma = summary(clinic2$patientsID %in% Metadata[[NBS]][,"patientsID"])
             print(suma)
 
-            message("selecting common PatientsID with Samples Annotation")
-            Pcom = which(clinic2$patientsID %in% Metadata[[NBS]][,"patientsID"])
-            clinic2 = clinic2[Pcom,]
+            message(paste("Keeping all patientsID in", exportname))
+
 
 
 
@@ -424,13 +421,12 @@ CleaningClinic <- function(Metadata = NULL,
           suma = summary(clinic2$patientsID %in% Metadata[[NBS]][,"patientsID"])
           print(suma)
 
-          message("selecting common PatientsID with Samples Annotation")
-          Pcom = which(clinic2$patientsID %in% Metadata[[NBS]][,"patientsID"])
-          clinic2 = clinic2[Pcom,]
+          message(paste("Keeping all patientsID in", exportname))
 
           }
       }}
 
+      rownames(clinic2) = clinic2$patientsID
 
       if(FilterSamples ==T){stop("Data type is not 'Patients',you can't substet it by PatientsID. Try FilterSamples = T.")}
       if(FilterPatients==T){
@@ -449,11 +445,40 @@ CleaningClinic <- function(Metadata = NULL,
 
         if(all(est_present==F)){
         substrings <- clinic2$samplesID
+
+        substrings <- clinic2$samplesID
+        MultiSamples = all(na.omit(str_detect(substrings, ";"))==F)
+
+        if(MultiSamples==F){
+
+          substrings = na.omit(unlist(str_split(substrings, ";")))
+
+          NBS <- which(attributes(Metadata)$Data.Type=="SamplesAnnot" & attributes(Metadata)$Cleaned == "No")
+          NBSc <- which(attributes(Metadata)$Data.Type=="SamplesAnnot" & attributes(Metadata)$Cleaned == "Yes")
+
+          if(length(NBSc)>0){
+          filter.pat= na.omit(Metadata[[NBSc[1]]][substrings,"patientsID"])
+          }
+          if(length(NBS)>0 & length(NBSc)==0){
+            filter.pat=  na.omit(Metadata[[NBS[1]]][substrings,"patientsID"])
+           }
+
+          } else {
+
         est_present <- sapply(substrings, function(x) any(colnames(Metadata[[zz]]) %in% x))}
 
+
+
+
+
+        }
+
         # Récupérer les index de position correspondants
-        indices <- which(est_present)
-        clinic2 <- clinic2[indices,] } else { message("No filtering doable.")}
+        if(exists("filter.pat")){indices=unique(filter.pat)
+         }else{
+        indices <- which(est_present)}
+        clinic2 <- clinic2[indices,]
+     } else { message("No filtering doable.")}
 
       }else {
 
@@ -472,7 +497,7 @@ CleaningClinic <- function(Metadata = NULL,
 
         }
 
-      rownames(clinic2) = clinic2$patientsID
+
 
 
 
@@ -540,9 +565,8 @@ CleaningClinic <- function(Metadata = NULL,
             suma = summary(cl_rolled$samplesID %in% Metadata[[NBS]]$samplesID)
             print(suma)
 
-            message("selecting common SamplesID with Samples Annotation")
-            Scom = which(cl_rolled$samplesID %in% Metadata[[NBS]]$samplesID)
-            cl_rolled = cl_rolled[Scom,]
+
+            message(paste("Keeping all samplesID in", exportname))
 
           } else {
 
@@ -551,9 +575,7 @@ CleaningClinic <- function(Metadata = NULL,
             suma = summary(cl_rolled$patientsID %in% Metadata[[NBS]][,"patientsID"])
             print(suma)
 
-            message("selecting common PatientsID with Samples Annotation")
-            Pcom = which(cl_rolled$patientsID %in% Metadata[[NBS]][,"patientsID"])
-            cl_rolled = cl_rolled[Pcom,]
+            message(paste("Keeping all patientsID in", exportname))
 
 
 
@@ -566,15 +588,14 @@ CleaningClinic <- function(Metadata = NULL,
           suma = summary(cl_rolled$patientsID %in% Metadata[[NBS]][,"patientsID"])
           print(suma)
 
-          message("selecting common PatientsID with Samples Annotation")
-          Pcom = which(cl_rolled$patientsID %in% Metadata[[NBS]][,"patientsID"])
-          cl_rolled = cl_rolled[Pcom,]
+          message(paste("Keeping all patientsID in", exportname))
+
 
         }
 
       }
 
-
+      rownames(cl_rolled) = cl_rolled$patientsID
 
       if(FilterPatients==T){
         message("Selecting only Patient present in both Count and clinical data.")
@@ -588,11 +609,38 @@ CleaningClinic <- function(Metadata = NULL,
 
         if(all(est_present==F)){
           substrings <- cl_rolled$samplesID
-          est_present <- sapply(substrings, function(x) any(colnames(Metadata[[zz]]) %in% x))}
+          est_present <- sapply(substrings, function(x) any(colnames(Metadata[[zz]]) %in% x))
+
+          MultiSamples = all(na.omit(str_detect(substrings, ";"))==F)
+
+          if(MultiSamples==F){
+
+            substrings = na.omit(unlist(str_split(substrings, ";")))
+
+            NBS <- which(attributes(Metadata)$Data.Type=="SamplesAnnot" & attributes(Metadata)$Cleaned == "No")
+            NBSc <- which(attributes(Metadata)$Data.Type=="SamplesAnnot" & attributes(Metadata)$Cleaned == "Yes")
+
+            if(length(NBSc)>0){
+              filter.pat= na.omit(Metadata[[NBSc[1]]][substrings,"patientsID"])}
+            if(length(NBS)>0 & length(NBSc)==0){
+              filter.pat=  na.omit(Metadata[[NBS[1]]][substrings,"patientsID"])}
+
+          } else {
+
+            est_present <- sapply(substrings, function(x) any(colnames(Metadata[[zz]]) %in% x))}
+
+
+
+
+
+        }
 
         # Récupérer les index de position correspondants
-        indices <- which(est_present)
-        cl_rolled <- cl_rolled[indices,]}
+        if(exists("filter.pat")){indices=unique(filter.pat)}else{
+          indices <- which(est_present)}
+        cl_rolled <- cl_rolled[indices,]
+          }
+
         else {
 
           zz = which(attributes(Metadata)$Data.Type=="Count")[1]
@@ -613,7 +661,7 @@ CleaningClinic <- function(Metadata = NULL,
       }
 
 
-      rownames(cl_rolled) = cl_rolled$patientsID
+
 
       if(exportname%in%names(Metadata)){
         if(force.replace==F){stop("set force.replace==T to subset object.")}
