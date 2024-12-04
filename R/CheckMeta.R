@@ -31,8 +31,10 @@ CheckMeta <- function(Metadata) {
   if(length(c)==0){stop("A Patients' Clinical data must be loaded.")}
 
   PpID <- unique(Metadata[[c[1]]][,"patientsID"])
+
+  if(length(c2)>0){
   PsID = Metadata[[c[1]]][,"samplesID"]
-  PsID = unique(unlist(strsplit(PsID, ";")))
+  PsID = unique(unlist(strsplit(PsID, ";")))}
 
 
   s <- which(attributes(Metadata)$Data.Type=="SamplesAnnot" & attributes(Metadata)$Cleaned=="No")
@@ -44,6 +46,9 @@ CheckMeta <- function(Metadata) {
 
   SsID <- unique(Metadata[[s[1]]][,"samplesID"])
   SpID <- unique(Metadata[[s[1]]][,"patientsID"])
+
+
+
 
     if(length(s)!=0){
     if(attributes(Metadata)$Data.Type[s[1]]=="SamplesAnnot"){sID <- Metadata[[s[1]]][,"samplesID"] }}
