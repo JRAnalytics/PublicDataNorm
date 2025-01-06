@@ -326,12 +326,16 @@ mm =  which(attributes(Metadata)$Data.Type=="Count")
           tot=0
           for (z in Metadata[[i]][,"samplesID"]) {
 
-            if("samplesID" %in% colnames( Metadata[[cellannot[1]]]) ){ t = summary(str_detect(pattern = paste0(z,"\\b"), Metadata[[cellannot[1]]][,"samplesID"]))["TRUE"][1]}else{
-
+            if("samplesID" %in% colnames( Metadata[[cellannot[1]]]) ){ t = summary(str_detect(pattern = paste0("\\b",
+                                                                                                               gsub("[[:punct:]]","_",z)
+                                                                                                               ,"\\b"),
+                                                                                              gsub("[[:punct:]]","_",
+                                                                                                   Metadata[[cellannot[1]]][,"samplesID"])))["TRUE"][1]}else{
+ #ici
 
             z = gsub("[[:punct:]]","-",z)
 
-            if(str_detect(pattern = paste0('[a-zA-Z]'),z)){ pattern = paste0(z,"-")}else {  paste0('[a-zA-Z]',z,"-")}
+            if(str_detect(pattern = paste0('[a-zA-Z]'),z)){ pattern = paste0(z,"-")}else { pattern =  paste0('[a-zA-Z]',z,"-")}
 
 
               t = summary(str_detect(pattern = paste0(pattern,"\\b"), cellID))["TRUE"][1]}
