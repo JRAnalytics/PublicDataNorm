@@ -83,14 +83,14 @@ CleaningClinic <- function(Metadata = NULL,
     colnames(clinic) <-gsub("[(]", "",colnames(clinic))
     colnames(clinic) <-gsub("[)]", "",colnames(clinic))
     colnames(clinic) <-gsub("[,]", "",colnames(clinic))
-    colnames(clinic) = gsub("[[:punct:]]","-", colnames(clinic))
+    colnames(clinic) = gsub("[[:punct:]]","_", colnames(clinic))
     LexicClinic <-  lapply(LexicClinic,function(x) gsub("[.]", "_",x))
     LexicClinic <-  lapply(LexicClinic,function(x) gsub("[:]", "_",x))
     LexicClinic <-  lapply(LexicClinic,function(x) gsub(" ", "_",x))
     LexicClinic <-  lapply(LexicClinic,function(x) gsub("[(]", "",x))
     LexicClinic <-  lapply(LexicClinic,function(x) gsub("[)]", "",x))
     LexicClinic <-  lapply(LexicClinic,function(x) gsub("[,]", "",x))
-    LexicClinic = lapply(LexicClinic,function(x) gsub("[[:punct:]]","-",x))
+    LexicClinic = lapply(LexicClinic,function(x) gsub("[[:punct:]]","_",x))
 
     if(file.exists(paste0(Processpath(Metadata),"/Samples.CleanedProcess.txt"))){ file.remove(paste0(Processpath(Metadata),"/Samples.CleanedProcess.txt"))}
 
@@ -171,10 +171,26 @@ CleaningClinic <- function(Metadata = NULL,
         } else {
 
           zz = which(attributes(Metadata)$Data.Type=="Count")[1]
+          cac = which(attributes(Metadata)$Data.Type=="CellsAnnot")[1]
+
           substrings <- clinic2$samplesID
           names(substrings) = substrings
+          if(!all(substrings %in% Metadata[[cac]][,"samplesID"])==F ){
           for(z in substrings){
-            if("TRUE" %in% str_detect(pattern = paste0(z,"-"), colnames(Metadata[[zz]]))){substrings[z] = T }else { substrings[z] = F}
+
+            if("samplesID" %in% colnames(Metadata[[cac]]) ){
+              if(z %in% Metadata[[cac]][,"samplesID"] ){substrings[z] = T}else { substrings[z] = F}
+            }
+            else {
+
+
+            if("TRUE" %in% str_detect(pattern = paste0(z,"-"), colnames(Metadata[[zz]]))){substrings[z] = T }else { substrings[z] = F}}
+          }}else{
+            message("No samplesID matches in cellAnnotations suboject. No filtering doable.\nKeeping all samples." )
+
+            for(z in substrings) {substrings[z] = T}
+
+
           }
           clinic2 <- clinic2[which(substrings==T),]
 
@@ -235,6 +251,7 @@ CleaningClinic <- function(Metadata = NULL,
         if(FilterSamples==T){
           message("Selecting only Samples present in both Count and SamplesAnnot.")
 
+          if(attributes(Metadata)$Omics.type != "Single.Cell"){
 
           zz = which(attributes(Metadata)$Data.Type=="Count")[1]
 
@@ -249,8 +266,35 @@ CleaningClinic <- function(Metadata = NULL,
 
           # Récupérer les index de position correspondants
           indices <- which(est_present)
-          cl_rolled <- cl_rolled[indices,]
-        }
+          cl_rolled <- cl_rolled[indices,]} else{
+
+          zz = which(attributes(Metadata)$Data.Type=="Count")[1]
+          cac = which(attributes(Metadata)$Data.Type=="CellsAnnot")[1]
+
+          substrings <- cl_rolled$samplesID
+
+          names(substrings) = substrings
+          if(!all(substrings %in% Metadata[[cac]][,"samplesID"])==F ){
+          for(z in substrings){
+
+            if("samplesID" %in% colnames(Metadata[[cac]]) ){
+              if(z %in% Metadata[[cac]][,"samplesID"] ){substrings[z] = T}else { substrings[z] = F}
+            }
+            else {
+
+
+
+              if("TRUE" %in% str_detect(pattern = paste0(z,"-"), colnames(Metadata[[zz]]))){substrings[z] = T }else { substrings[z] = F}}
+          }} else { message("No samplesID matches in cellAnnotations suboject. No filtering doable.\nKeeping all samples." )
+
+            for(z in substrings) {substrings[z] = T}  }
+          cl_rolled <- cl_rolled[which(substrings==T),]
+
+        }}
+
+
+
+
         rownames(cl_rolled) = cl_rolled$samplesID
 
         Metadata[[exportname]] <- cl_rolled
@@ -311,14 +355,14 @@ CleaningClinic <- function(Metadata = NULL,
     colnames(clinic) <-gsub("[(]", "",colnames(clinic))
     colnames(clinic) <-gsub("[)]", "",colnames(clinic))
     colnames(clinic) <-gsub("[,]", "",colnames(clinic))
-    colnames(clinic) = gsub("[[:punct:]]","-", colnames(clinic))
+    colnames(clinic) = gsub("[[:punct:]]","_", colnames(clinic))
     LexicClinic <-  lapply(LexicClinic,function(x) gsub("[.]", "_",x))
     LexicClinic <-  lapply(LexicClinic,function(x) gsub("[:]", "_",x))
     LexicClinic <-  lapply(LexicClinic,function(x) gsub(" ", "_",x))
     LexicClinic <-  lapply(LexicClinic,function(x) gsub("[(]", "",x))
     LexicClinic <-  lapply(LexicClinic,function(x) gsub("[)]", "",x))
     LexicClinic <-  lapply(LexicClinic,function(x) gsub("[,]", "",x))
-    LexicClinic = lapply(LexicClinic,function(x) gsub("[[:punct:]]","-",x))
+    LexicClinic = lapply(LexicClinic,function(x) gsub("[[:punct:]]","_",x))
 
     if(file.exists(paste0(Processpath(Metadata),"/Patients.CleanedProcess.txt"))){ file.remove(paste0(Processpath(Metadata),"/Patients.CleanedProcess.txt"))}
 
@@ -483,11 +527,19 @@ CleaningClinic <- function(Metadata = NULL,
       }else {
 
         zz = which(attributes(Metadata)$Data.Type=="Count")[1]
+        cac = which(attributes(Metadata)$Data.Type=="CellsAnnot")[1]
 
         substrings <- clinic2$patientsID
         names(substrings) = substrings
         for(z in substrings){
-        if("TRUE" %in% str_detect(pattern = paste0(z,"-"), colnames(Metadata[[zz]]))){substrings[z] = T }else { substrings[z] = F}
+
+          if("patientsID" %in% colnames(Metadata[[cac]]) ){
+            if(z %in% Metadata[[cac]][,"patientsID"] ){substrings[z] = T}else { substrings[z] = F}
+          }
+          else {
+
+        if("TRUE" %in% str_detect(pattern = paste0(z,"-"), colnames(Metadata[[zz]]))){substrings[z] = T }else { substrings[z] = F}}
+
           }
         clinic2 <- clinic2[which(substrings==T),]
 
@@ -645,10 +697,20 @@ CleaningClinic <- function(Metadata = NULL,
 
           zz = which(attributes(Metadata)$Data.Type=="Count")[1]
 
+          cac = which(attributes(Metadata)$Data.Type=="CellsAnnot")[1]
+
           substrings <- cl_rolled$patientsID
           names(substrings) = substrings
           for(z in substrings){
-            if("TRUE" %in% str_detect(pattern = paste0(z,"-"), colnames(Metadata[[zz]]))){substrings[z] = T }else { substrings[z] = F}
+
+            if("patientsID" %in% colnames(Metadata[[cac]]) ){
+              if(z %in% Metadata[[cac]][,"patientsID"] ){substrings[z] = T}else { substrings[z] = F}
+            }
+            else {
+
+
+
+            if("TRUE" %in% str_detect(pattern = paste0(z,"-"), colnames(Metadata[[zz]]))){substrings[z] = T }else { substrings[z] = F}}
           }
           cl_rolled <- cl_rolled[which(substrings==T),]
 
@@ -717,18 +779,21 @@ CleaningClinic <- function(Metadata = NULL,
     colnames(clcl) = names(LexicClinic)
     LexicClinic <- lapply(LexicClinic, toupper)
 
+
     colnames(clinic) <-gsub("[.]", "_",colnames(clinic))
     colnames(clinic) <-gsub(" ", "_",colnames(clinic))
     colnames(clinic) <-gsub("[:]", "_",colnames(clinic))
     colnames(clinic) <-gsub("[(]", "",colnames(clinic))
     colnames(clinic) <-gsub("[)]", "",colnames(clinic))
     colnames(clinic) <-gsub("[,]", "",colnames(clinic))
+    colnames(clinic) = gsub("[[:punct:]]","_", colnames(clinic))
     LexicClinic <-  lapply(LexicClinic,function(x) gsub("[.]", "_",x))
     LexicClinic <-  lapply(LexicClinic,function(x) gsub("[:]", "_",x))
     LexicClinic <-  lapply(LexicClinic,function(x) gsub(" ", "_",x))
     LexicClinic <-  lapply(LexicClinic,function(x) gsub("[(]", "",x))
     LexicClinic <-  lapply(LexicClinic,function(x) gsub("[)]", "",x))
     LexicClinic <-  lapply(LexicClinic,function(x) gsub("[,]", "",x))
+    LexicClinic = lapply(LexicClinic,function(x) gsub("[[:punct:]]","_",x))
 
     if(file.exists(paste0(Processpath(Metadata),"/CellAnnotation.CleanedProcess.txt"))){ file.remove(paste0(Processpath(Metadata),"/CellAnnotation.CleanedProcess.txt"))}
 
