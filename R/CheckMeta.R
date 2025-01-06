@@ -68,13 +68,14 @@ CheckMeta <- function(Metadata) {
 
       c <- which(attributes(Metadata)$Data.Type=="Clinic" & attributes(Metadata)$Cleaned=="No")
       c2 <- which(attributes(Metadata)$Data.Type=="Clinic" & attributes(Metadata)$Cleaned=="Yes")
-      if(length(c2)>0){c=c2}
+      if(length(c2)>0){c=c2
+      PsID = Metadata[[c[1]]][,"samplesID"]
+      PsID = unique(unlist(strsplit(PsID, ";")))}
       if(length(c)==0){stop("A Patients' Clinical data must be loaded")}
 
 
       PpID <- unique(Metadata[[c[1]]][,"patientsID"])
-      PsID = Metadata[[c[1]]][,"samplesID"]
-      PsID = unique(unlist(strsplit(PsID, ";")))
+
     }
 
 
@@ -291,10 +292,16 @@ mm =  which(attributes(Metadata)$Data.Type=="Count")
       tot=0
       for (z in unique(Metadata[[i]][,"patientsID"])) {
 
-        z = gsub("[[:punct:]]","-",z)
+        if("patientsID" %in% colnames(Metadata[[cellannot[1]]]) ){ t = summary(str_detect(pattern = paste0(z,"\\b"),  Metadata[[cellannot[1]]][,"patientsID"]))["TRUE"][1]}else{
+
+          z = gsub("[[:punct:]]","-",z)
 
         if(str_detect(pattern = paste0('[a-zA-Z]'),z)){ pattern = paste0(z,"-")}else {pattern=  paste0('[a-zA-Z]',z,"-")}
-        t = summary(str_detect(pattern = paste0(pattern,"\\b"), cellID))["TRUE"][1]
+
+
+
+
+           t = summary(str_detect(pattern = paste0(pattern,"\\b"), cellID))["TRUE"][1]}
 
         if(is.na(as.numeric(t))){ t = 0}
 
@@ -319,11 +326,17 @@ mm =  which(attributes(Metadata)$Data.Type=="Count")
           tot=0
           for (z in Metadata[[i]][,"samplesID"]) {
 
+            if("samplesID" %in% colnames( Metadata[[cellannot[1]]]) ){ t = summary(str_detect(pattern = paste0(z,"\\b"), Metadata[[cellannot[1]]][,"samplesID"]))["TRUE"][1]}else{
+
+
             z = gsub("[[:punct:]]","-",z)
 
             if(str_detect(pattern = paste0('[a-zA-Z]'),z)){ pattern = paste0(z,"-")}else {  paste0('[a-zA-Z]',z,"-")}
 
-            t = summary(str_detect(pattern = paste0(pattern,"\\b"), cellID))["TRUE"][1]
+
+              t = summary(str_detect(pattern = paste0(pattern,"\\b"), cellID))["TRUE"][1]}
+
+
 
             if(is.na(as.numeric(t))){ t = 0}
 
