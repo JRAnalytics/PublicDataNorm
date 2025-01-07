@@ -294,14 +294,18 @@ mm =  which(attributes(Metadata)$Data.Type=="Count")
 
         if("patientsID" %in% colnames(Metadata[[cellannot[1]]]) ){ t = summary(str_detect(pattern = paste0(z,"\\b"),  Metadata[[cellannot[1]]][,"patientsID"]))["TRUE"][1]}else{
 
+
+          message(paste("No patientsID found in",names(Metadata)[cellannot[1]], ". Looking in barcodes:"))
           z = gsub("[[:punct:]]","-",z)
 
+
         if(str_detect(pattern = paste0('[a-zA-Z]'),z)){ pattern = paste0(z,"-")}else {pattern=  paste0('[a-zA-Z]',z,"-")}
+        if(all(str_detect(pattern ="_", cellID))==F & all(str_detect(pattern = "-", cellID==T))){ cellID = gsub("-","_",cellID)}
 
 
+           t = summary(str_detect(pattern = paste0(pattern,"\\b"), cellID))["TRUE"][1]
 
-
-           t = summary(str_detect(pattern = paste0(pattern,"\\b"), cellID))["TRUE"][1]}
+           }
 
         if(is.na(as.numeric(t))){ t = 0}
 
@@ -309,7 +313,11 @@ mm =  which(attributes(Metadata)$Data.Type=="Count")
 
 
 
+
       }
+
+
+
       message("Total = " , tot,"/",length(cellID), "\n Passed Checkpoint? ", tot/length(cellID)==1)
       message("-------------------------")}
 
@@ -333,8 +341,9 @@ mm =  which(attributes(Metadata)$Data.Type=="Count")
                                                                                                    Metadata[[cellannot[1]]][,"samplesID"])))["TRUE"][1]}else{
  #ici
 
+            message(paste("No samplesID found in",names(Metadata)[cellannot[1]], ". Looking in barcodes:"))
             z = gsub("[[:punct:]]","-",z)
-
+            if(all(str_detect(pattern ="_", cellID))==F & all(str_detect(pattern = "-", cellID==T))){ cellID = gsub("-","_",cellID)}
             if(str_detect(pattern = paste0('[a-zA-Z]'),z)){ pattern = paste0(z,"-")}else { pattern =  paste0('[a-zA-Z]',z,"-")}
 
 
@@ -348,6 +357,10 @@ mm =  which(attributes(Metadata)$Data.Type=="Count")
 
 
           }
+
+
+
+
           message("Total = " , tot, "/",length(cellID), "\n Passed Checkpoint? ", tot/length(cellID)==1)
           message("-------------------------")
         }
