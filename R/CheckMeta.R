@@ -288,38 +288,54 @@ mm =  which(attributes(Metadata)$Data.Type=="Count")
 
     if(attributes(Metadata)$Omics.type=="Single.Cell"){
       for (i in c(c,s)){
-      message(paste0("patientsID from '", names(Metadata)[i],"', in CellsAnnotation object"))
-      tot=0
-      for (z in unique(Metadata[[i]][,"patientsID"])) {
+        message(paste0("patientsID from '", names(Metadata)[i],"', in CellsAnnotation object"))
+        tot=0
+        for (z in unique(Metadata[[i]][,"patientsID"])) {
 
-        if("patientsID" %in% colnames(Metadata[[cellannot[1]]]) ){ t = summary(str_detect(pattern = paste0(z,"\\b"),  Metadata[[cellannot[1]]][,"patientsID"]))["TRUE"][1]}else{
+          if("patientsID" %in% colnames(Metadata[[cellannot[1]]]) ){ t = summary(str_detect(pattern = paste0(z,"\\b"),  Metadata[[cellannot[1]]][,"patientsID"]))["TRUE"][1]}else{
+
+            z = gsub("[[:punct:]]","-",z)
 
 
+            if(str_detect(pattern = paste0('[a-zA-Z]'),z)){ pattern = paste0(z,"-")}else {pattern=  paste0('[a-zA-Z]',z,"-")}
+
+
+
+            t = summary(str_detect(pattern = paste0(pattern,"\\b"), cellID))["TRUE"][1]
+
+          }
+
+          if(is.na(as.numeric(t))){ t = 0}
+
+          tot=tot+as.numeric(t)
+
+
+
+
+        }
+
+        if(tot == 0){
           message(paste("No patientsID found in",names(Metadata)[cellannot[1]], ". Looking in barcodes:"))
-          z = gsub("[[:punct:]]","-",z)
+
+          if(all(str_detect(pattern ="_", cellID))==F & all(str_detect(pattern = "-", cellID==T))){ cellID = gsub("-","_",cellID)}
+
+          for (z in unique(Metadata[[i]][,"patientsID"])) {
+            z = gsub("[[:punct:]]","-",z)
+            if(str_detect(pattern = paste0('[a-zA-Z]'),z)){ pattern = paste0(z,"-")}else {pattern=  paste0('[a-zA-Z]',z,"-")}
+
+            t = summary(str_detect(pattern = paste0(pattern,"\\b"),cellID))["TRUE"][1]
 
 
-        if(str_detect(pattern = paste0('[a-zA-Z]'),z)){ pattern = paste0(z,"-")}else {pattern=  paste0('[a-zA-Z]',z,"-")}
-        if(all(str_detect(pattern ="_", cellID))==F & all(str_detect(pattern = "-", cellID==T))){ cellID = gsub("-","_",cellID)}
+            if(is.na(as.numeric(t))){ t = 0}
 
+            tot=tot+as.numeric(t)
 
-           t = summary(str_detect(pattern = paste0(pattern,"\\b"), cellID))["TRUE"][1]
+          }
 
-           }
+        }
 
-        if(is.na(as.numeric(t))){ t = 0}
-
-        tot=tot+as.numeric(t)
-
-
-
-
-      }
-
-
-
-      message("Total = " , tot,"/",length(cellID), "\n Passed Checkpoint? ", tot/length(cellID)==1)
-      message("-------------------------")}
+        message("Total = " , tot,"/",length(cellID), "\n Passed Checkpoint? ", tot/length(cellID)==1)
+        message("-------------------------")}
 
 
       if(length(ccc)>0){ p =  which(attributes(Metadata)$Data.Type=="SamplesAnnot" & attributes(Metadata)$Cleaned=="Yes")}else{
@@ -339,15 +355,14 @@ mm =  which(attributes(Metadata)$Data.Type=="Count")
                                                                                                                ,"\\b"),
                                                                                               gsub("[[:punct:]]","_",
                                                                                                    Metadata[[cellannot[1]]][,"samplesID"])))["TRUE"][1]}else{
- #ici
+                                                                                                     #ici
 
-            message(paste("No samplesID found in",names(Metadata)[cellannot[1]], ". Looking in barcodes:"))
-            z = gsub("[[:punct:]]","-",z)
-            if(all(str_detect(pattern ="_", cellID))==F & all(str_detect(pattern = "-", cellID==T))){ cellID = gsub("-","_",cellID)}
-            if(str_detect(pattern = paste0('[a-zA-Z]'),z)){ pattern = paste0(z,"-")}else { pattern =  paste0('[a-zA-Z]',z,"-")}
+                                                                                                     z = gsub("[[:punct:]]","-",z)
+
+                                                                                                     if(str_detect(pattern = paste0('[a-zA-Z]'),z)){ pattern = paste0(z,"-")}else { pattern =  paste0('[a-zA-Z]',z,"-")}
 
 
-              t = summary(str_detect(pattern = paste0(pattern,"\\b"), cellID))["TRUE"][1]}
+                                                                                                     t = summary(str_detect(pattern = paste0(pattern,"\\b"), cellID))["TRUE"][1]}
 
 
 
@@ -359,6 +374,26 @@ mm =  which(attributes(Metadata)$Data.Type=="Count")
           }
 
 
+          if(tot == 0){
+            message(paste("No samplesID found in",names(Metadata)[cellannot[1]], ". Looking in barcodes:"))
+
+            if(all(str_detect(pattern ="_", cellID))==F & all(str_detect(pattern = "-", cellID==T))){ cellID = gsub("-","_",cellID)}
+
+            for (z in unique(Metadata[[i]][,"samplesID"])) {
+
+              z = gsub("[[:punct:]]","-",z)
+              if(str_detect(pattern = paste0('[a-zA-Z]'),z)){ pattern = paste0(z,"-")}else {pattern=  paste0('[a-zA-Z]',z,"-")}
+
+              t = summary(str_detect(pattern = paste0(pattern,"\\b"),cellID))["TRUE"][1]
+
+
+              if(is.na(as.numeric(t))){ t = 0}
+
+              tot=tot+as.numeric(t)
+
+            }
+
+          }
 
 
           message("Total = " , tot, "/",length(cellID), "\n Passed Checkpoint? ", tot/length(cellID)==1)
@@ -368,7 +403,7 @@ mm =  which(attributes(Metadata)$Data.Type=="Count")
 
 
 
-      }
+    }
 
 
 
