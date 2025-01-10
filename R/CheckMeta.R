@@ -24,30 +24,33 @@ CheckMeta <- function(Metadata) {
 
 
   if(attributes(Metadata)$Omics.type!="Single.Cell"){
+
+
+    if("Clinic" %in%attributes(Metadata)$Data.Type){
+
   c <- which(attributes(Metadata)$Data.Type=="Clinic" & attributes(Metadata)$Cleaned=="No")
   c2 <- which(attributes(Metadata)$Data.Type=="Clinic" & attributes(Metadata)$Cleaned=="Yes")
 
   if(length(c2)>0){c=c2}
-  if(length(c)==0){stop("A Patients' Clinical data must be loaded.")}
 
   PpID <- unique(Metadata[[c[1]]][,"patientsID"])
+
+  }else {stop("A Patients' Clinical data must be loaded.")}
+
 
   if(length(c2)>0){
   PsID = Metadata[[c[1]]][,"samplesID"]
   PsID = unique(unlist(strsplit(PsID, ";")))}
 
-
+  if("SamplesAnnot" %in%attributes(Metadata)$Data.Type ){
   s <- which(attributes(Metadata)$Data.Type=="SamplesAnnot" & attributes(Metadata)$Cleaned=="No")
   s2 <- which(attributes(Metadata)$Data.Type=="SamplesAnnot" & attributes(Metadata)$Cleaned=="Yes")
-
-  if(is_empty(s)){  s = NULL}
-
-  if(length(s2)>0){s=s2}
-
+    if(length(s2)>0){s=s2}
 
   SsID <- unique(Metadata[[s[1]]][,"samplesID"])
   SpID <- unique(Metadata[[s[1]]][,"patientsID"])
 
+  }else{ s = NULL}
 
 
 
