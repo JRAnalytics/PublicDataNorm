@@ -121,7 +121,7 @@ AddExpressionMatrixSC <- function(Metadata=NULL,
 
 
 
-        if(length(rownames(Cells)==length(colnames(dt)))) {  colnames(dt) = rownames(Cells)} else
+        if(length(rownames(Cells))==length(colnames(dt))) {  colnames(dt) = rownames(Cells)} else
         { stop(paste(Cell.file, "has not the same number of cells than column of expression matrix."))
         }
 
