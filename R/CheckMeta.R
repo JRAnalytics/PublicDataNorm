@@ -44,6 +44,7 @@ CheckMeta <- function(Metadata) {
 
   if(length(s2)>0){s=s2}
 
+
   SsID <- unique(Metadata[[s[1]]][,"samplesID"])
   SpID <- unique(Metadata[[s[1]]][,"patientsID"])
 

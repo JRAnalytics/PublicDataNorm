@@ -98,7 +98,7 @@ AddExpressionMatrixSC <- function(Metadata=NULL,
 
              }else { stop("Object set in ExpressionMatrix is not of class 'data.frame', 'matrix', 'dgCMatrix' ,'dgTMatrix'")}}
 
-
+    if("V1" %in% colnames(dt) ){dt$V1 = NULL}
 
     if(is.null(colnames(dt))){
       message(paste(ExpressionMatrix,"has no colnames. A Cell.csv file may be associated in raw data directory."))} else {  colnames(dt) = gsub("_","-", colnames(dt))}
@@ -121,8 +121,8 @@ AddExpressionMatrixSC <- function(Metadata=NULL,
 
 
 
-        if(length(rownames(Cells))==length(colnames(dt))) {  colnames(dt) = rownames(Cells)} else
-        { stop(paste(Cell.file, "has not the same number of cells than column of expression matrix."))
+        if(!length(rownames(Cells))==length(colnames(dt))) {
+         message(paste("Cell.file has not the same number of cells than column of expression matrix."))
         }
 
 
@@ -131,10 +131,10 @@ AddExpressionMatrixSC <- function(Metadata=NULL,
         if(!setID.cellAnnotColumn %in%colnames(Cells) ){stop(paste(setID.cellAnnotColumn, "is not found in colnames of Cell.File"))}
         Cells$CellsBarcode = Cells[,setID.cellAnnotColumn]
         Cells$CellsBarcode = gsub("[[:punct:]]","-", Cells$CellsBarcode)
-        colnames(dt) = Cells$CellsBarcode}
+}
         if(inherits(setID.cellAnnotColumn,"numeric")){Cells$CellsBarcode = Cells[,setID.cellAnnotColumn]
         Cells$CellsBarcode = gsub("[[:punct:]]","-", Cells$CellsBarcode)
-        colnames(dt) = Cells$CellsBarcode}
+}
 
 
 
