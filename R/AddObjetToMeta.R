@@ -125,7 +125,7 @@ AddObjetToMeta <- function(Metadata,
   attributes(Metadata)$Data.Type[l+1] <- Data.type
 
   attributes(Metadata)$Export[l+1] <- Export
-
+  attributes(Metadata)$Cleaned[l+1] = "No"
 
 
 return(Metadata)

@@ -52,12 +52,31 @@ CleaningData = function(Metadata = NULL,
                              ClinicToClean = SamplesAnnotToClean,
                              exportname = SamplesExportname,
                              FilterSamples =  FilterSP,
-                             force.replace = force.replace )
+                             force.replace = force.replace,
+                             keep.all.column = keep.all.column )
 
 
 
     }
+
+    if(length(SamAnnotRaw)<1 & !is.null(SamplesLexic)){
+
+      Metadata <- CleaningClinic(Metadata = Metadata,
+                                 Lexic = SamplesLexic,
+                                 type = "Samples",
+                                 ClinicToClean = names(Metadata)[ClinicRaw],
+                                 exportname = SamplesExportname,
+                                 FilterPatients =F,
+                                 FilterSamples = FilterSP,
+                                 CleanFromOtherType = T,
+                                 force.replace = force.replace,
+                                 keep.all.column = keep.all.column )}
+
+
   }
+
+
+
 
  if(!all(is.null(PatientsExportname),is.null(PatientsLexic),is.null(PatientsAnnotToClean))){
     if(is.null(PatientsAnnotToClean) & attributes(Metadata)$Omics.type!="Single.Cell"   ){
@@ -77,7 +96,8 @@ CleaningData = function(Metadata = NULL,
                                  FilterPatients =  FilterSP,
                                  FilterSamples = F,
                                  force.replace = force.replace,
-                                 CleanFromOtherType = T)
+                                 CleanFromOtherType = T,
+                                 keep.all.column = keep.all.column)
 
 
 
@@ -100,7 +120,8 @@ CleaningData = function(Metadata = NULL,
                                  FilterPatients =  FilterSP,
                                  FilterSamples = F,
                                  force.replace = force.replace,
-                                 CleanFromOtherType = T)
+                                 CleanFromOtherType = T,
+                                 keep.all.column = keep.all.column)
 
 
 
@@ -158,7 +179,7 @@ if(FilterGenes == T){
                                  FilterSamples = F,
                                  CleanFromOtherType = F,
                                  force.replace = force.replace,
-                                 keep.all.column =F )
+                                 keep.all.column =keep.all.column )
 
       cellID = Metadata$Cells.Annotation$CellsBarcode
 
@@ -192,7 +213,7 @@ if(FilterGenes == T){
                                  FilterSamples = F,
                                  CleanFromOtherType = T,
                                  force.replace = force.replace,
-                                 keep.all.column =F )
+                                 keep.all.column =keep.all.column )
 
 
       }# Patient annot absent
@@ -211,7 +232,7 @@ if(FilterGenes == T){
                                  FilterSamples = F,
                                  CleanFromOtherType = F,
                                  force.replace = force.replace,
-                                 keep.all.column =F )
+                                 keep.all.column =keep.all.column )
 
 
     }# Patient annot Present
@@ -230,7 +251,7 @@ if(FilterGenes == T){
                                  FilterSamples = FilterSP,
                                  CleanFromOtherType = F,
                                  force.replace = force.replace,
-                                 keep.all.column =F )
+                                 keep.all.column =keep.all.column )
 
 
     }    # Sample annot Present
@@ -248,7 +269,7 @@ if(FilterGenes == T){
                                  FilterSamples = FilterSP,
                                  CleanFromOtherType = T,
                                  force.replace = force.replace,
-                                 keep.all.column =F )
+                                 keep.all.column =keep.all.column )
 
 
 
