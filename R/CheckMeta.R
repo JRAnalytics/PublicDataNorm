@@ -38,7 +38,7 @@ CheckMeta <- function(Metadata) {
   }else {stop("A Patients' Clinical data must be loaded.")}
 
 
-  if(length(c2)>0){
+  if(length(c)>0){
   PsID = Metadata[[c[1]]][,"samplesID"]
   PsID = unique(unlist(strsplit(PsID, ";")))}
 
