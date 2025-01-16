@@ -101,7 +101,7 @@ AddExpressionMatrixSC <- function(Metadata=NULL,
     if("V1" %in% colnames(dt) ){dt$V1 = NULL}
 
 
-    if(!"CellsAnnot" %in% attributes(Metadata)){
+    if(!"CellsAnnot" %in% attributes(Metadata)$Data.Type){
       if(!is.null(Cell.file)){
 
         if(rlang::inherits_any(Cell.file, c("data.frame", "matrix"))){Cells = Cell.file} else {
@@ -116,12 +116,24 @@ AddExpressionMatrixSC <- function(Metadata=NULL,
                 Cells <- as.data.frame(data.table::fread(file.path(path,Cell.file),header = F))
                 rownames(Cells) = Cells[,1]}}else {stop("Cell.file is not a character string or an environment object as data.frame or matrix.")}}
 
-
-          } else {  colnames(dt) = gsub("_","-", colnames(dt))}
-
         if(!length(rownames(Cells))==length(colnames(dt))) {
           message(paste("Cell.file has not the same number of cells than column of expression matrix."))
         }
+
+        if(is.null(colnames(dt))){
+          message(paste(ExpressionMatrix,"has no colnames. A Cell.csv file may be associated in raw data directory."))
+
+          if(length(rownames(Cells))==dim(dt)[2]){
+            message("Fetching from file.")
+            colnames(dt) = Cells$CellsBarcode}
+
+        }
+
+
+
+
+         } else {  colnames(dt) = gsub("_","-", colnames(dt))}
+
 
         if(is.null(setID.cellAnnotColumn)){stop("setID.cellAnnotColumn mus be specify")}
         if(inherits(setID.cellAnnotColumn,"character")){
@@ -134,15 +146,8 @@ AddExpressionMatrixSC <- function(Metadata=NULL,
 }
 
 
-      if(is.null(colnames(dt))){
-        message(paste(ExpressionMatrix,"has no colnames. A Cell.csv file may be associated in raw data directory."))
 
-        if(length(rownames(Cells))==dim(dt)[2]){
-          message("Fetching from file.")
-          colnames(dt) = Cells$CellsBarcode}
-
-      }
-      }
+      } else{colnames(dt) = gsub("_","-", colnames(dt))}
 
 
 
