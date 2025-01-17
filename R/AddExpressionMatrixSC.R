@@ -120,34 +120,30 @@ AddExpressionMatrixSC <- function(Metadata=NULL,
           message(paste("Cell.file has not the same number of cells than column of expression matrix."))
         }
 
+
+        if(is.null(setID.cellAnnotColumn)){stop("setID.cellAnnotColumn mus be specify")}
+        if(inherits(setID.cellAnnotColumn,"character")){
+          if(!setID.cellAnnotColumn %in%colnames(Cells) ){stop(paste(setID.cellAnnotColumn, "is not found in colnames of Cell.File"))}
+          Cells$CellsBarcode = Cells[,setID.cellAnnotColumn]
+          Cells$CellsBarcode = gsub("[[:punct:]]","-", Cells$CellsBarcode)
+        }
+        if(inherits(setID.cellAnnotColumn,"numeric")){Cells$CellsBarcode = Cells[,setID.cellAnnotColumn]
+        Cells$CellsBarcode = gsub("[[:punct:]]","-", Cells$CellsBarcode)
+        }
+
+
         if(is.null(colnames(dt))){
           message(paste(ExpressionMatrix,"has no colnames. A Cell.csv file may be associated in raw data directory."))
+
 
           if(length(rownames(Cells))==dim(dt)[2]){
             message("Fetching from file.")
             colnames(dt) = Cells$CellsBarcode}
 
-        }
+        } else {  colnames(dt) = gsub("_","-", colnames(dt))}
 
 
-
-
-         } else {  colnames(dt) = gsub("_","-", colnames(dt))}
-
-
-        if(is.null(setID.cellAnnotColumn)){stop("setID.cellAnnotColumn mus be specify")}
-        if(inherits(setID.cellAnnotColumn,"character")){
-        if(!setID.cellAnnotColumn %in%colnames(Cells) ){stop(paste(setID.cellAnnotColumn, "is not found in colnames of Cell.File"))}
-        Cells$CellsBarcode = Cells[,setID.cellAnnotColumn]
-        Cells$CellsBarcode = gsub("[[:punct:]]","-", Cells$CellsBarcode)
-}
-        if(inherits(setID.cellAnnotColumn,"numeric")){Cells$CellsBarcode = Cells[,setID.cellAnnotColumn]
-        Cells$CellsBarcode = gsub("[[:punct:]]","-", Cells$CellsBarcode)
-}
-
-
-
-      } else{colnames(dt) = gsub("_","-", colnames(dt))}
+      }} else{ colnames(dt) = gsub("_","-", colnames(dt))}
 
 
 
