@@ -43,7 +43,7 @@ CheckMeta <- function(Metadata) {
     if("samplesID" %in% colnames(Metadata[[c[1]]])){
       if(!all(is.na(Metadata[[c[1]]][,"samplesID"]))){
   PsID = Metadata[[c[1]]][,"samplesID"]
-  PsID = unique(unlist(strsplit(PsID, ";")))}}
+  PsID = unique(unlist(strsplit(PsID, ";")))}}}
 
 
   if("SamplesAnnot" %in%attributes(Metadata)$Data.Type ){
@@ -63,7 +63,7 @@ CheckMeta <- function(Metadata) {
   if(length(c)!=0){
     if(attributes(Metadata)$Data.Type[c[1]]=="Clinic"){pID <- Metadata[[c[1]]][,"patientsID"] }}
 
-  }}
+  }
 
 
 
