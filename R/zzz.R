@@ -3,8 +3,7 @@
 #   library.dynam("PublicDataNorm", pkgname, libname)
 # }
 
-PDNStartupMessage <- function()
-{
+PDNStartupMessage <- function(){
   # Startup message obtained as
   # > figlet -f slant MCLUST
   msg <- c(paste0(
@@ -24,8 +23,9 @@ PDNStartupMessage <- function()
   return(msg)
 }
 
-.onAttach <- function(lib, pkg)
-{
+
+
+.onAttach <- function(lib, pkg){
   # startup message
   msg <- PDNStartupMessage()
 
@@ -35,12 +35,6 @@ PDNStartupMessage <- function()
   invisible()
 
 }
-
-
-
-
-
-
 
 
 
