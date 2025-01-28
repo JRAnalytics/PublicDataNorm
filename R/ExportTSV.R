@@ -23,8 +23,11 @@ ExportTSV <- function (Metadata ,encoding = "UTF-8"){
 
 
   project = attributes(Metadata)$Project
+
   count <- 0
-  object <- length(Metadata)
+
+  object <- summary(as.factor(attributes(Metadata)$Export))["Yes"]
+
   name <- names(Metadata)
 
 
@@ -46,10 +49,7 @@ ExportTSV <- function (Metadata ,encoding = "UTF-8"){
     attributes(Metadata)$Version <- "V1"}
 
 
-  message(paste0("Exporting Version V", Vnumber))
 
-
-  message(paste("Exporting", object, "objects"))
 
 
 
@@ -58,7 +58,6 @@ ExportTSV <- function (Metadata ,encoding = "UTF-8"){
 
   NB.raw.clinic <- which(c(attributes(Metadata)$Data.Type=="Clinic" | attributes(Metadata)$Data.Type=="SamplesAnnot" ) & attributes(Metadata)$Export=="No" )
   if(length(NB.raw.clinic)>0) {
-    count <- count+1
     message("-------------------------------------------------")
     message(paste("Exporting", count, "/", object,"object: ",names(Metadata)[NB.raw.clinic],"data will not be exported"))
   }
@@ -75,9 +74,13 @@ ExportTSV <- function (Metadata ,encoding = "UTF-8"){
     SamplesLexic = lapply(ls(envir=.GlobalEnv), get)[lapply(lapply(ls(envir=.GlobalEnv), get), attr, "Lexic") == "Yes" & lapply(lapply(ls(envir=.GlobalEnv), get), attr, "Name")=="SamplesLexic" ][[1]]
 
 
+    if(exists("PatientLexic", mode= "any" )) {object = object+1}
+    if(exists("SamplesLexic", mode= "any" )) {object = object+1}
+    if(exists("CellsLexic", mode= "any" )) {object = object+1}
 
+    message(paste0("Exporting Version V", Vnumber))
 
-
+    message(paste("Exporting", object, "objects"))
 
   if(exists("PatientLexic", mode= "any" )) {
     count <- count+1
