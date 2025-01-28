@@ -38,9 +38,13 @@ CheckMeta <- function(Metadata) {
   }else {stop("A Patients' Clinical data must be loaded.")}
 
 
+    PsID=NULL
   if(length(c)>0){
+    if("samplesID" %in% colnames(Metadata[[c[1]]])){
+      if(!all(is.na(Metadata[[c[1]]][,"samplesID"]))){
   PsID = Metadata[[c[1]]][,"samplesID"]
-  PsID = unique(unlist(strsplit(PsID, ";")))}
+  PsID = unique(unlist(strsplit(PsID, ";")))}}
+
 
   if("SamplesAnnot" %in%attributes(Metadata)$Data.Type ){
   s <- which(attributes(Metadata)$Data.Type=="SamplesAnnot" & attributes(Metadata)$Cleaned=="No")
@@ -59,7 +63,7 @@ CheckMeta <- function(Metadata) {
   if(length(c)!=0){
     if(attributes(Metadata)$Data.Type[c[1]]=="Clinic"){pID <- Metadata[[c[1]]][,"patientsID"] }}
 
-  }
+  }}
 
 
 
@@ -72,9 +76,15 @@ CheckMeta <- function(Metadata) {
 
       c <- which(attributes(Metadata)$Data.Type=="Clinic" & attributes(Metadata)$Cleaned=="No")
       c2 <- which(attributes(Metadata)$Data.Type=="Clinic" & attributes(Metadata)$Cleaned=="Yes")
+
       if(length(c2)>0){c=c2
+
+      if("samplesID" %in% colnames(Metadata[[c[1]]])){
+        if(!all(is.na(Metadata[[c[1]]][,"samplesID"]))){
+
       PsID = Metadata[[c[1]]][,"samplesID"]
-      PsID = unique(unlist(strsplit(PsID, ";")))}
+      PsID = unique(unlist(strsplit(PsID, ";")))}} else{PsID=NULL}}
+
       if(length(c)==0){stop("A Patients' Clinical data must be loaded")}
 
 
@@ -137,14 +147,15 @@ if(attributes(Metadata)$Omics.type!="Single.Cell"){
     if(length(s)>0 & length(c)<1 | length(c)>0 & length(s)>0 ){
     if(all(SsID %in% colnames(Metadata[[i]]))==T) {   message(paste(MetaDataN[i]), " colnames : PASS") } else {
       message(paste(MetaDataN[i]), " colnames : FAIL")
-      if(summary(PsID %in% colnames(Metadata[[i]]))["TRUE"]==ncol(Metadata[[i]]) ){message(paste("All samples from", MetaDataN[i],"are found in Samples or clinical annotation file."))}
+      if(summary(SsID %in% colnames(Metadata[[i]]))["TRUE"]==ncol(Metadata[[i]]) ){message(paste("All samples from", MetaDataN[i],"are found in Samples or clinical annotation file."))}
       message(paste("Samples not found in ", MetaDataN[i]," : "), paste0(na.omit(SsID[!SsID%in%colnames(Metadata[[i]])]),collapse = "; "))}
     }
-    if(length(c)>0 & length(s)<1  ){
+    if(length(c)>0 & length(s)<1 & !is.null(PsID) ){
       if(all(PsID %in% colnames(Metadata[[i]]))==T) {   message(paste(MetaDataN[i]), " colnames : PASS") } else {
         message(paste(MetaDataN[i]), " colnames : FAIL")
+        if( !is.null(PsID)){
         if(summary(PsID %in% colnames(Metadata[[i]]))["TRUE"]==ncol(Metadata[[i]]) ){message(paste("All samples from", MetaDataN[i],"are found in Samples or clinical annotation file."))}
-        message(paste("Samples not found in ", MetaDataN[i]," : "), paste0(na.omit(PsID[!PsID%in%colnames(Metadata[[i]])]),collapse = "; "))}
+        message(paste("Samples not found in ", MetaDataN[i]," : "), paste0(na.omit(PsID[!PsID%in%colnames(Metadata[[i]])]),collapse = "; "))}}
     }
 
     }
