@@ -1,6 +1,6 @@
 Package: PublicDataNorm
 Title: Building and cleaning of public RNAseq data
-Version: 1.0.0
+Version: 1.1.0
 Authors@R: 
     person("Jerome", "Raffenne", , "raffenne.jerome@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "YOUR-ORCID-ID"))
