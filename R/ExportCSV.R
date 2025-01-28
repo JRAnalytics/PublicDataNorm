@@ -22,7 +22,10 @@ ExportCSV <- function (Metadata){
   project = attributes(Metadata)$Project
 
   count <- 0
-  object <- length(Metadata)
+  count <- 0
+
+  object <- summary(as.factor(attributes(Metadata)$Export))["Yes"]
+
   name <- names(Metadata)
 
 
@@ -43,11 +46,6 @@ ExportCSV <- function (Metadata){
       attributes(Metadata)$Version <- "V1"}
 
 
-      message(paste0("Exporting Version V", Vnumber))
-
-
-      message(paste("Exporting", object, "objects"))
-
 
 
 
@@ -59,6 +57,27 @@ ExportCSV <- function (Metadata){
     message("-------------------------------------------------")
     message(paste("Exporting", count, "/", object,"object: ",names(Metadata)[NB.raw.clinic],"data will not be exported"))
   }
+
+  PatientLexic = lapply(ls(envir=.GlobalEnv), get)[lapply(lapply(ls(envir=.GlobalEnv), get), attr, "Lexic") == "Yes" & lapply(lapply(ls(envir=.GlobalEnv), get), attr, "Name")=="PatientsLexic" ][[1]]
+
+  if(attributes(Metadata)$Omics.type=="Single.Cell"){
+
+    CellsLexic = lapply(ls(envir=.GlobalEnv), get)[lapply(lapply(ls(envir=.GlobalEnv), get), attr, "Lexic") == "Yes" & lapply(lapply(ls(envir=.GlobalEnv), get), attr, "Name")=="CellsLexic" ][[1]]
+
+  }
+
+  SamplesLexic = lapply(ls(envir=.GlobalEnv), get)[lapply(lapply(ls(envir=.GlobalEnv), get), attr, "Lexic") == "Yes" & lapply(lapply(ls(envir=.GlobalEnv), get), attr, "Name")=="SamplesLexic" ][[1]]
+
+
+
+  if(exists("PatientLexic", mode= "any" )) {object = object+1}
+  if(exists("SamplesLexic", mode= "any" )) {object = object+1}
+  if(exists("CellsLexic", mode= "any" )) {object = object+1}
+  message(paste0("Exporting Version V", Vnumber))
+
+
+  message(paste("Exporting", object, "objects"))
+
 
 
         if(exists("PatientLexic", mode= "any" )) {

@@ -10,12 +10,25 @@
 AddKeyLexic <- function(lexic=NULL, key = NULL,value= NULL){
 
 
-  if(key%in%names(lexic)){
+
+  if(value%in%unlist(lexic)){
+
+
+    ItemsN = names(unlist(lexic))[which(unlist(lexic) %in% value)]
+    Items = unique(names(lexic)[unlist(lapply(ItemsN, function(x) which(str_detect(x, names(lexic)))))])
+
+
+    message(c(paste0("Value '", value, "' already present in: "), paste0(Items, sep= ", "), "will not be added.
+              Suppress Value from Key items.
+              Try:  Lexic[[key]] = Lexic[[key]][Lexic[[key]]!= c(value)] "))} else{
+
+
+    if(key%in%names(lexic)){
 
     if(!value%in%lexic[[key]]){
       message(paste("Adding",value, "in", key, "."))
     lexic[[key]] <-  c(lexic[[key]],value)
-    } else { message(paste(value, "in", key, "already present."))}
+    } else { }
 
 
 
@@ -24,7 +37,7 @@ AddKeyLexic <- function(lexic=NULL, key = NULL,value= NULL){
     lexic[[key]] <- c(key,value)
 
 
-    }
+    }}
 
   return(lexic)
 
