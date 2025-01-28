@@ -59,7 +59,7 @@ AddClinicFromObject  <- function(Metadata,
     if(type=="Patients"){
       if(!is.null(setPatientID.Column)){
         object$patientsID =object[,setPatientID.Column]}else{stop("setPatientID.Column must be set")}
-      if(!is.null(setPatientID.Column)){ object$samplesID =object[,setSamplesID.Column]}}
+      if(!is.null(setSamplesID.Column)){ object$samplesID =object[,setSamplesID.Column]}}
 
 
     if(type=="Cells"){

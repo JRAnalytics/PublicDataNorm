@@ -14,7 +14,7 @@ CleaningClinic(
   FilterPatients = F,
   CleanFromOtherType = F,
   force.replace = F,
-  keep.all.column = F
+  keep.all.column = T
 )
 }
 \arguments{
@@ -36,7 +36,7 @@ CleaningClinic(
 
 \item{force.replace}{set as F. T : replace an already object with the same name}
 
-\item{keep.all.column}{default F, if T, copy all column from clinic.}
+\item{keep.all.column}{default T, copy all column from clinic, else only column from Lexic are built.}
 }
 \value{
 a data frame of Samples pheno or patients clinical data. If Sample ID and Patients ID are the sames, so Samples.pheno and Patient_clinic are the same data frame

@@ -8,6 +8,8 @@ VersionCheck(Metadata, path = NULL)
 }
 \arguments{
 \item{Metadata}{the Metaobject of the project}
+
+\item{path}{file path to DataBaseSumary.txt}
 }
 \value{
 Return a Versionned metadata object
