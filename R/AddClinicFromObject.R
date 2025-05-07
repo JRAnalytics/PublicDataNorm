@@ -52,20 +52,24 @@ AddClinicFromObject  <- function(Metadata,
     if(type=="Cells"){ExpressionMatrixIdColumn = "CellsBarcode"}
 
     if(type=="Samples"){
-      if(!is.null(setSamplesID.Column)){object$samplesID = object[,setSamplesID.Column]
+      if(!is.null(setSamplesID.Column)){
+
+        colnames(object)[ colnames(object)==setSamplesID.Column] = "samplesID"
+
       if(!is.null(setPatientID.Column)){
-        object$patientsID =object[,setPatientID.Column]}else {stop("setPatientID.Column must be set")}}else{stop("setSamplesID.Column must be set")}}
+        colnames(object)[ colnames(object)==setPatientID.Column] = "patientsID"}else {stop("setPatientID.Column must be set")}}else{stop("setSamplesID.Column must be set")}}
 
     if(type=="Patients"){
       if(!is.null(setPatientID.Column)){
-        object$patientsID =object[,setPatientID.Column]}else{stop("setPatientID.Column must be set")}
-      if(!is.null(setSamplesID.Column)){ object$samplesID =object[,setSamplesID.Column]}}
+        colnames(object)[ colnames(object)==setPatientID.Column] = "patientsID"}else{stop("setPatientID.Column must be set")}
+      if(!is.null(setSamplesID.Column)){    colnames(object)[ colnames(object)==setSamplesID.Column] = "samplesID"}}
 
 
     if(type=="Cells"){
-      if(!is.null(setCellsBarcode.Column)){object$CellsBarcode =object[,setCellsBarcode.Column]}else{stop("setCellsBarcode.Column must be set")}
-      if(!is.null(setSamplesID.Column)){object$samplesID =object[,setSamplesID.Column]}
-      if(!is.null(setPatientID.Column)){object$patientsID =object[,setPatientID.Column]}
+      if(!is.null(setCellsBarcode.Column)){colnames(object)[ colnames(object)==setCellsBarcode.Column] = "CellsBarcode"
+      }else{stop("setCellsBarcode.Column must be set")}
+      if(!is.null(setSamplesID.Column)){   colnames(object)[ colnames(object)==setSamplesID.Column] = "samplesID"}
+      if(!is.null(setPatientID.Column)){  colnames(object)[ colnames(object)==setPatientID.Column] = "patientsID"}
       object$CellsBarcode = gsub("[[:punct:]]","-",  object$CellsBarcode)
     }
 

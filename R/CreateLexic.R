@@ -30,19 +30,19 @@ CreateLexic <- function(Metadata=NULL, type = c("SamplesLexic","PatientsLexic","
     message(paste("Importing PatientLexic.txt from",project, "directory."))
     x <- scan(paste0(list.files.path$Project.Processes, "/",project,".PatientLexic.txt"), what="", sep="\n")%>%strsplit("[[:space:]]+")
     names(x) <- sapply(x, `[[`, 1)
-    PL<- lapply(x, `[`, -1)
+    Lexic<- lapply(x, `[`, -1)
 
-    attr(PL, "Lexic") = "Yes"
-    attr(PL, "Name") = "PatientsLexic"
+    attr(Lexic, "Lexic") = "Yes"
+    attr(Lexic, "Name") = "PatientsLexic"
 
-    return(PL)} else {    PL <- scan(paste(Refpath(Metadata),"PatientLexic.txt",sep = "/"), what="", sep="\n")%>%strsplit("[[:space:]]+")
-    names(PL) <- sapply(PL, `[[`, 1)
-    PL<- lapply(PL, `[`, -1)
+    } else {    Lexic <- scan(paste(Refpath(Metadata),"PatientLexic.txt",sep = "/"), what="", sep="\n")%>%strsplit("[[:space:]]+")
+    names(Lexic) <- sapply(Lexic, `[[`, 1)
+    Lexic<- lapply(Lexic, `[`, -1)
 
-    attr(PL, "Lexic") = "Yes"
-    attr(PL, "Name") = "PatientsLexic"
+    attr(Lexic, "Lexic") = "Yes"
+    attr(Lexic, "Name") = "PatientsLexic"
 
-     return(PL)  }}
+       }}
 
   if(type=="SamplesLexic"){
 
@@ -52,22 +52,22 @@ CreateLexic <- function(Metadata=NULL, type = c("SamplesLexic","PatientsLexic","
       message(paste("Importing SamplesLexic.txt from",project, "directory."))
       x <- scan(paste0(list.files.path$Project.Processes, "/",project,".SamplesLexic.txt"), what="", sep="\n")%>%strsplit("[[:space:]]+")
       names(x) <- sapply(x, `[[`, 1)
-      SL<- lapply(x, `[`, -1)
+      Lexic<- lapply(x, `[`, -1)
 
-      attr(SL, "Lexic") = "Yes"
-      attr(SL, "Name") = "SamplesLexic"
+      attr(Lexic, "Lexic") = "Yes"
+      attr(Lexic, "Name") = "SamplesLexic"
 
-      return(SL)
+
 
 
     } else {
 
-      SL <- scan(paste(Refpath(Metadata),"SamplesLexic.txt",sep = "/"), what="", sep="\n")%>%strsplit("[[:space:]]+")
-      names(SL) <- sapply(SL, `[[`, 1)
-      SL<- lapply(SL, `[`, -1)
-      attr(SL, "Lexic") = "Yes"
-      attr(SL, "Name") = "SamplesLexic"
-      return(SL)
+      Lexic <- scan(paste(Refpath(Metadata),"SamplesLexic.txt",sep = "/"), what="", sep="\n")%>%strsplit("[[:space:]]+")
+      names(Lexic) <- sapply(Lexic, `[[`, 1)
+      Lexic<- lapply(Lexic, `[`, -1)
+      attr(Lexic, "Lexic") = "Yes"
+      attr(Lexic, "Name") = "SamplesLexic"
+
 
 
   }
@@ -82,28 +82,37 @@ CreateLexic <- function(Metadata=NULL, type = c("SamplesLexic","PatientsLexic","
          message(paste("Importing SamplesLexic.txt from",project, "directory."))
          x <- scan(paste0(list.files.path$Project.Processes, "/",project,"CellsLexic.txt"), what="", sep="\n")%>%strsplit("[[:space:]]+")
          names(x) <- sapply(x, `[[`, 1)
-         SL<- lapply(x, `[`, -1)
-         attr(SL, "Lexic") = "Yes"
-         attr(SL, "Name") = "CellsLexic"
-         return(SL)
+         Lexic<- lapply(x, `[`, -1)
+         attr(Lexic, "Lexic") = "Yes"
+         attr(Lexic, "Name") = "CellsLexic"
+
 
 
        } else {
 
          if(file.exists(paste0(list.files.path$Project.Processes, "/",project,".CellsLexic.txt"))){
-           SL <- scan(paste0(list.files.path$Project.Processes,"/",project,".CellsLexic.txt"), what="", sep="\n")%>%strsplit("[[:space:]]+")
-           names(SL) <- sapply(SL, `[[`, 1)
-           SL<- lapply(SL, `[`, -1)
+           Lexic <- scan(paste0(list.files.path$Project.Processes,"/",project,".CellsLexic.txt"), what="", sep="\n")%>%strsplit("[[:space:]]+")
+           names(Lexic) <- sapply(Lexic, `[[`, 1)
+           Lexic<- lapply(Lexic, `[`, -1)
 
          } else {
-           SL <- scan(paste(Refpath(Metadata),"CellsLexic.txt",sep = "/"), what="", sep="\n")%>%strsplit("[[:space:]]+")
-           names(SL) <- sapply(SL, `[[`, 1)
-           SL<- lapply(SL, `[`, -1)}
-         attr(SL, "Lexic") = "Yes"
-         attr(SL, "Name") = "CellsLexic"
-         return(SL)
+           Lexic <- scan(paste(Refpath(Metadata),"CellsLexic.txt",sep = "/"), what="", sep="\n")%>%strsplit("[[:space:]]+")
+           names(Lexic) <- sapply(Lexic, `[[`, 1)
+           Lexic<- lapply(Lexic, `[`, -1)}
+         attr(Lexic, "Lexic") = "Yes"
+         attr(Lexic, "Name") = "CellsLexic"
+
       }}
 
 
 
+   DupItems = duplicated(toupper(names(Lexic)))
+
+   if(!all(DupItems==F)){
+
+     DupItems = names(Lexic)[which(DupItems)]
+
+     stop(paste("Duplicated Items '",DupItems,"' in lexic"))}
+
+   return(Lexic)
 }
