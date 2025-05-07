@@ -182,8 +182,17 @@ if(exists("CellsLexic", mode= "any" )) {
         if(attributes(Metadata)$Omics.type=="Single.Cell"){
 
           filename <- paste0(Verifiedpath(Metadata),"/","V1.matrix.mtx")
-          if(!class(Metadata[[j]])[1]=="dgTMatrix"){Metadata[[j]] = as.matrix(Metadata[[j]]) }
-          writeMM(Matrix(as.matrix(Metadata[[j]]), sparse = T),file = filename)
+          if(class(Metadata[[j]])[1]== "dgCMatrix") {
+            writeMM(Matrix((Metadata[[j]]), sparse = T),file = filename)} else{
+
+            if(!class(Metadata[[j]])[1]=="dgTMatrix"){Metadata[[j]] = as.matrix(Metadata[[j]])}
+            print("là2")
+            writeMM(Matrix(Metadata[[j]], sparse = T),file = filename)
+          }
+
+
+
+
           message(paste("Compressing"))
           R.utils::gzip(filename, destname=sprintf("%s.gz", filename), overwrite=T, remove=TRUE, BFR.SIZE=1e+07)
           gc()
