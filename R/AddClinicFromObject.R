@@ -57,12 +57,14 @@ AddClinicFromObject  <- function(Metadata,
         colnames(object)[ colnames(object)==setSamplesID.Column] = "samplesID"
 
       if(!is.null(setPatientID.Column)){
-        colnames(object)[ colnames(object)==setPatientID.Column] = "patientsID"}else {stop("setPatientID.Column must be set")}}else{stop("setSamplesID.Column must be set")}}
+        if(setPatientID.Column==setSamplesID.Column){object$patientsID =object$samplesID} else{
+        colnames(object)[ colnames(object)==setPatientID.Column] = "patientsID"}}else {stop("setPatientID.Column must be set")}}else{stop("setSamplesID.Column must be set")}}
 
     if(type=="Patients"){
       if(!is.null(setPatientID.Column)){
         colnames(object)[ colnames(object)==setPatientID.Column] = "patientsID"}else{stop("setPatientID.Column must be set")}
-      if(!is.null(setSamplesID.Column)){    colnames(object)[ colnames(object)==setSamplesID.Column] = "samplesID"}}
+      if(!is.null(setSamplesID.Column)){
+        if(setSamplesID.Column==setPatientID.Column){object$samplesID =object$patientsID  } else {colnames(object)[ colnames(object)==setSamplesID.Column] = "samplesID"}}}
 
 
     if(type=="Cells"){
